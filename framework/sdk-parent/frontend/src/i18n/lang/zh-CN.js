@@ -4,6 +4,9 @@ import test_track from "./track/zh-CN";
 
 const message = {
   commons: {
+    header_custom_select_tips: '请选择列表中要展示的信息',
+    advance_search_total_suffix: '个结果',
+    advance_search_clear: '清空条件',
     project_permission: '请先添加该项目权限',
     no_permission: '暂无权限',
     failure_continues: "失败继续",
@@ -331,6 +334,7 @@ const message = {
     },
     adv_search: {
       title: '高级搜索',
+      new_title: '筛选',
       combine: '组合查询',
       test: "所属测试",
       project: "所属项目",
@@ -1928,7 +1932,7 @@ const message = {
       import_version: '导入版本',
       data_update_version: '同一API更新到',
       data_new_version: '新增API创建到',
-      latest_version: '最新版本',
+      latest_version: '默认最新版本',
     },
     scenario_import: {
       data_update_version: '同一场景更新到',
@@ -2397,7 +2401,7 @@ const message = {
   table: {
     header_display_field: '表头显示字段',
     fields_to_be_selected: '待选字段',
-    selected_fields: '已选字段'
+    selected_fields: '已选字段',
   },
   run_mode: {
     title: "模式",
