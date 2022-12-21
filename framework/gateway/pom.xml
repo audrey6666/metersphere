@@ -195,14 +195,6 @@
                     <groupId>org.tukaani</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>shiro-spring</artifactId>
-                    <groupId>org.apache.shiro</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>shiro-web</artifactId>
-                    <groupId>org.apache.shiro</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>springdoc-openapi-ui</artifactId>
                     <groupId>org.springdoc</groupId>
                 </exclusion>
