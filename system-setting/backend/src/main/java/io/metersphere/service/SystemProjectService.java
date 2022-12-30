@@ -27,7 +27,6 @@ import io.metersphere.metadata.service.FileMetadataService;
 import io.metersphere.request.AddProjectRequest;
 import io.metersphere.request.ProjectRequest;
 import io.metersphere.xpack.api.service.ProjectApplicationSyncService;
-import io.metersphere.xpack.quota.service.QuotaService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -71,6 +70,8 @@ public class SystemProjectService {
     private EnvironmentGroupProjectService environmentGroupProjectService;
     @Resource
     private BaseScheduleService baseScheduleService;
+    @Resource
+    private QuotaService quotaService;
 
     public Project addProject(AddProjectRequest project) {
         if (StringUtils.isBlank(project.getName())) {
@@ -81,7 +82,6 @@ public class SystemProjectService {
         if (projectMapper.countByExample(example) > 0) {
             MSException.throwException(Translator.get("project_name_already_exists"));
         }
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         if (quotaService != null) {
             quotaService.checkWorkspaceProject(project.getWorkspaceId());
         }

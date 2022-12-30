@@ -9,7 +9,6 @@ import io.metersphere.commons.constants.PerformanceTestStatus;
 import io.metersphere.commons.constants.ReportKeys;
 import io.metersphere.commons.exception.MSException;
 import io.metersphere.commons.utils.BeanUtils;
-import io.metersphere.commons.utils.CommonBeanFactory;
 import io.metersphere.commons.utils.JSON;
 import io.metersphere.commons.utils.LogUtil;
 import io.metersphere.dto.*;
@@ -26,7 +25,6 @@ import io.metersphere.request.DeleteReportRequest;
 import io.metersphere.request.OrderRequest;
 import io.metersphere.request.RenameReportRequest;
 import io.metersphere.request.ReportRequest;
-import io.metersphere.xpack.quota.service.QuotaService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +83,8 @@ public class PerformanceReportService {
     private ExtTestPlanLoadCaseMapper extTestPlanLoadCaseMapper;
     @Resource
     private BaseEnvironmentService baseEnvironmentService;
+    @Resource
+    private QuotaService quotaService;
 
     public List<ReportDTO> getRecentReportList(ReportRequest request) {
         List<OrderRequest> orders = new ArrayList<>();
@@ -191,7 +191,6 @@ public class PerformanceReportService {
         if (project == null || StringUtils.isBlank(project.getWorkspaceId())) {
             MSException.throwException("project is null or workspace_id of project is null. project id: " + projectId);
         }
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         RLock lock = redissonClient.getLock(project.getWorkspaceId());
         if (quotaService != null) {
             try {

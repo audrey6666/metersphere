@@ -49,10 +49,10 @@ import io.metersphere.service.*;
 import io.metersphere.service.ext.ExtApiScheduleService;
 import io.metersphere.service.ext.ExtFileAssociationService;
 import io.metersphere.service.plan.TestPlanApiCaseService;
+import io.metersphere.service.quota.QuotaService;
 import io.metersphere.service.scenario.ApiScenarioService;
 import io.metersphere.xpack.api.service.ApiCaseBatchSyncService;
 import io.metersphere.xpack.api.service.ApiDefinitionSyncService;
-import io.metersphere.xpack.quota.service.QuotaService;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.collections.CollectionUtils;
@@ -160,6 +160,8 @@ public class ApiDefinitionService {
 
     @Resource
     private ApiDefinitionImportUtilService apiDefinitionImportUtilService;
+    @Resource
+    private QuotaService quotaService;
 
 
     private static final String COPY = "Copy";
@@ -432,7 +434,6 @@ public class ApiDefinitionService {
 
 
     public void checkQuota(String projectId) {
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         if (quotaService != null) {
             quotaService.checkAPIDefinitionQuota(projectId);
         }

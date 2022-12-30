@@ -56,8 +56,8 @@ import io.metersphere.service.definition.TcpApiParamService;
 import io.metersphere.service.ext.ExtApiScheduleService;
 import io.metersphere.service.ext.ExtFileAssociationService;
 import io.metersphere.service.plan.TestPlanScenarioCaseService;
+import io.metersphere.service.quota.QuotaService;
 import io.metersphere.xpack.api.service.ApiAutomationRelationshipEdgeService;
-import io.metersphere.xpack.quota.service.QuotaService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -157,6 +157,8 @@ public class ApiScenarioService {
     private ExtApiScenarioReferenceIdMapper extApiScenarioReferenceIdMapper;
     @Resource
     private ExtTestPlanApiScenarioMapper extTestPlanApiScenarioMapper;
+    @Resource
+    private QuotaService quotaService;
 
     private ThreadLocal<Long> currentScenarioOrder = new ThreadLocal<>();
 
@@ -297,7 +299,6 @@ public class ApiScenarioService {
     }
 
     private void checkQuota(String projectId) {
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         if (quotaService != null) {
             quotaService.checkAPIAutomationQuota(projectId);
         }

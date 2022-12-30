@@ -26,7 +26,6 @@ import io.metersphere.log.vo.performance.PerformanceReference;
 import io.metersphere.metadata.service.FileMetadataService;
 import io.metersphere.request.*;
 import io.metersphere.task.dto.TaskRequestDTO;
-import io.metersphere.xpack.quota.service.QuotaService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -92,6 +91,8 @@ public class PerformanceTestService {
     private TestPlanLoadCaseMapper testPlanLoadCaseMapper;
     @Resource
     private TestCaseTestMapper testCaseTestMapper;
+    @Resource
+    private QuotaService quotaService;
 
     public List<LoadTestDTO> list(QueryTestPlanRequest request) {
         request.setOrders(ServiceUtils.getDefaultSortOrder(request.getOrders()));
@@ -509,7 +510,6 @@ public class PerformanceTestService {
 
     private void checkLoadQuota(LoadTestReportWithBLOBs testReport, Engine engine) {
         RunTestPlanRequest checkRequest = new RunTestPlanRequest();
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         checkRequest.setLoadConfiguration(testReport.getLoadConfiguration());
         checkRequest.setProjectId(testReport.getProjectId());
         if (quotaService != null) {
@@ -710,7 +710,6 @@ public class PerformanceTestService {
     }
 
     private void checkQuota(TestPlanRequest request, boolean create) {
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         if (quotaService != null) {
             quotaService.checkLoadTestQuota(request, create);
         }

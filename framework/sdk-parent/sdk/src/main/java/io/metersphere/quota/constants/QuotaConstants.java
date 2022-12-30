@@ -1,4 +1,4 @@
-package io.metersphere.xpack.quota.dto;
+package io.metersphere.quota.constants;
 
 public class QuotaConstants {
 

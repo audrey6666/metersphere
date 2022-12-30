@@ -23,7 +23,6 @@ import io.metersphere.log.vo.system.SystemReference;
 import io.metersphere.request.GroupRequest;
 import io.metersphere.request.group.EditGroupRequest;
 import io.metersphere.request.group.EditGroupUserRequest;
-import io.metersphere.xpack.quota.service.QuotaService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +68,9 @@ public class GroupService {
     private MicroService microService;
     @Resource
     private BaseUserService baseUserService;
+    @Resource
+    private QuotaService quotaService;
+
     private static final String GLOBAL = "global";
 
     // 服务权限拼装顺序
@@ -526,7 +528,6 @@ public class GroupService {
     }
 
     private void addNotSystemGroupUser(Group group, List<String> userIds, List<String> sourceIds) {
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         for (String userId : userIds) {
             User user = userMapper.selectByPrimaryKey(userId);
             if (user == null) {

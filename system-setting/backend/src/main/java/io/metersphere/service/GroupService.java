@@ -23,7 +23,6 @@ import io.metersphere.log.vo.system.SystemReference;
 import io.metersphere.request.GroupRequest;
 import io.metersphere.request.group.EditGroupRequest;
 import io.metersphere.request.group.EditGroupUserRequest;
-import io.metersphere.xpack.quota.service.QuotaService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +65,8 @@ public class GroupService {
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private QuotaService quotaService;
 
     private static final String GLOBAL = "global";
     private static final String PERSONAL_PREFIX = "PERSONAL";
@@ -511,7 +512,6 @@ public class GroupService {
     }
 
     private void addNotSystemGroupUser(Group group, List<String> userIds, List<String> sourceIds) {
-        QuotaService quotaService = CommonBeanFactory.getBean(QuotaService.class);
         for (String userId : userIds) {
             User user = userMapper.selectByPrimaryKey(userId);
             if (user == null) {
