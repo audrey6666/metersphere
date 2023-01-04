@@ -241,42 +241,26 @@
       </div>
       <!-- 正文 -->
       <div class="edit-content-container">
-        <div class="content-body-wrap">
-          <!-- 非创建状态下 展示 -->
-          <div class="tab-pane-wrap" v-if="!editable">
-            <el-tabs v-model="caseActiveName">
-              <el-tab-pane label="用例详情" name="detail">
-                <case-detail-component
-                  :editable="editable"
-                  :form="form"
-                  :richTextDefaultOpen="richTextDefaultOpen"
-                  :formLabelWidth="formLabelWidth"
-                ></case-detail-component>
-              </el-tab-pane>
-              <el-tab-pane label="关联测试用例" name="associateTestCases"
-                >关联测试用例
-              </el-tab-pane>
-              <el-tab-pane label="关联缺陷" name="associatedDefects"
-                >关联缺陷
-              </el-tab-pane>
-              <el-tab-pane label="依赖关系" name="dependencies"
-                >依赖关系
-              </el-tab-pane>
-              <el-tab-pane label="评论" name="comment">评论 </el-tab-pane>
-              <el-tab-pane label="变更记录" name="changeRecord"
-                >变更记录
-              </el-tab-pane>
-            </el-tabs>
-          </div>
-          <case-detail-component
-            v-if="editable"
-            :editable="editable"
-            :form="form"
-            :richTextDefaultOpen="richTextDefaultOpen"
-            :formLabelWidth="formLabelWidth"
-            ref="testCaseBaseInfo"
-          ></case-detail-component>
-        </div>
+        <case-edit-info-component
+          :editable="editable"
+          :richTextDefaultOpen="richTextDefaultOpen"
+          :formLabelWidth="formLabelWidth"
+          :read-only="readOnly"
+          :project-id="projectIds"
+          :form="form"
+          :is-copy="currentTestCaseInfo.isCopy"
+          :copy-case-id="copyCaseId"
+          :label-width="formLabelWidth"
+          :case-id="form.id"
+          :type="type"
+          :comments.sync="comments"
+          @openComment="openComment"
+          :is-click-attachment-tab.sync="isClickAttachmentTab"
+          :version-enable="versionEnable"
+          :default-open="richTextDefaultOpen"
+          ref="otherInfo"
+        >
+        </case-edit-info-component>
         <!-- 基础信息 -->
         <div class="content-base-info-wrap">
           <case-base-info
@@ -298,8 +282,8 @@
         </div>
       </div>
       <!-- 底部操作按钮 -->
-      <div class="edit-footer-container">
-        <template v-if="editable">
+      <div class="edit-footer-container" v-if="editable">
+        <template>
           <!-- 保存 -->
           <div class="save-btn-row">
             <el-button size="small" @click="handleCommand">保存</el-button>
@@ -399,16 +383,14 @@ import {
   getDefaultVersion,
   setLatestVersionById,
 } from "metersphere-frontend/src/api/version";
-import BaseEditItemComponent from "./BaseEditItemComponent";
-import CaseDetailComponent from "./case/CaseDetailComponent";
-import CaseBaseInfo from "./case/CaseBaseInfo";
 
+import CaseEditInfoComponent from "./case/CaseEditInfoComponent";
+import CaseBaseInfo from "./case/CaseBaseInfo";
 export default {
   name: "TestCaseEdit",
   components: {
+    CaseEditInfoComponent,
     CaseBaseInfo,
-    CaseDetailComponent,
-    BaseEditItemComponent,
     CustomFiledFormItem,
     StepChangeItem,
     TestCaseStepItem,
@@ -438,9 +420,6 @@ export default {
   },
   data() {
     return {
-      // since v2.6
-      caseActiveName: "detail",
-
       // origin
       path: "/test/case/add",
       isPublic: false,
@@ -1650,8 +1629,6 @@ export default {
         // 1024 减去左右padding 各24 和 1px右边框
         width: px2rem(975);
         height: 100%;
-        padding-left: px2rem(24);
-        padding-right: px2rem(24);
         .case-title-wrap {
           display: flex;
           margin-top: px2rem(24);
@@ -1666,7 +1643,17 @@ export default {
             color: #1f2329;
           }
         }
-
+        :deep(.el-tabs__nav-scroll) {
+          padding-left: 6px;
+          height: 45px;
+        }
+        :deep(.el-tabs__nav) {
+          height: 45px;
+          line-height: 45px;
+        }
+        :deep(.el-tabs__item) {
+          padding: 0 14px !important;
+        }
         //公共样式
         .content-wrap {
           :deep(.v-note-op) {

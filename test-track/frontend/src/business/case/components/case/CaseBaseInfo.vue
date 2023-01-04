@@ -193,7 +193,7 @@
             :editable="editable"
             trigger="hover"
             :contentObject="{
-              content: {demandId: form.demandId, demandOptions},
+              content: { demandId: form.demandId, demandOptions },
               contentType: 'STORY',
             }"
             :readonlyHoverEvent="true"
@@ -213,9 +213,13 @@
                     size="small"
                   >
                     <template slot-scope="{ data }">
-                      <span class="demand-span" :title="data.label">{{
-                        data.label
-                      }}</span>
+                      <div class="story-box">
+                        <div class="story-platform">{{ data.platform }}</div>
+                        <div class="story-label" v-if="data.value === 'other'">
+                          {{ $t("test_track.case.other") }}
+                        </div>
+                        <div class="story-label" v-else>{{ data.label }}</div>
+                      </div>
                     </template>
                   </el-cascader>
 
@@ -565,6 +569,28 @@ export default {
 
 <style scoped lang="scss">
 @import "@/business/style/index.scss";
+
+/* 关联需求下拉框 */
+.story-box {
+  display: flex;
+  .story-platform {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #783887;
+    padding: 1px 6px;
+    gap: 4px;
+    width: 49px;
+    height: 24px;
+    background: rgba(120, 56, 135, 0.2);
+    border-radius: 2px;
+    margin-right: 8px;
+  }
+  .story-label {
+    line-height: 22px;
+    color: #1f2329;
+  }
+}
 .selectHover {
   // background: rgba(31, 35, 41, 0.1);
   border-radius: 4px;
@@ -654,8 +680,6 @@ export default {
         // 1024 减去左右padding 各24 和 1px右边框
         width: px2rem(975);
         height: 100%;
-        padding-left: px2rem(24);
-        padding-right: px2rem(24);
         .case-title-wrap {
           display: flex;
           margin-top: px2rem(24);
@@ -777,6 +801,9 @@ export default {
           width: px2rem(256);
           height: 32px;
           :deep(.el-select) {
+            width: 100%;
+          }
+          :deep(.el-cascader) {
             width: 100%;
           }
         }

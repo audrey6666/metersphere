@@ -245,7 +245,7 @@ export default {
     },
     preSave() {
       //先校验
-
+      // TODO 
       //准备保存
       if (this.autoSave && this.selfEditable) {
         this.selfEditable = false;
@@ -302,7 +302,6 @@ export default {
   line-height: 32px;
   font-weight: 400;
   font-size: 14px;
-  line-height: 22px;
   color: #1f2329;
 }
 // .select:hover {
@@ -322,7 +321,7 @@ export default {
       align-items: center;
       padding: 1px 6px;
       gap: 4px;
-      width: 82px;
+      width: 45px;
       height: 24px;
       line-height: 24px;
       text-align: center;

@@ -208,6 +208,7 @@
                 <!-- 本地上传 -->
                 <div
                   class="local-row"
+                  @click="uploadFile"
                   style="
                     display: flex;
                     height: 32px;
@@ -235,6 +236,7 @@
                 <!-- 关联文件 -->
                 <div
                   class="ref-row"
+                  @click = "associationFile"
                   style="
                     display: flex;
                     height: 32px;
@@ -272,6 +274,7 @@
         </div>
       </div>
     </el-form>
+    <ms-file-metadata-list ref="metadataList" @checkRows="checkRows"/>
   </div>
 </template>
 <script>
@@ -280,6 +283,9 @@ import BaseEditItemComponent from "../BaseEditItemComponent";
 import TestCaseStepItem from "@/business/case/components/case/CaseStepItem";
 import StepChangeItem from "@/business/case/components/case/CaseStepChange";
 import CaseAttachmentViewer from "@/business/case/components/case/CaseAttachmentViewer";
+import MsFileMetadataList from "../common/MsFileMetadataList";
+import MsFileBatchMove from "metersphere-frontend/src/components/environment/commons/variable/FileBatchMove";
+
 export default {
   name: "CaseDetailComponent",
   components: {
@@ -288,6 +294,7 @@ export default {
     TestCaseStepItem,
     StepChangeItem,
     CaseAttachmentViewer,
+    MsFileMetadataList
   },
   data() {
     return {};
@@ -310,6 +317,16 @@ export default {
     handleSaveEvent() {
       //触发保存 TODO
     },
+    uploadFile(){
+      //唤起本地上传文件
+    },
+    associationFile(){
+      //唤起关联文件
+      this.$refs.metadataList.open();
+    },
+    checkRows(rows) {
+      //
+    }
   },
 };
 </script>
@@ -405,8 +422,6 @@ export default {
         // 1024 减去左右padding 各24 和 1px右边框
         width: px2rem(975);
         height: 100%;
-        padding-left: px2rem(24);
-        padding-right: px2rem(24);
         .case-title-wrap {
           display: flex;
           margin-top: px2rem(24);
