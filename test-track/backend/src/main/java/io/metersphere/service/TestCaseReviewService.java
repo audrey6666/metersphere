@@ -437,7 +437,7 @@ public class TestCaseReviewService {
         TestCaseReview testCaseReview = new TestCaseReview();
         testCaseReview.setId(reviewId);
 
-        if (statusList.contains(TestReviewCaseStatus.Prepare.name())) {
+        if (statusList.contains(TestReviewCaseStatus.Prepare.name()) || statusList.contains(TestReviewCaseStatus.Again.name())) {
             testCaseReview.setStatus(TestCaseReviewStatus.Underway.name());
             testCaseReviewMapper.updateByPrimaryKeySelective(testCaseReview);
             return;
