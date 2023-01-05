@@ -108,6 +108,11 @@ export default {
     :deep(.v-show-content) {
       padding: 8px 12px !important;
     }
+    :deep(.v-note-wrapper) {
+      box-shadow: none !important;
+      background: #f5f6f7 !important;
+      border-radius: 4px !important;
+    }
   }
 
   .state-edit-row {

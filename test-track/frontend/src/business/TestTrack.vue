@@ -98,7 +98,8 @@ input.el-input__inner {
   border-radius: 4px;
 }
 
-.el-button--small span {
+/* 此处不能公共使用 按需局部使用 */
+/* .el-button--small span {
   font-family: 'PingFang SC';
   font-style: normal;
   font-weight: 400;
@@ -112,7 +113,7 @@ input.el-input__inner {
     width: 80px;
     height: 32px;
     border-radius: 4px;
-}
+} */
 
 button.el-button.el-button--default.el-button--small {
   color: #1F2329;

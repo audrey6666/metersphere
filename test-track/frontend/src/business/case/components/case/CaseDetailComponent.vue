@@ -189,92 +189,20 @@
           <!-- 添加附件 -->
           <!-- tip -->
           <div class="opt-btn">
-            <el-popover
-              ref="popover"
-              placement="right"
-              trigger="click"
-              popper-class="attachment-popover"
-              :visible-arrow="false"
-            >
-              <div
-                class="upload-wrap"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  width: 120px;
-                  align-items: center;
-                "
-              >
-                <!-- 本地上传 -->
-                <div
-                  class="local-row"
-                  @click="uploadFile"
-                  style="
-                    display: flex;
-                    height: 32px;
-                    margin-top: 8px;
-                    line-height: 32px;
-                    text-align: center;
-                    magin-left: 1px;
-                    magin-right: 1px;
-                  "
-                >
-                  <div class="icon">
-                    <i class="el-icon-upload2" style="color: #646a73"></i>
-                  </div>
-                  <div
-                    class="title"
-                    style="
-                      letter-spacing: -0.1px;
-                      color: #1f2329;
-                      margin-left: 10px;
-                    "
-                  >
-                    上传文件
-                  </div>
-                </div>
-                <!-- 关联文件 -->
-                <div
-                  class="ref-row"
-                  @click = "associationFile"
-                  style="
-                    display: flex;
-                    height: 32px;
-                    margin-bottom: 8px;
-                    line-height: 32px;
-                    text-align: center;
-                    magin-left: 1px;
-                    magin-right: 1px;
-                  "
-                >
-                  <div class="icon">
-                    <i class="el-icon-connection" style="color: #646a73"></i>
-                  </div>
-                  <div
-                    class="title"
-                    style="
-                      letter-spacing: -0.1px;
-                      color: #1f2329;
-                      margin-left: 10px;
-                    "
-                  >
-                    关联文件
-                  </div>
-                </div>
-              </div>
-            </el-popover>
-            <el-button v-popover:popover icon="el-icon-plus" size="small"
-              >添加附件</el-button
-            >
-          </div>
-          <div class="opt-tip">支持任意类型文件，文件大小不超过 500MB</div>
-          <div class="attachment-preview">
-            <case-attachment-viewer></case-attachment-viewer>
+            <case-attachment-component
+              :caseId="form.id"
+              :type="type"
+              :isCopy="isCopy"
+              :copyCaseId="copyCaseId"
+              :readOnly="readOnly"
+              :projectId="projectId"
+              :isClickAttachmentTab="isClickAttachmentTab"
+              :isDelete="!isTestPlan"
+            ></case-attachment-component>
           </div>
         </div>
       </div>
     </el-form>
-    <ms-file-metadata-list ref="metadataList" @checkRows="checkRows"/>
   </div>
 </template>
 <script>
@@ -282,8 +210,7 @@ import FormRichTextItem from "@/business/case/components/richtext/FormRichTextIt
 import BaseEditItemComponent from "../BaseEditItemComponent";
 import TestCaseStepItem from "@/business/case/components/case/CaseStepItem";
 import StepChangeItem from "@/business/case/components/case/CaseStepChange";
-import CaseAttachmentViewer from "@/business/case/components/case/CaseAttachmentViewer";
-import MsFileMetadataList from "../common/MsFileMetadataList";
+import CaseAttachmentComponent from "@/business/case/components/case/CaseAttachmentComponent";
 import MsFileBatchMove from "metersphere-frontend/src/components/environment/commons/variable/FileBatchMove";
 
 export default {
@@ -293,8 +220,7 @@ export default {
     BaseEditItemComponent,
     TestCaseStepItem,
     StepChangeItem,
-    CaseAttachmentViewer,
-    MsFileMetadataList
+    CaseAttachmentComponent,
   },
   data() {
     return {};
@@ -305,6 +231,13 @@ export default {
     readOnly: Boolean,
     richTextDefaultOpen: String,
     formLabelWidth: String,
+    isClickAttachmentTab: Boolean,
+    isTestPlan: Boolean,
+    type: String,
+    caseId: String,
+    projectId: String,
+    copyCaseId: String,
+    isCopy: Boolean,
   },
   methods: {
     textBlur(options, refName) {
@@ -317,16 +250,6 @@ export default {
     handleSaveEvent() {
       //触发保存 TODO
     },
-    uploadFile(){
-      //唤起本地上传文件
-    },
-    associationFile(){
-      //唤起关联文件
-      this.$refs.metadataList.open();
-    },
-    checkRows(rows) {
-      //
-    }
   },
 };
 </script>
@@ -420,7 +343,7 @@ export default {
       }
       .content-body-wrap {
         // 1024 减去左右padding 各24 和 1px右边框
-        width: px2rem(975);
+        width: px2rem(1024);
         height: 100%;
         .case-title-wrap {
           display: flex;
@@ -534,17 +457,6 @@ export default {
 
           .content-wrap {
             .opt-btn {
-            }
-
-            .opt-tip {
-              font-family: "PingFang SC";
-              font-style: normal;
-              font-weight: 400;
-              font-size: 14px;
-              line-height: 22px;
-              /* identical to box height, or 157% */
-
-              color: #8f959e;
             }
           }
         }

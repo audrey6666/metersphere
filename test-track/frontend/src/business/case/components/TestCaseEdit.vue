@@ -1614,6 +1614,7 @@ export default {
       width: 100%;
       height: 100%;
       display: flex;
+      justify-content: space-between;
       background-color: #fff;
       .required-item:after {
         content: "*";
@@ -1626,8 +1627,8 @@ export default {
         line-height: 22px;
       }
       .content-body-wrap {
-        // 1024 减去左右padding 各24 和 1px右边框
-        width: px2rem(975);
+        // 1024 减去左右padding 各24 和 1px右边框 px2rem(1024)
+        width: px2rem(1024);
         height: 100%;
         .case-title-wrap {
           display: flex;

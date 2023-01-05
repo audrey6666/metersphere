@@ -1,16 +1,70 @@
 <template>
-  <div class="container">
-    <div class="icon"></div>
-    <div class="detail">
-      <div class="filename">mybatis.txt</div>
-      <div class="file-info-row">
-        <div class="size">15.2M</div>
-        <div class="split">|</div>
-        <div class="username">youliyuan</div>
-        <div class="upload-time">上传于2022-10-06 10:00:00</div>
+  <div class="atta-box">
+    <div class="atta-container" :class="isError ? 'error-border' : ''">
+      <div class="icon">
+        <img :src="iconSrc" alt="" />
+      </div>
+      <div class="detail">
+        <div class="filename">{{ fileItem.name }}</div>
+        <div class="file-info-row" v-if="isSuccess">
+          <div class="size">{{ fileItem.size }}</div>
+          <div class="split">|</div>
+          <div class="username">{{ fileItem.creator }}</div>
+          <div class="fiexd">上传于</div>
+          <div class="upload-time">
+            {{ fileItem.updateTime | datetimeFormat }}
+          </div>
+        </div>
+        <div class="error-msg" v-else-if="isError">上传失败</div>
+        <div class="error-msg" v-else-if="isExpired || isDelete">
+          该文件不存在
+        </div>
+        <div class="wait-upload" v-else-if="isToUpload">等待上传</div>
+      </div>
+      <div class="options">
+        <!-- 下载 -->
+        <div class="download" v-if="enableDownload" @click="handleDownload">
+          <img src="/assets/figma/icon_bottom-align_outlined" alt="" />
+        </div>
+        <!-- 转储 -->
+        <div class="retry" v-if="enableRetry" @click="handleRetry">
+          <img src="/assets/figma/icon_refresh_outlined" alt="" />
+        </div>
+        <!-- 预览 -->
+        <div class="into" v-if="enablePreview" @click="handlePreview">
+          <img src="/assets/figma/icon_into-item_outlined" alt="" />
+        </div>
+        <!-- 取消关联 -->
+        <div class="unLink" v-if="enableUnLink" @click="handleUnLink">
+          <img src="/assets/figma/icon_unlink_outlined" alt="" />
+        </div>
+        <!-- 删除 -->
+        <div class="delete" v-if="enableDelete" @click="handleDelete">
+          <img src="/assets/figma/icon_delete-trash_outlined" alt="" />
+        </div>
       </div>
     </div>
-    <div class="options"></div>
+    <!-- 进度 -->
+    <div class="process">
+      <el-progress
+        class="row-delete-name"
+        type="line"
+        v-if="!fileItem.isLocal && fileItem.isRelatedDeleted"
+        :text-inside="true"
+        :format="clearPercentage(fileItem)"
+        :stroke-width="4"
+      >
+      </el-progress>
+      <el-progress
+        v-else-if="!isError && !isExpired && !isToUpload"
+        :color="fileItem.progress >= 100 ? '' : uploadProgressColor"
+        type="line"
+        :format="clearPercentage(fileItem)"
+        :text-inside="true"
+        :percentage="fileItem.progress >= 100 ? 100 : fileItem.progress"
+        :stroke-width="4"
+      ></el-progress>
+    </div>
   </div>
 </template>
 <script>
@@ -18,6 +72,7 @@ export default {
   name: "CaseAttachmentItem",
   props: {
     fileItem: Object,
+    index: Number,
     readOnly: {
       type: Boolean,
       default: false,
@@ -31,6 +86,297 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      uploadProgressColor: "#AA4FBF",
+    };
+  },
+  methods: {
+    handleDownload() {
+      this.$emit("handleDownload", this.fileItem);
+    },
+    handleRetry() {
+      // 转储
+      this.$emit("handleRetry", this.fileItem, this.index);
+    },
+    handlePreview() {
+      this.$emit("handlePreview", this.fileItem);
+    },
+    handleUnLink() {
+      this.$emit("handleUnLink", this.fileItem, this.index);
+    },
+    handleDelete() {
+      this.$emit("handleDelete", this.fileItem, this.index);
+    },
+    clearPercentage(data) {
+      return () => {
+        return data.name;
+      };
+    },
+  },
+  computed: {
+    enableUnLink() {
+      return (
+        !(
+          this.readOnly ||
+          !this.isDelete ||
+          this.isCopy ||
+          (!this.fileItem.id && !this.isToRelate)
+        ) &&
+        this.isComplete &&
+        this.fileItem.isLocal
+      );
+    },
+    enableDelete() {
+      if (this.isToUpload || this.isError) {
+        return true;
+      }
+      return (
+        !(
+          this.readOnly ||
+          !this.isDelete ||
+          this.isCopy ||
+          (!this.fileItem.id && !this.isToUpload)
+        ) &&
+        this.isComplete &&
+        this.fileItem.isLocal
+      );
+    },
+    // 转储
+    enableRetry() {
+      return (
+        !(this.isCopy || !this.fileItem.id) &&
+        this.isComplete &&
+        this.fileItem.isLocal
+      );
+    },
+    enablePreview() {
+      let fileType = this.fileItem.type || "";
+      fileType = fileType.toUpperCase();
+      return (
+        this.isComplete &&
+        !(
+          !this.fileItem.id ||
+          !this.isToRelate ||
+          this.fileItem.isRelatedDeleted
+        ) &&
+        (fileType === "JPG" ||
+          fileType === "JPEG" ||
+          fileType === "PDF" ||
+          fileType === "PNG")
+      );
+    },
+    enableDownload() {
+      return (
+        this.fileItem.id &&
+        !this.isToRelate &&
+        !this.fileItem.isRelatedDeleted &&
+        this.isComplete
+      );
+    },
+    isComplete() {
+      return this.fileItem.proccess === 100;
+    },
+    isSuccess() {
+      return this.fileItem.status === "success";
+    },
+    isToUpload() {
+      return this.fileItem.status === "toUpload";
+    },
+    isToRelate() {
+      return this.fileItem.status === "toRelate";
+    },
+    isExpired() {
+      return this.fileItem.status === "expired";
+    },
+    isError() {
+      return (
+        !this.isSuccess &&
+        !this.isToUpload &&
+        !this.isToRelate &&
+        !this.isExpired
+      );
+    },
+    fileStatus() {
+      return this.fileItem.status;
+    },
+    iconSrc() {
+      let type = this.fileItem.type || "None";
+      type = type.toLowerCase();
+      let prefix = "/assets/figma/";
+      let suffix = ".svg";
+      let src = "";
+      switch (type) {
+        case "txt":
+          src = "icon_file-text_colorful";
+          break;
+        case "excel":
+          src = "icon_file-excel_colorful";
+          break;
+        case "word":
+          src = "icon_file-word_colorful";
+          break;
+        case "pdf":
+          src = "icon_file-pdf_colorful";
+          break;
+        case "xmind":
+          src = "icon_file-xmind_colorful";
+          break;
+        case "ppt":
+          src = "icon_file-ppt_colorful";
+          break;
+        case "sketch":
+          src = "icon_file-sketch_colorful";
+          break;
+        case "csv":
+          src = "icon_file-CSV_colorful";
+          break;
+        case "png":
+          src = "icon_file-image_colorful";
+          break;
+        case "sql":
+          src = "icon_file-sql_colorful";
+          break;
+
+        // 视频资源
+        case "mp4":
+          src = "icon_file-vedio_colorful";
+          break;
+
+        default:
+          // 未知
+          src = "icon_file-unknow_colorful";
+          break;
+      }
+
+      return prefix + src + suffix;
+    },
+  },
 };
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+@import "@/business/style/index.scss";
+.atta-box {
+  width: px2rem(480);
+  height: px2rem(58);
+  .atta-container:hover {
+    border-color: #783887;
+  }
+  .error-border {
+    border-color: #f54a45 !important;
+  }
+  .atta-container {
+    width: px2rem(480);
+    height: px2rem(58);
+    display: flex;
+    justify-content: flex-start;
+    background: #ffffff;
+    border: 1px solid #dee0e3;
+    border-radius: 4px;
+    .icon {
+      margin-top: px2rem(11.5);
+      margin-left: px2rem(18.67);
+      width: px2rem(24);
+      margin-right: px2rem(14.67);
+      img {
+      }
+    }
+
+    .detail {
+      margin-top: px2rem(8);
+      margin-right: px2rem(17.33);
+      width: px2rem(310);
+      display: flex;
+      flex-direction: column;
+      .filename {
+        width: 100%;
+        color: #1f2329;
+        height: px2rem(22);
+        line-height: px2rem(22);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .wait-upload {
+        height: px2rem(20);
+        font-size: 12px;
+        line-height: px2rem(20);
+        color: #8f959e;
+      }
+      .error-msg {
+        height: px2rem(20);
+        font-size: 12px;
+        line-height: px2rem(20);
+        color: #f54a45;
+      }
+      .file-info-row {
+        display: flex;
+        font-size: 12px;
+        line-height: px2rem(20);
+        height: px2rem(20);
+        color: #8f959e;
+        .size {
+        }
+
+        .split {
+          margin: 0 px2rem(8);
+        }
+
+        .username {
+        }
+
+        .fiexd {
+          margin: 0 px2rem(8);
+        }
+
+        .upload-time {
+        }
+      }
+    }
+
+    .options {
+      width: px2rem(112);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      img {
+        width: 13.33px;
+        height: 13.33px;
+      }
+      .download {
+        img {
+        }
+      }
+
+      .retry {
+        img {
+        }
+      }
+
+      .into {
+        img {
+        }
+      }
+
+      .unLink {
+        img {
+        }
+      }
+
+      .delete {
+        img {
+        }
+      }
+    }
+  }
+  .process {
+    width: px2rem(480);
+    position: relative;
+    bottom: px2rem(11);
+    height: px2rem(4);
+    :deep(.el-progress.row-delete-name .el-progress-bar__innerText) {
+      color: lightgrey !important;
+    }
+  }
+}
+</style>

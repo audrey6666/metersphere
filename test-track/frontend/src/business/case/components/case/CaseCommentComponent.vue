@@ -46,7 +46,7 @@ export default {
       }
       let userObj = JSON.parse(token);
       let name = userObj.name;
-      return name.substring(0, 1);
+      return name.substring(0, 2).toUpperCase();
     },
     toEdit() {
       this.state = "EDIT";
@@ -105,7 +105,7 @@ export default {
       margin-right: 12px;
       color: #fff;
       width: 40px;
-      background-color: #72dc91;
+      background-color: #783887;
       height: 40px;
       line-height: 40px;
       text-align: center;

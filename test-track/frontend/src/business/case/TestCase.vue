@@ -940,18 +940,17 @@ export default {
   width: 98px;
 }
 
-:deep(.iconBtn i){
+/* :deep(.iconBtn i){
   position: relative;
   top: -5px;
   width: 12px;
-  left: -4px;
   height: 12px;
 }
 
 :deep(.iconBtn span) {
   position: relative;
   left: -7px;
-}
+} */
 
 .export-model {
   font-family: 'PingFang SC';
@@ -982,4 +981,11 @@ export default {
   align-self: stretch;
   flex-grow: 0;
 }
+
+
+/* 创建用例按钮样式 */
+.el-button--small {
+    height: 32px;
+    border-radius: 4px;
+} 
 </style>

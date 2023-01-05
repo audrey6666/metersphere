@@ -678,7 +678,7 @@ export default {
       }
       .content-body-wrap {
         // 1024 减去左右padding 各24 和 1px右边框
-        width: px2rem(975);
+        width: px2rem(1024);
         height: 100%;
         .case-title-wrap {
           display: flex;

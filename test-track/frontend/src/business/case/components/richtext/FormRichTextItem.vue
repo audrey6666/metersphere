@@ -38,12 +38,14 @@ export default {
 </script>
 
 <style scoped>
-:deep(.v-note-wrapper) {
+/* :deep(.v-note-wrapper) {
   position: initial;
-}
+} */
 :deep(.v-note-op) {
   background-color: #f8f9fa !important;
   border-bottom: 1px solid #bbbfc4;
+  min-height: 34px !important;
+  height: 34px !important;
 }
 :deep(.v-note-wrapper) {
   box-sizing: border-box;
@@ -52,9 +54,17 @@ export default {
   box-shadow: none !important;
 }
 :deep(.v-note-show) {
-  min-height: 65px;
+  min-height: 64px;
 }
 :deep(.v-left-item) {
   flex: none !important;
+  min-height: 34px !important;
+}
+:deep(.v-right-item) {
+  text-align: left !important;
+  min-height: 34px !important;
+}
+:deep(.op-icon) {
+  padding: 0px !important;
 }
 </style>
