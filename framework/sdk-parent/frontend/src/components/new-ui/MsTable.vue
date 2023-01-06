@@ -19,6 +19,7 @@
       @filter-change="filter"
       @select-all="handleSelectAll"
       @select="handleSelect"
+      @selection-change="handleSelectionChange"
       @header-dragend="headerDragend"
       @cell-mouse-enter="showPopover"
       @row-click="handleRowClick"
@@ -91,9 +92,9 @@
       </el-table-column>
 
       <template #empty>
-        <div style="width: 100%;height: 238px;display: flex;flex-direction: column;justify-content: center;align-items: center">
-          <img src="../../assets/module/figma/icon_none.svg" style="height: 100px;width: 100px;margin-bottom: 8px"/>
-          <span class="addition-info-title">{{ $t("home.dashboard.public.no_data") }}</span>
+        <div style="width: 100%;height: 300px;display: flex;flex-direction: column;justify-content: start;align-items: center">
+          <img :src="refreshBySearch ? '/assets/module/figma/icon_search_none.svg' : '/assets/module/figma/icon_none.svg'" style="height: 100px;width: 100px;margin-bottom: 8px"/>
+          <span class="addition-info-title">{{ refreshBySearch ? $t("home.dashboard.public.no_search_data") : $t("home.dashboard.public.no_data") }}</span>
         </div>
       </template>
     </el-table>
@@ -124,7 +125,7 @@ import {
   handleRowDrop,
   clearShareDragParam,
 } from "../../utils/tableUtils";
-import MsTableHeaderSelectPopover from "../table/MsTableHeaderSelectPopover";
+import MsTableHeaderSelectPopover from "./MsTableHeaderSelectPopover";
 import MsTablePagination from "../pagination/TablePagination";
 import ShowMoreBtn from "../table/ShowMoreBtn";
 import MsTableColumn from "../table/MsTableColumn";
@@ -163,6 +164,7 @@ export default {
       defaultSort: {},
       tableActive: true,
       msTableKey: "msTableKey_" + getUUID(),
+      highlightRowIndexArr: [],
     };
   },
   props: {
@@ -271,7 +273,8 @@ export default {
     rowKey: [String, Function],
     // 自定义排序，需要传资源所属的项目id或者测试计划id，并且传排序的方法
     rowOrderGroupId: String,
-    rowOrderFunc: Function
+    rowOrderFunc: Function,
+    refreshBySearch: Boolean // 是否通过搜索刷新的列表
   },
   created() {
   },
@@ -384,6 +387,17 @@ export default {
         setTimeout(this.removeBatchPopper, 1);
       });
     },
+    handleSelectionChange(rows) {
+      let selectArr = [];
+      rows.forEach((row, index) => {
+        this.data.forEach((item, i) => {
+          if(item.id == row.id){
+            selectArr.push(i)
+          }
+        })
+      })
+      this.highlightRowIndexArr = selectArr;
+    },
     isSelectDataAll(data) {
       this.condition.selectAll = data;
       //设置勾选
@@ -395,6 +409,7 @@ export default {
       //更新统计信息
       this.selectDataCounts = getSelectDataCounts(this.condition, this.total, this.selectRows);
       this.selectIds = Array.from(this.selectRows).map(o => o.id);
+      this.$emit('callBackSelect');
     },
     headerDragend(newWidth, oldWidth, column, event) {
       if (column) {
@@ -512,11 +527,13 @@ export default {
     rowStyle({row}) {
       return row.hidden ? {"display": "none"} : {};
     },
-    tableRowClassName(row) {
-      if (row.row.hidden) {
-        return 'ms-variable-hidden-row';
+    tableRowClassName({row, rowIndex}) {
+      let selectIndex = this.highlightRowIndexArr;
+      for(let i = 0; i < selectIndex.length; i++){
+        if(rowIndex === selectIndex[i]){
+          return 'hignlight-row'
+        }
       }
-      return '';
     },
   }
 };
@@ -557,7 +574,13 @@ export default {
 .ms-table :deep(.el-table__body) tr.hover-row.el-table__row--striped.current-row > td,
 .ms-table :deep(.el-table__body) tr.hover-row.el-table__row--striped > td,
 .ms-table :deep(.el-table__body) tr.hover-row > td {
-  background-color: #ffffff;
+  background-color: rgba(31, 35, 41, 0.1)!important;
+  cursor: pointer!important;
+}
+
+/* 选中某行时的背景色*/
+.ms-table :deep(.el-table__body tr.hignlight-row > td) {
+  background-color: rgba(120, 56, 135, 0.1)!important;
 }
 
 /* 解决拖拽排序后hover阴影错乱问题 */
@@ -576,6 +599,7 @@ export default {
 :deep(.ms-table-header-cell) {
   height: 46px;
   background-color: #F5F6F7;
+  font-family: 'PingFang SC';
   font-size: 14px;
   font-weight: 500;
   border: 1px solid rgba(31, 35, 41, 0.15);
@@ -584,6 +608,25 @@ export default {
   color: #646A73;
   line-height: 22px;
   padding: 0px;
+  align-items: center;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+:deep(.el-table__body-wrapper) {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #1F2329;
+  flex: none;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: auto;
+  order: 1;
+  flex-grow: 0;
 }
 
 :deep(.ms-select-all-fixed th.el-table-column--selection.is-leaf.ms-table-header-cell.el-table__cell) {
@@ -615,6 +658,9 @@ export default {
   height: 46px;
 }
 
+.addition-info-title {
+  margin-top: -10px;
+}
 /*:deep(.el-table--scrollable-x .el-table__body-wrapper) {*/
 /*    overflow-x: hidden;*/
 /*}*/

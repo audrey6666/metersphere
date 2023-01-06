@@ -1296,6 +1296,8 @@ const message = {
     batch_menus: {
       select_all_data: "选择所有数据(共{0}条)",
       select_show_data: "选择可见数据(共{0}条)",
+      select_current_page: "全选当页",
+      select_all_page: "全选所有页"
     },
     mock: {
       create_error: "接口信息未保存",

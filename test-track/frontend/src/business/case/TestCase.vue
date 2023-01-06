@@ -103,6 +103,7 @@
             @setCondition="setCondition"
             @decrease="decrease"
             @search="refreshTreeByCaseFilter"
+            @openExcelExport="openExportDialog"
             ref="testCaseList">
           </test-case-list>
           <test-case-minder
@@ -458,9 +459,15 @@ export default {
     handleExportCommand(e) {
       switch (e) {
         case "excel":
-          this.$refs.exportExcel.open(this.$refs.testCaseList.selectCounts, true);
+          this.openExportDialog(this.$refs.testCaseList.selectCounts, true)
+          break;
+        case "xmind":
+          this.exportTestCase(e, {exportAll: true})
           break;
       }
+    },
+    openExportDialog(size, isExportAll) {
+      this.$refs.exportExcel.open(size, isExportAll);
     },
     getTrashList() {
       testCaseNodeTrashCount(this.projectId)

@@ -94,6 +94,7 @@ export default {
     input_prerequisite: "請輸入前置條件",
     input_demand_name: "請輸入需求ID或名稱",
     delete_confirm: "確認刪除測試用例",
+    case_delete_confirm: "是否刪除用例",
     delete: "刪除用例",
     batch_delete_confirm: "確定刪除{0}項用例?",
     batch_delete_tip: "刪除後將無法恢復, 請謹慎操作。",
@@ -370,7 +371,10 @@ export default {
     describe: "描述",
     current_owner: "處理人",
     creation_time: "創建時間",
-    project_name: "所屬項目"
+    project_name: "所屬項目",
+    input_name: "請輸入模塊名稱",
+    success_create: "模塊創建成功",
+    case_module_already_exists: "同層級下已經存在該模塊名稱",
   },
   home: {
     recent_test: "最近測試",

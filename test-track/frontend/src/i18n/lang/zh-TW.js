@@ -32,6 +32,7 @@ const message = {
         this_week: "本週",
         load_error: "加載失敗",
         no_data: "暫無數據",
+        no_search_data: '沒有找到相關內容',
       },
       case_finished_review_pass_tip: "已評審通過的案例/所有完成評審的案例*100%"
     },

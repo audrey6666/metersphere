@@ -27,7 +27,7 @@
               <svg-icon v-if="data.id !== 'root' && !hideOpretor" icon-class="icon_drag_outlined"/>
             </span>
 
-            <span v-if="data.isEdit" @click.stop>
+            <span v-if="data.isEdit" @click.stop @click.stop style="width: 92%">
               <el-input @blur.stop="save(node, data)" @keyup.enter.native.stop="$event.target.blur()" v-model="data.name"
                         class="name-input" size="mini" ref="nameInput" :draggable="true"/>
             </span>
@@ -54,9 +54,9 @@
 
               <el-button v-if="!data.id" class="node-operate-btn" @click="remove(node, data)" icon="el-icon-delete"/>
 
-              <el-dropdown placement="bottom-start" v-if="data.id && data.id !== 'root' && data.name !== defaultLabel && !hideOpretor">
+              <el-dropdown placement="bottom-start" v-if="data.id && data.id !== 'root' && data.name !== defaultLabel && !hideOpretor" trigger="click">
                 <el-button class="node-operate-btn" icon="el-icon-more" />
-                <el-dropdown-menu slot="dropdown">
+                <el-dropdown-menu slot="dropdown" class="module-more-operate">
                   <el-dropdown-item :disabled="!updatePermission">
                     <span @click.stop="edit(node, data)" class="more-operate-btn">
                       <svg-icon icon-class="icon_global_rename" style="margin-right: 9px; margin-top: 1px; width: 1.1em; height: 1.1em"/>
@@ -72,9 +72,9 @@
                 </el-dropdown-menu>
               </el-dropdown>
 
-              <el-dropdown placement="bottom-start" v-if="data.id && data.name === defaultLabel && data.level !== 1 && !hideOpretor">
-                <el-button class="node-operate-btn" icon="el-icon-more" />
-                <el-dropdown-menu slot="dropdown">
+              <el-dropdown placement="bottom-start" v-if="data.id && data.name === defaultLabel && data.level !== 1 && !hideOpretor" trigger="click">
+                <el-button class="node-operate-btn"/>
+                <el-dropdown-menu slot="dropdown" class="module-more-operate">
                   <el-dropdown-item :disabled="!updatePermission">
                     <span @click.stop="edit(node, data)" class="more-operate-btn">
                       <svg-icon icon-class="icon_global_rename" style="margin-right: 9px; margin-top: 1px; width: 1.1em; height: 1.1em"/>
@@ -117,7 +117,7 @@
             <svg-icon v-if="data.id !== 'root' && !hideOpretor" icon-class="icon_drag_outlined"/>
           </span>
 
-          <span v-if="data.isEdit" @click.stop>
+          <span v-if="data.isEdit" @click.stop style="width: 92%">
             <el-input @blur.stop="save(node, data)" @keyup.enter.native.stop="$event.target.blur()" v-model="data.name"
                       class="name-input" size="mini" ref="nameInput" :draggable="true"/>
           </span>
@@ -146,8 +146,8 @@
             <el-button v-if="!data.id" class="node-operate-btn" @click="remove(node, data)" icon="el-icon-delete"/>
 
             <el-dropdown placement="bottom-start" v-if="data.id && data.id !== 'root' && data.name !== defaultLabel && !hideOpretor">
-              <el-button class="node-operate-btn" icon="el-icon-more" />
-              <el-dropdown-menu slot="dropdown">
+              <el-button class="node-operate-btn" icon="el-icon-more"/>
+              <el-dropdown-menu slot="dropdown" class="module-more-operate">
                 <el-dropdown-item :disabled="!updatePermission">
                   <span @click.stop="edit(node, data)" class="more-operate-btn">
                     <svg-icon icon-class="icon_global_rename" style="margin-right: 9px; margin-top: 1px; width: 1.1em; height: 1.1em"/>
@@ -164,8 +164,8 @@
             </el-dropdown>
 
             <el-dropdown placement="bottom-start" v-if="data.id && data.name === defaultLabel && data.level !== 1 && !hideOpretor">
-              <el-button class="node-operate-btn" icon="el-icon-more" />
-              <el-dropdown-menu slot="dropdown">
+              <el-button class="node-operate-btn"/>
+              <el-dropdown-menu slot="dropdown" class="module-more-operate">
                 <el-dropdown-item :disabled="!updatePermission">
                   <span @click.stop="edit(node, data)" class="more-operate-btn">
                     <svg-icon icon-class="icon_global_rename" style="margin-right: 9px; margin-top: 1px; width: 1.1em; height: 1.1em"/>
@@ -191,6 +191,7 @@
 
 <script>
 import MsLeft2RightContainer from "../MsLeft2RightContainer";
+import { Message } from 'element-ui';
 
 export default {
   name: "MsNodeTree",
@@ -440,17 +441,24 @@ export default {
     },
     save(node, data) {
       if (data.name.trim() === '') {
-        this.$warning(this.$t('test_track.case.input_name'));
+        this.$warning(this.$t('test_track.module.input_name'), false);
         this.$refs['nameInput'].focus();
         return;
       }
       if (data.name.trim().length > this.nameLimit) {
-        this.$warning(this.$t('test_track.length_less_than') + this.nameLimit);
+        this.$warning(this.$t('test_track.length_less_than') + this.nameLimit, false);
         this.$refs['nameInput'].focus();
         return;
       }
       if (data.name.indexOf("\\") > -1) {
-        this.$warning(this.$t('commons.node_name_tip'));
+        this.$warning(this.$t('commons.node_name_tip'), false);
+        this.$refs['nameInput'].focus();
+        return;
+      }
+      let sameLevelNode = node.parent.childNodes;
+      let filterNode = sameLevelNode.filter(sameNode => sameNode.data.name === node.data.name);
+      if (filterNode.length > 1) {
+        this.$warning(this.$t('test_track.module.case_module_already_exists'), false);
         this.$refs['nameInput'].focus();
         return;
       }
@@ -472,9 +480,7 @@ export default {
         this.$refs.tree.remove(node);
         return;
       }
-      let title = this.$t('commons.confirm_delete') + ': ' + data.label + "?";
-      // let tip = '确定删除节点 ' + data.label + ' 及其子节点下所有资源' + '？';
-      // let info =  this.$t("test_track.module.delete_confirm") + data.label + "，" + this.$t("test_track.module.delete_all_resource") + "？";
+      let title = this.$t('commons.confirm_delete') + ': ' + this.$t("project.project_file.file_module_type.module") + data.label + "?";
       if (this.showRemoveTip) {
         this.$confirm(this.$t('test_track.module.delete_tip'), title, {
             cancelButtonText: this.$t("commons.cancel"),
@@ -666,7 +672,6 @@ export default {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   font-size: 14px;
   padding-right: 8px;
   width: 100%;
@@ -836,5 +841,14 @@ export default {
 
 :deep(.el-dropdown-menu__item:hover) {
   background-color: rgba(31, 35, 41, 0.1);
+}
+
+.module-more-operate {
+  margin-left: 10px;
+  margin-top: 0px;
+}
+
+.module-more-operate:hover {
+
 }
 </style>

@@ -3,7 +3,7 @@
   <div class="case-main-layout">
 
     <div class="case-main-layout-left" style="float: left; display: inline-block">
-      <ms-table-count-bar :count-content="$t('table.all_case_content') + '(' + page.total + ')'"></ms-table-count-bar>
+      <ms-table-count-bar :count-content="$t('table.all_case_content') + ' (' + page.total + ')'"></ms-table-count-bar>
     </div>
 
     <div class="case-main-layout-right" style="float: right; display: inline-block">
@@ -40,6 +40,8 @@
       :disable-header-config="true"
       :field-key="tableHeaderKey"
       :custom-fields="testCaseTemplate.customFields"
+      :highlight-current-row="true"
+      :refresh-by-search.sync="refreshBySearch"
       @handlePageChange="initTableData"
       @order="initTableData"
       @filter="search"
@@ -365,12 +367,7 @@ export default {
           permissions: ['PROJECT_TRACK_CASE:READ+BATCH_COPY']
         },
         {
-          name: this.$t('test_track.case.batch_delete_btn'),
-          handleClick: this.handleDeleteBatchToGc,
-          permissions: ['PROJECT_TRACK_CASE:READ+BATCH_DELETE']
-        },
-        {
-          name: this.$t('test_track.demand.batch_relate'),
+          name: this.$t('test_track.case.batch_link_demand_btn'),
           handleClick: this.openRelateDemand,
           permissions: ['PROJECT_TRACK_CASE:READ+BATCH_LINK_DEMAND']
         },
@@ -385,6 +382,31 @@ export default {
           isXPack: true,
           handleClick: this.handleBatchAddPublic,
           permissions: ['PROJECT_TRACK_CASE:READ+BATCH_ADD_PUBLIC'],
+        },
+        {
+          name: this.$t('test_track.case.import.case_export'),
+          permissions: ['PROJECT_TRACK_CASE:READ+EXPORT'],
+          children: [
+            {
+              name: this.$t('test_track.case.export.export_to_excel'),
+              tips: this.$t('test_track.case.export.export_to_excel_tips'),
+              handleClick: this.handleBatchExportToExcel,
+              permissions: ['PROJECT_TRACK_CASE:READ+EXPORT'],
+            },
+            {
+              name: this.$t('test_track.case.export.export_to_xmind'),
+              tips: this.$t('test_track.case.export.export_to_xmind_tips'),
+              handleClick: this.handleBatchExportToXmind,
+              permissions: ['PROJECT_TRACK_CASE:READ+EXPORT'],
+            }
+          ]
+        },
+        {
+          name: this.$t('test_track.case.batch_delete_btn'),
+          handleClick: this.handleDeleteBatchToGc,
+          permissions: ['PROJECT_TRACK_CASE:READ+BATCH_DELETE'],
+          isDivide: true,
+          isActive: true
         }
       ],
       trashButtons: [
@@ -445,7 +467,8 @@ export default {
       rowCaseResult: {loading: false},
       userFilter: [],
       advanceSearchShow: false,
-      selectCounts: 0
+      selectCounts: 0,
+      refreshBySearch: false,
     };
   },
   props: {
@@ -764,6 +787,7 @@ export default {
       }
     },
     search() {
+      this.refreshBySearch = true;
       // 添加搜索条件时，当前页设置成第一页
       this.page.currentPage = 1;
       this.initTableData();
@@ -852,9 +876,18 @@ export default {
             // 删除提供列表删除和全部版本删除
             this.$refs.apiDeleteConfirm.open(testCase, this.$t('test_track.case.delete_confirm'));
           } else {
-            operationConfirm(this, this.$t('test_track.case.delete_confirm') + '\'' + testCase.name + '\'', () => {
-              this._handleDeleteVersion(testCase, false);
-            });
+            let title = this.$t('test_track.case.case_delete_confirm') + ": " + testCase.name + "?";
+            this.$confirm(this.$t('test_track.case.batch_delete_tip'), title, {
+                cancelButtonText: this.$t("commons.cancel"),
+                confirmButtonText: this.$t("commons.delete"),
+                customClass: 'custom-confirm-delete',
+                callback: action => {
+                  if (action === "confirm") {
+                    this._handleDeleteVersion(testCase, false);
+                  }
+                }
+              }
+            );
           }
         })
     },
@@ -926,7 +959,7 @@ export default {
         .then(() => {
           this.$emit('refreshAll');
           this.initTableData();
-          this.$success(this.$t('commons.delete_success'));
+          this.$success(this.$t('commons.delete_success'), false);
         });
     },
     clearTableSelect() {
@@ -1046,6 +1079,12 @@ export default {
           }
         });
     },
+    handleBatchExportToExcel() {
+      this.$emit("openExcelExport", this.selectCounts, false);
+    },
+    handleBatchExportToXmind() {
+      this.exportTestCase("xmind", {exportAll: false})
+    },
     openRelateDemand() {
       this.$refs.relateDemand.open(this.condition.selectAll ? this.page.total : this.$refs.table.selectRows.size);
     },
@@ -1080,7 +1119,7 @@ export default {
       if (deleteCurrentVersion) {
         deleteTestCaseVersion(testCase.versionId, testCase.refId)
           .then(() => {
-            this.$success(this.$t('commons.delete_success'));
+            this.$success(this.$t('commons.delete_success'), false);
             this.$refs.apiDeleteConfirm.close();
             this.$emit("refreshAll");
           });

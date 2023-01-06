@@ -94,6 +94,7 @@ export default {
     input_prerequisite: "请输入前置条件",
     input_demand_name: "请输入需求ID或名称",
     delete_confirm: "确认删除测试用例",
+    case_delete_confirm: "是否删除用例",
     batch_delete_confirm: "确定删除{0}项用例?",
     batch_delete_tip: "删除后将无法恢复, 请谨慎操作。",
     delete: "删除用例",
@@ -370,7 +371,10 @@ export default {
     describe: "描述",
     current_owner: "处理人",
     creation_time: "创建时间",
-    project_name: "所属项目"
+    project_name: "所属项目",
+    input_name: "请输入模块名称",
+    success_create: "模块创建成功",
+    case_module_already_exists: "同层级下已经存在该模块名称",
   },
   home: {
     recent_test: "最近测试",

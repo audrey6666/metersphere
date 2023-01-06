@@ -37,16 +37,6 @@
 <!--    <test-case-import-->
 <!--      @refreshAll="importRefresh"-->
 <!--      ref="testCaseImport"/>-->
-<!--    <test-case-export-->
-<!--      @refreshAll="refreshAll"-->
-<!--      @exportTestCase="exportTestCase"-->
-<!--      ref="testCaseExport"/>-->
-<!--    <test-case-create-->
-<!--      :tree-nodes="treeNodes"-->
-<!--      @saveAsEdit="saveAsEdit"-->
-<!--      @createCase="createCase"-->
-<!--      @refresh="refresh"-->
-<!--      ref="testCaseCreate"/>-->
 
     <is-change-confirm
       :tip="$t('test_track.case.minder_import_save_confirm_tip')"
@@ -234,6 +224,7 @@ export default {
       param.projectId = this.projectId;
       testCaseNodeAdd(param)
         .then(() => {
+          this.$success(this.$t("test_track.module.success_create"), false);
           this.list();
         });
     },
@@ -264,7 +255,7 @@ export default {
         .then(() => {
           this.list();
           this.$emit("refreshTable")
-          this.$success(this.$t('commons.delete_success'));
+          this.$success(this.$t('commons.delete_success'), false);
         });
     },
     drag(param, list) {

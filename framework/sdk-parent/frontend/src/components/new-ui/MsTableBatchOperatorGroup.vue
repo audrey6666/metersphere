@@ -6,12 +6,30 @@
       </el-button>
     </div>
 
-    <el-dropdown size="small" v-if="moreOperators && moreOperators.length > 0" placement="bottom-start">
+    <el-dropdown size="small" v-if="moreOperators && moreOperators.length > 0" placement="top-start" ref="parentMenu">
       <el-button type="primary" class="more-btn"><i class="el-icon-more"></i></el-button>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item v-for="(operator,index) in moreOperators" :disabled="isDisable(operator)" :divided="isDivide(operator)" v-if="isXPack(operator)" @click.native.stop="click(operator)" :key="index">
-          {{ operator.name }}
-        </el-dropdown-item>
+      <el-dropdown-menu slot="dropdown" class="more-operate-menu" @mouseenter.native="() => $refs.parentMenu.show()">
+        <template v-for="(operator, index) in moreOperators">
+          <el-dropdown-item v-if="operator.children && operator.children.length > 0" :key="index">
+            <!--  多级: 暂时支持2级 -->
+            <el-dropdown placement="right-end" ref="childrenMenu">
+              <span class="more-operate-menu-children-content" :class="{active: operator.isActive}">{{operator.name}}<i class="el-icon-arrow-right el-icon--right"/></span>
+              <el-dropdown-menu slot="dropdown" class="more-operate-menu-children" @mouseenter.native="() => $refs.parentMenu.show()" @mouseleave.native="() => $refs.parentMenu.hide()">
+                <template v-for='childOperator in operator.children'>
+                  <el-dropdown-item v-if="isXPack(childOperator)" :disabled="isDisable(childOperator)" :divided="isDivide(childOperator)"
+                                    @click.native.stop="click(childOperator)" @mouseenter="childMove" style="height: 50px">
+                    <span class="operator" :class="{active: operator.isActive}">{{childOperator.name}}</span>
+                    <span class="tips">{{childOperator.tips}}</span>
+                  </el-dropdown-item>
+                </template>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <!-- 一级 -->
+          <el-dropdown-item v-else :disabled="isDisable(operator)" :divided="isDivide(operator)" @click.native.stop="click(operator)" :key="index" :class="{active: operator.isActive}">
+            {{ operator.name }}
+          </el-dropdown-item>
+        </template>
       </el-dropdown-menu>
     </el-dropdown>
 
@@ -82,7 +100,10 @@ export default {
       } else {
         return true;
       }
-    }
+    },
+    childMove() {
+      console.log("childMove.....")
+    },
   }
 }
 </script>
@@ -181,5 +202,99 @@ export default {
   flex: none;
   order: 2;
   flex-grow: 0;
+}
+
+.el-dropdown-menu__item, .more-operate-menu-children-content {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #1F2329!important;
+  height: 32px;
+  padding-top: 6px;
+}
+
+.el-dropdown-menu__item:hover {
+  background-color: rgba(31, 35, 41, 0.1)!important;
+}
+
+.more-operate-menu {
+  width: 164px!important;
+}
+
+.more-operate-menu-children {
+  margin-left: 40px;
+  margin-bottom: -12px;
+  width: 135px!important;
+}
+
+:deep(.more-operate-menu-children-content li.el-dropdown-menu__item) {
+  height: 50px!important;
+}
+
+.operator {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+  color: #1F2329;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.tips {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  display: block;
+  align-items: center;
+  color: #8F959E;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.el-dropdown-menu--small .el-dropdown-menu__item.el-dropdown-menu__item--divided:before {
+  height: 0px;
+}
+
+.active {
+  color: #F54A45!important;
+}
+</style>
+
+<style>
+/* 消除小三角 */
+.el-popper[x-placement^=top] .popper__arrow{
+  border: none;
+}
+
+.el-popper[x-placement^=top] .popper__arrow::after {
+  border: none;
+}
+
+.el-popper[x-placement^=bottom] .popper__arrow{
+  border: none;
+}
+
+.el-popper[x-placement^=bottom] .popper__arrow::after {
+  border: none;
+}
+
+.el-popper[x-placement^=right] .popper__arrow{
+  border: none;
+}
+
+.el-popper[x-placement^=right] .popper__arrow::after {
+  border: none;
 }
 </style>

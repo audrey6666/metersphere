@@ -32,6 +32,7 @@ const message = {
         this_week: "Week ",
         load_error: "Loading failure",
         no_data: "No data",
+        no_search_data: 'No search data',
       },
       case_finished_review_pass_tip: "Reviewed cases/All reviewed cases *100%"
     },

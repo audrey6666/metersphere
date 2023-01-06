@@ -101,6 +101,7 @@ export default {
     input_prerequisite: "Please select prerequisite",
     input_demand_name: "Please input demand id or name",
     delete_confirm: "Confirm delete test case",
+    case_delete_confirm: "Confirm delete case",
     delete: "Delete case",
     batch_delete_confirm: "Confirm delete {0} case?",
     batch_delete_tip: "It cannot be recovered after delete, please delete carefully",
@@ -367,7 +368,10 @@ export default {
     status: "Status",
     current_owner: "Current Owner",
     creation_time: "Creation time",
-    project_name: "Project"
+    project_name: "Project",
+    input_name: "Please input name",
+    success_create: "Module create successfully",
+    case_module_already_exists: "The module name already exists at the same level",
   },
   home: {
     recent_test: "Recent Test",

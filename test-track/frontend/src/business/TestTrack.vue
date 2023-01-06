@@ -37,9 +37,14 @@ export default {
 </style>
 
 <style>
-/* Element-UI Common Style 暂时提取为测试跟踪公共使用*/
+/**
+ * Element-UI Common Style
+ * Use By Test-Track Since v2.6
+ */
 
-/* el-input__inner 字体*/
+/**
+ * el-input__inner 字体
+ */
 input.el-input__inner {
   font-family: 'PingFang SC';
   font-style: normal;
@@ -49,9 +54,11 @@ input.el-input__inner {
   color: #1F2329;
 }
 
-/*el-message*/
+/**
+ * el-message
+ */
 .el-message-box__header {
-  padding: 20px 0 0 24px;
+  padding: 20px 24px 0 24px;
 }
 
 .el-message-box__title {
@@ -64,6 +71,10 @@ input.el-input__inner {
   flex: none;
   order: 0;
   flex-grow: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 340px;
 }
 
 .el-message-box__content {
@@ -164,10 +175,6 @@ button.el-button.el-button--default.el-button--small.el-button--danger {
   min-width: 100px;
 }
 
-.el-icon-warning:before, .el-icon-success:before {
-  font-size: 17px;
-}
-
 .el-message__content {
   font-family: 'PingFang SC';
   font-style: normal;
@@ -178,6 +185,37 @@ button.el-button.el-button--default.el-button--small.el-button--danger {
   flex: none;
   order: 2;
   flex-grow: 0;
+}
+
+/**
+ * el-message
+ */
+.el-button--small span {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  position: relative;
+  top: -5px;
+}
+
+.el-button--small {
+    width: 80px;
+    height: 32px;
+    border-radius: 4px;
+}
+
+button.el-button.el-button--default.el-button--small {
+  color: #1F2329;
+}
+
+button.el-button.el-button--default.el-button--small.el-button--primary {
+  color: #FFFFFF;
+}
+
+button.el-button.el-button--default.el-button--small.el-button--danger {
+  color: #FFFFFF;
 }
 
 /* el-dialog */
@@ -207,6 +245,13 @@ button.el-button.el-button--default.el-button--small.el-button--danger {
 
 .el-dialog__footer {
   padding: 0px;
+}
+
+/**
+ * el-icon
+ */
+.el-icon-warning:before, .el-icon-success:before {
+  font-size: 17px;
 }
 </style>
 

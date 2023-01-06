@@ -1505,6 +1505,10 @@ public class TestCaseService {
     public void testCaseXmindExport(HttpServletResponse response, TestCaseBatchRequest request) {
         try {
             request.getCondition().setStatusIsNot("Trash");
+            if (request.getExportAll()) {
+                // 导出所有用例, 勾选ID清空
+                request.setIds(null);
+            }
             List<TestCaseDTO> testCaseDTOList = this.findByBatchRequest(request);
 
             TestCaseXmindData rootXmindData = this.generateTestCaseXmind(testCaseDTOList);

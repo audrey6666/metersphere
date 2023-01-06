@@ -1285,6 +1285,8 @@ const message = {
     batch_menus: {
       select_all_data: "Select all datas({0})",
       select_show_data: "Select show datas({0})",
+      select_current_page: "Select current page",
+      select_all_page: "Select all page"
     },
     mock: {
       create_error: "Api info is not saved",
