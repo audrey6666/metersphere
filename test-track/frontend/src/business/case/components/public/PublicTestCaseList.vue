@@ -1,10 +1,20 @@
 <template>
 
-  <span>
-    <ms-search
-      :condition.sync="condition"
-      @search="search">
-    </ms-search>
+  <div class="case-main-layout">
+    <div class="case-main-layout-left" style="float: left; display: inline-block">
+      <ms-table-count-bar :count-content="$t('table.all_case_content') + ' (' + page.total + ')'"></ms-table-count-bar>
+    </div>
+
+    <div class="case-main-layout-right" style="float: right; display: inline-block">
+      <!-- 简单搜索框 -->
+      <ms-new-ui-search :condition.sync="condition" @search="search" style="float: left" />
+
+      <!-- 高级搜索框  -->
+      <ms-table-adv-search :condition.sync="condition" @search="search" ref="advanceSearch"/>
+
+      <!-- 表头自定义显示Popover  -->
+      <ms-table-header-custom-popover :fields.sync="fields" :field-key="tableHeaderKey" @reload="reloadTable" />
+    </div>
 
     <ms-table
       v-loading="loading"
@@ -18,6 +28,7 @@
       :screen-height="screenHeight"
       :batch-operators="batchButtons"
       :remember-order="true"
+      :disable-header-config="true"
       :row-order-group-id="projectId"
       :row-order-func="editTestCaseOrder"
       :fields.sync="fields"
@@ -25,6 +36,8 @@
       @handlePageChange="initTableData"
       @order="initTableData"
       @filter="search"
+      @callBackSelect="callBackSelect"
+      @callBackSelectAll="callBackSelectAll"
       ref="table">
 
       <span v-for="(item, index) in fields" :key="index">
@@ -83,7 +96,7 @@
         </ms-table-column>
 
         <ms-table-column
-          prop="createUser"
+          prop="createName"
           min-width="120"
           :field="item"
           :fields-width="fieldsWidth"
@@ -159,8 +172,10 @@
 
     </ms-table>
 
-    <ms-table-pagination :change="initTableData" :current-page.sync="page.currentPage" :page-size.sync="page.pageSize"
-                         :total="page.total"/>
+    <ms-table-batch-operator-group v-if="selectCounts > 0" :batch-operators="batchButtons" :select-counts="selectCounts" @clear="clearTableSelect"/>
+
+    <home-pagination v-if="page.data.length > 0 && selectCounts == 0" :change="initTableData" :current-page.sync="page.currentPage" :page-size.sync="page.pageSize"
+                     :total="page.total" layout="total, prev, pager, next, sizes, jumper" style="margin-top: 19px"/>
 
     <test-case-preview ref="testCasePreview" :loading="rowCaseResult.loading"/>
 
@@ -173,12 +188,17 @@
                 @copyPublic="copyPublic"
                 ref="testBatchMove"/>
 
-  </span>
+  </div>
 
 </template>
 
 <script>
-
+import HomePagination from '@/business/home/components/pagination/HomePagination';
+import MsTableAdvSearch from "metersphere-frontend/src/components/new-ui/MsTableAdvSearch";
+import MsTableHeaderCustomPopover from 'metersphere-frontend/src/components/new-ui/MsTableHeaderCustomPopover'
+import MsNewUiSearch from "metersphere-frontend/src/components/new-ui/MsSearch";
+import MsTableCountBar from 'metersphere-frontend/src/components/table/MsTableCountBar';
+import MsTableBatchOperatorGroup from "metersphere-frontend/src/components/new-ui/MsTableBatchOperatorGroup";
 import MsTablePagination from 'metersphere-frontend/src/components/pagination/TablePagination';
 import {TEST_CASE_CONFIGS} from "metersphere-frontend/src/components/search/search-components";
 import {TEST_CASE_LIST} from "metersphere-frontend/src/utils/constants";
@@ -197,26 +217,19 @@ import PlanStatusTableItem from "@/business/common/tableItems/plan/PlanStatusTab
 import {getCurrentProjectID, getCurrentUserId, getCurrentWorkspaceId} from "metersphere-frontend/src/utils/token";
 import {getUUID, parseTag} from "metersphere-frontend/src/utils"
 import {hasLicense} from "metersphere-frontend/src/utils/permission"
-import MsTable from "metersphere-frontend/src/components/table/MsTable";
+import MsTable from "metersphere-frontend/src/components/new-ui/MsTable";
 import MsTableColumn from "metersphere-frontend/src/components/table/MsTableColumn";
 import MsUpdateTimeColumn from "metersphere-frontend/src/components/table/MsUpdateTimeColumn";
 import MsCreateTimeColumn from "metersphere-frontend/src/components/table/MsCreateTimeColumn";
 import TestPlanCaseStatusTableItem from "@/business/common/tableItems/TestPlanCaseStatusTableItem";
 import TestCaseReviewStatusTableItem from "@/business/common/tableItems/TestCaseReviewStatusTableItem";
-import MsSearch from "metersphere-frontend/src/components/search/MsSearch";
-
 import BatchMove from "@/business/case/components/BatchMove";
 import TestCasePreview from "@/business/case/components/TestCasePreview";
 import {
-  deletePublicTestCaseVersion,
-  editTestCaseOrder,
-  getTestCase,
-  getTestCaseStep, getTestCaseVersions,
-  testCasePublicBatchCopy,
-  testCasePublicBatchDeleteToGc,
-  testCasePublicList,
+  deletePublicTestCaseVersion, editTestCaseOrder, getTestCase,
+  getTestCaseStep, getTestCaseVersions, testCaseBatchDeleteToGc, testCasePublicBatchCopy,
+  testCasePublicBatchDeleteToGc, testCasePublicList,
 } from "@/api/testCase";
-
 import ListItemDeleteConfirm from "metersphere-frontend/src/components/ListItemDeleteConfirm";
 import {TEST_CASE_STATUS_MAP} from "@/business/constants/table-constants";
 import {mapState} from "pinia";
@@ -245,7 +258,12 @@ export default {
     ReviewStatus,
     TestCaseReviewStatusTableItem,
     TestPlanCaseStatusTableItem,
-    MsSearch
+    MsTableBatchOperatorGroup,
+    MsTableCountBar,
+    MsNewUiSearch,
+    MsTableAdvSearch,
+    MsTableHeaderCustomPopover,
+    HomePagination
   },
   data() {
     return {
@@ -261,36 +279,41 @@ export default {
       },
       batchButtons: [
         {
-          name: this.$t('test_track.case.batch_copy'),
+          name: this.$t('test_track.case.batch_copy_btn'),
           handleClick: this.handleBatchCopy,
           permissions: ['PROJECT_TRACK_CASE:READ+BATCH_COPY']
         },
         {
-          name: this.$t('test_track.case.batch_delete_case'),
+          name: this.$t('test_track.case.batch_delete_btn'),
           handleClick: this.handleDeleteBatchToPublic,
           permissions: ['PROJECT_TRACK_CASE:READ+BATCH_DELETE'],
-        },
+          isDelete: true
+        }
       ],
       operators: [
         {
           tip: this.$t('commons.view'), icon: "el-icon-view",
           exec: this.handleEditShow,
+          isTextButton: true,
           permissions: ['PROJECT_TRACK_CASE:READ'],
         },
         {
           tip: this.$t('commons.edit'), icon: "el-icon-edit",
           exec: this.handleEdit,
+          isTextButton: true,
           permissions: ['PROJECT_TRACK_CASE:READ+EDIT'],
           isDisable: !this.isOwner
         },
         {
           tip: this.$t('commons.copy'), icon: "el-icon-copy-document", type: "success",
           exec: this.handleCopyPublic,
+          isTextButton: true,
           permissions: ['PROJECT_TRACK_CASE:READ+COPY']
         },
         {
           tip: this.$t('commons.remove'), icon: "el-icon-delete", type: "danger",
           exec: this.handleDeleteToGc,
+          isTextButton: true,
           permissions: ['PROJECT_TRACK_CASE:READ+DELETE'],
           isDisable: !this.isOwner
         }
@@ -301,7 +324,8 @@ export default {
       rowCase: {},
       rowCaseResult: {},
       userFilter: [],
-      versionFilters: []
+      versionFilters: [],
+      selectCounts: 0
     };
   },
   props: {
@@ -364,6 +388,9 @@ export default {
     },
   },
   methods: {
+    reloadTable() {
+      this.$refs.table.resetHeader();
+    },
     initTableData(nodeIds) {
       this.condition.nodeIds = [];
       initCondition(this.condition, this.condition.selectAll);
@@ -398,6 +425,16 @@ export default {
       this.page.currentPage = 1;
       this.initTableData();
       this.$emit('search');
+    },
+    clearTableSelect() {
+      this.$refs.table.clear();
+      this.selectCounts = 0;
+    },
+    callBackSelect(selection) {
+      this.selectCounts = this.$refs.table.selectDataCounts;
+    },
+    callBackSelectAll(selection) {
+      this.selectCounts = this.$refs.table.selectDataCounts;
     },
     handleEdit(testCase) {
       let TestCaseData = this.$router.resolve({
@@ -490,18 +527,28 @@ export default {
       this.$emit('refreshAll');
     },
     handleDeleteBatchToPublic() {
-      operationConfirm(this, this.$t('test_track.case.delete_confirm'), () => {
-        let param = buildBatchParam(this, this.$refs.table.selectIds);
-        testCasePublicBatchDeleteToGc(param)
-          .then(() => {
-            this.$refs.table.clear();
-            this.$emit("refreshPublic");
-            this.$success(this.$t('commons.delete_success'));
-          });
-      });
+      let title = this.$t('test_track.case.batch_delete_confirm', [this.$refs.table.selectIds.length]);
+      this.$confirm(this.$t('test_track.case.batch_delete_tip'), title, {
+          cancelButtonText: this.$t("commons.cancel"),
+          confirmButtonText: this.$t("commons.delete"),
+          customClass: 'custom-confirm-delete',
+          callback: action => {
+            if (action === "confirm") {
+              let param = buildBatchParam(this, this.$refs.table.selectIds);
+              testCasePublicBatchDeleteToGc(param)
+                .then(() => {
+                  this.clearTableSelect();
+                  this.$emit("refreshPublic");
+                  this.$success(this.$t('commons.delete_success'), false);
+                });
+            }
+          }
+        }
+      );
     },
     handleBatchCopy() {
-      this.$refs.testBatchMove.open(this.treeNodes, this.$refs.table.selectIds, this.moduleOptions);
+      let firstSelectRow = this.$refs.table.selectRows.values().next().value;
+      this.$refs.testBatchMove.open(false, firstSelectRow.name, this.treeNodes, this.$refs.table.selectIds, this.moduleOptions);
     },
     copyPublic(param) {
       param.condition = this.condition;
@@ -512,7 +559,7 @@ export default {
       testCasePublicBatchCopy(param)
         .then(() => {
           this.loading = false;
-          this.$success(this.$t('commons.save_success'));
+          this.$success(this.$t('commons.save_success'), false);
           this.$refs.testBatchMove.close();
           this.refresh();
         });
@@ -538,5 +585,31 @@ export default {
 
 :deep(.el-table) {
   overflow: auto;
+  position: relative;
+  top: 16px;
+}
+
+:deep(button.el-button.el-button--default.el-button--mini) {
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  background: #FFFFFF;
+  border: 1px solid #BBBFC4;
+  border-radius: 4px;
+  flex: none;
+  order: 5;
+  align-self: center;
+  flex-grow: 0;
+  margin-left: 12px;
+}
+
+:deep(button.el-button.el-button--default.el-button--mini:hover) {
+  color: #783887;
+  border: 1px solid #783887;
+}
+
+:deep(button.el-button.el-button--default.el-button--mini:focus) {
+  color: #783887;
+  border: 1px solid #783887;
 }
 </style>

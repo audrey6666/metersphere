@@ -173,4 +173,20 @@ export default {
   width: 1.2em;
   height: 1.2em;
 }
+
+:deep(.el-button--small span) {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  position: relative;
+  top: -5px;
+}
+
+.el-button--small {
+  min-width: 80px;
+  height: 32px;
+  border-radius: 4px;
+}
 </style>

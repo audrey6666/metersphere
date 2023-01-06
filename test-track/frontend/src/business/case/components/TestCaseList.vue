@@ -1070,12 +1070,12 @@ export default {
             this.loading = true;
             testCaseBatchEdit(param)
               .then(() => {
-                this.$success(this.$t('commons.save_success'));
+                this.$success(this.$t('commons.save_success'), false);
                 this.loading = false;
                 this.refresh();
               });
           } else {
-            this.$warning(this.$t('test_track.case.public_warning'));
+            this.$warning(this.$t('test_track.case.public_warning'), false);
           }
         });
     },

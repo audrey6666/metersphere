@@ -1,7 +1,7 @@
 <template>
   <div class="batch-operator-layout">
     <div v-if="showOperators && showOperators.length > 0" class="showBtnGroup">
-      <el-button size="small" v-for="(operator, index) in showOperators" :disabled="isDisable(operator)" v-if="isXPack(operator)" @click="click(operator)" :key="index">
+      <el-button size="small" v-for="(operator, index) in showOperators" :disabled="isDisable(operator)" v-if="isXPack(operator)" @click="click(operator)" :key="index" :class="{'is-delete': operator.isDelete}">
         {{operator.name}}
       </el-button>
     </div>
@@ -269,6 +269,15 @@ export default {
 
 .active {
   color: #F54A45!important;
+}
+
+.is-delete {
+  color: #F54A45!important;
+  border: 1px solid #F54A45!important;
+}
+
+.is-delete:hover {
+  background: rgba(245, 74, 69, 0.2)!important;
 }
 </style>
 

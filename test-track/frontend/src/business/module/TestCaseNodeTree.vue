@@ -35,10 +35,6 @@
       :condition="condition"
       :total="total"
       :exe="enableTrash"/>
-<!--    <test-case-import-->
-<!--      @refreshAll="importRefresh"-->
-<!--      ref="testCaseImport"/>-->
-
     <is-change-confirm
       :tip="$t('test_track.case.minder_import_save_confirm_tip')"
       @confirm="changeConfirm"

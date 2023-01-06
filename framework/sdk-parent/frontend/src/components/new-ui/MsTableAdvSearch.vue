@@ -6,8 +6,7 @@
     </el-button>
     <el-dialog :title="$t('commons.adv_search.new_title')" :visible.sync="visible"
                custom-class="adv-dialog" :append-to-body="true" width="60%">
-
-      <div class="search-items"  style="height: 300px">
+      <div class="search-items"  style="height: 275px">
         <el-scrollbar style="height: 100%" ref="scrollbar">
             <div class="search-item" v-for="(component) in optional.components" :key="component.key">
               <el-row>
@@ -25,7 +24,7 @@
                  class="add-filter-link" @click="addFilter">{{ $t('commons.adv_search.add_filter_link') }}</el-link>
       </div>
       <template v-slot:footer>
-        <div class="dialog-footer">
+        <div class="dialog-footer" style="margin-top: 30px">
           <el-button size="small" @click="reset">{{ $t('commons.adv_search.reset') }}</el-button>
           <el-button size="small" type="primary" @click="search">{{ $t('commons.adv_search.search') }}</el-button>
         </div>
@@ -220,7 +219,7 @@ export default {
     addFilter() {
       const index = _findIndexByKey(this.optional.components, this.nullFilterKey);
       if (index > -1) {
-        this.$warning(this.$t('commons.adv_search.add_filter_link_tip'));
+        this.$warning(this.$t('commons.adv_search.add_filter_link_tip'), false);
         return;
       }
       let data = {
@@ -336,7 +335,8 @@ export default {
 }
 
 .search-item {
-  display: inline-block;
+  display: block;
+  width: 100%;
 }
 
 .delete-icon {
@@ -369,18 +369,6 @@ export default {
   position: relative;
   left: 3px;
   top: -6px;
-}
-
-:deep(.el-dialog__header) {
-  padding: 24px 24px 24px 24px;
-}
-
-:deep(.el-dialog__body) {
-  padding: 0px 24px 0px 24px;
-}
-
-:deep(.el-dialog__footer) {
-  padding: 10px 24px 24px;
 }
 
 :deep(.el-row) {

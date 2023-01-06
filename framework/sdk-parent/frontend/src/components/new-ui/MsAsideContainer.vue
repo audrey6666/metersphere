@@ -4,7 +4,7 @@
             :style="{
               // 'margin-left': !asideHidden ? 0 : '-' + asideHiddenMargin,
               'min-width': minWidth + 'px',
-              'height': calHeight,
+              // 'height': calHeight,
              }">
     <div v-if="enableAsideHidden" class="hiddenBottom" :style="{'top': hiddenBottomTop ? hiddenBottomTop : 0}" @click="asideHidden = !asideHidden">
       <i v-if="!asideHidden" class="el-icon-d-arrow-left"/>

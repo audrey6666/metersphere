@@ -1,5 +1,5 @@
 <template>
-  <div class="recycle" :class="{'is-active': condition.publicEnable}" v-if="this.isXpack" @click="exe">
+  <div class="recycle" v-if="this.isXpack" @click="exe">
     <div style="padding: 9px 13px 9px 13px;" class="to-public">
       <svg-icon icon-class="icon_folder-share" style="width: 1.3em;height: 1.3em;position: relative;top: 4px;left: 1px;margin-right: 9px;"/>
       <span style="margin-right: 12px;">{{ $t('project.case_public') }}</span>
@@ -56,10 +56,6 @@ export default {
 .recycle:hover {
   color: #6d317c;
   cursor: pointer;
-}
-
-.is-active {
-background-color: #f3f6f9;
 }
 
 .recycle span {

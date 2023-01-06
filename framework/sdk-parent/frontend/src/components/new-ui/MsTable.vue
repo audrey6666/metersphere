@@ -23,7 +23,7 @@
       @header-dragend="headerDragend"
       @cell-mouse-enter="showPopover"
       @row-click="handleRowClick"
-      :max-height="data.length > 0 ? 464 : 524"
+      :max-height="data.length > 0 ? 'calc(100vh - 286px)' : 'calc(100vh - 286px)'"
       ref="table">
 
       <el-table-column
@@ -661,6 +661,7 @@ export default {
 .addition-info-title {
   margin-top: -10px;
 }
+
 /*:deep(.el-table--scrollable-x .el-table__body-wrapper) {*/
 /*    overflow-x: hidden;*/
 /*}*/
@@ -676,4 +677,14 @@ export default {
 /*:deep(.el-table--scrollable-y .el-table__body-wrapper:hover) {*/
 /*  overflow-y: auto;*/
 /*}*/
+</style>
+
+<style>
+.ms-table .el-table__fixed::before {
+  height: 0;
+}
+
+.ms-table .el-table__fixed-right::before {
+  height: 0;
+}
 </style>

@@ -19,5 +19,6 @@ export default {
 :deep(.el-card.card-content.is-always-shadow) {
   border: none;
   border-radius: 0 4px 4px 0;
+  height: -webkit-fill-available;
 }
 </style>

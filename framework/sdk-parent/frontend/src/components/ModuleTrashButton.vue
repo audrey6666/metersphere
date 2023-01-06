@@ -1,8 +1,7 @@
 <template>
-  <div @click="exe" class="recycle" :class="{'is-active': condition.trashEnable}">
+  <div @click="exe" class="recycle">
     <el-row>
       <el-col :span="21"><i class="el-icon-delete"> {{ $t('commons.trash') }}</i></el-col>
-<!--      <el-col :span="3"><span style="color: var(&#45;&#45;primary_color);">{{ total }}</span></el-col>-->
     </el-row>
   </div>
 </template>
@@ -60,10 +59,6 @@ export default {
 .recycle:hover {
   color: #6d317c;
   cursor: pointer;
-}
-
-.is-active {
-  background-color: #f3f6f9;
 }
 
 i.el-icon-delete {

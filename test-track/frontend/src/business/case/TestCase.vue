@@ -1,6 +1,6 @@
 <template>
   <ms-container v-if="renderComponent" v-loading="loading">
-    <div class="top-btn-group-layout">
+    <div class="top-btn-group-layout" v-if="!showPublicNode && !showTrashNode" style="margin-bottom: 16px">
       <el-button size="small" icon="el-icon-plus" v-permission="['PROJECT_TRACK_CASE:READ+BATCH_EDIT']" @click="handleCreateCase" class="iconBtn" type="primary">
         {{$t('test_track.case.create_case')}}
       </el-button>
@@ -36,7 +36,14 @@
       </el-dropdown>
     </div>
 
-    <div style="display: flex; margin-top: 16px" v-if="!editable">
+    <div v-if="showPublicNode || showTrashNode" class="back-layout">
+      <i class="el-icon-back" style="float: left;position: relative;top: 15px;left: 21px;" @click="activeName = 'default'"/>
+      <span class="back-content">{{showPublicNode? $t('project.case_public') : $t('commons.trash')}}</span>
+    </div>
+
+
+    <div style="display: flex; height: calc(100vh - 144px)" v-if="!editable">
+      <!-- case-aside-container  -->
       <ms-aside-container v-show="isAsideHidden" :min-width="'0'">
         <test-case-node-tree
           :type="'edit'"
@@ -56,25 +63,28 @@
           @importRefresh="importRefresh"
           @importChangeConfirm="importChangeConfirm"
           @createCase="handleCaseSimpleCreate($event, 'add')"
-          ref="nodeTree"
-        />
+          ref="nodeTree"/>
       </ms-aside-container>
 
-      <!--    <ms-aside-container v-if="showPublicNode">-->
-      <!--      <test-case-public-node-tree-->
-      <!--        :case-condition="publicCondition"-->
-      <!--        @nodeSelectEvent="publicNodeChange"-->
-      <!--        ref="publicNodeTree"/>-->
-      <!--    </ms-aside-container>-->
+      <!-- public-case-aside-container  -->
+      <ms-aside-container v-if="showPublicNode">
+        <test-case-public-node-tree
+          :show-operator="false"
+          :case-condition="publicCondition"
+          @nodeSelectEvent="publicNodeChange"
+          ref="publicNodeTree"/>
+      </ms-aside-container>
 
-      <!--    <ms-aside-container v-if="showTrashNode">-->
-      <!--      <test-case-trash-node-tree-->
-      <!--        :case-condition="trashCondition"-->
-      <!--        @nodeSelectEvent="trashNodeChange"-->
-      <!--        ref="trashNodeTree"/>-->
-      <!--    </ms-aside-container>-->
+      <!-- trash-case-aside-container  -->
+      <ms-aside-container v-if="showTrashNode">
+        <test-case-trash-node-tree
+          :case-condition="trashCondition"
+          @nodeSelectEvent="trashNodeChange"
+          ref="trashNodeTree"/>
+      </ms-aside-container>
 
-      <ms-main-container>
+      <!-- case-main-container  -->
+      <ms-main-container v-if="!showPublicNode && !showTrashNode">
         <ms-tab-button
           :active-dom="activeDom"
           @update:activeDom="updateActiveDom"
@@ -139,23 +149,6 @@
         <!--              ref="testCaseTrashList">-->
         <!--            </test-case-list>-->
         <!--          </ms-tab-button>-->
-        <!--        </el-tab-pane>-->
-        <!--        <el-tab-pane name="public" v-if="publicEnable" :label="$t('project.case_public')">-->
-        <!--          <div style="height: 6px;"></div>-->
-        <!--          <public-test-case-list-->
-        <!--            :tree-nodes="treeNodes"-->
-        <!--            :version-enable="versionEnable"-->
-        <!--            @refreshTable="refresh"-->
-        <!--            @testCaseEdit="editTestCase"-->
-        <!--            @testCaseEditShow="editTestCaseShow"-->
-        <!--            @testCaseCopy="copyTestCase"-->
-        <!--            @refresh="refresh"-->
-        <!--            @refreshAll="refreshAll"-->
-        <!--            @refreshPublic="refreshPublic"-->
-        <!--            @setCondition="setPublicCondition"-->
-        <!--            @search="refreshTreeByCaseFilter"-->
-        <!--            ref="testCasePublicList">-->
-        <!--          </public-test-case-list>-->
         <!--        </el-tab-pane>-->
         <!--        <el-tab-pane-->
         <!--          :key="item.name"-->
@@ -224,6 +217,25 @@
         <is-change-confirm
           @confirm="changeConfirm"
           ref="isChangeConfirm"/>
+      </ms-main-container>
+
+      <!-- public-main-container  -->
+      <ms-main-container v-if="showPublicNode">
+        <el-card class="card-content">
+          <public-test-case-list
+            :tree-nodes="treeNodes"
+            :version-enable="versionEnable"
+            @refreshTable="refresh"
+            @testCaseEdit="editTestCase"
+            @testCaseEditShow="editTestCaseShow"
+            @testCaseCopy="copyTestCase"
+            @refresh="refresh"
+            @refreshAll="refreshAll"
+            @refreshPublic="refreshPublic"
+            @setCondition="setPublicCondition"
+            @search="refreshTreeByCaseFilter"
+            ref="testCasePublicList"/>
+        </el-card>
       </ms-main-container>
     </div>
     <!-- since v2.6 创建用例流程变更 -->
@@ -947,7 +959,7 @@ export default {
   width: 98px;
 }
 
-/* :deep(.iconBtn i){
+:deep(.iconBtn i){
   position: relative;
   top: -5px;
   width: 12px;
@@ -957,7 +969,7 @@ export default {
 :deep(.iconBtn span) {
   position: relative;
   left: -7px;
-} */
+}
 
 .export-model {
   font-family: 'PingFang SC';
@@ -989,10 +1001,58 @@ export default {
   flex-grow: 0;
 }
 
-
 /* 创建用例按钮样式 */
 .el-button--small {
     height: 32px;
     border-radius: 4px;
-} 
+}
+
+.back-layout {
+  height: 48px;
+  background-color: #FFFFFF;;
+  border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+  border-radius: 4px 4px 0 0;
+}
+
+.back-content {
+  position: relative;
+  top: 12px;
+  left: 35px;
+  width: 80px;
+  height: 24px;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #1F2329;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.el-icon-back:before {
+  font-size: 20px;
+}
+
+:deep(i.el-icon-back:hover) {
+  color: #783887;
+  cursor: pointer;
+}
+
+:deep(.el-button--small span) {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  position: relative;
+  top: -5px;
+}
+
+.el-button--small {
+  min-width: 80px;
+  height: 32px;
+  border-radius: 4px;
+}
 </style>
