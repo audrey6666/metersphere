@@ -134,7 +134,7 @@ const message = {
     system_setting: 'Settings',
     api: 'API',
     encode: 'Encode',
-    view: 'view',
+    view: 'View',
     follow_api: 'Follow API definition',
     response_time_delay: 'Response delay time',
     my_workstation: 'Workstation',
@@ -1285,8 +1285,8 @@ const message = {
     batch_menus: {
       select_all_data: "Select all datas({0})",
       select_show_data: "Select show datas({0})",
-      select_current_page: "Select current page",
-      select_all_page: "Select all page"
+      select_current_page: "Select Current",
+      select_all_page: "Select All"
     },
     mock: {
       create_error: "Api info is not saved",

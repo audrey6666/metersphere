@@ -23,7 +23,7 @@ export default {
   props: {
     minWidth: {
       type: [String, Number],
-      default: '120px'
+      default: '140px'
     },
     fieldsWidth: Object,
     prop: {

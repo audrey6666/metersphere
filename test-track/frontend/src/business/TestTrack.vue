@@ -109,6 +109,10 @@ input.el-input__inner {
   border-radius: 4px;
 }
 
+.custom-confirm-delete .el-message-box__btns .el-button--small {
+  min-width: 80px;
+}
+
 button.el-button.el-button--default.el-button--small {
   color: #1F2329;
 }

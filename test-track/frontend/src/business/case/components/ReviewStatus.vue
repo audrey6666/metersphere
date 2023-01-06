@@ -3,7 +3,7 @@
       <el-tag v-if="value === 'Prepare'" class="status-label prepare">
         {{ $t('test_track.review.prepare') }}
       </el-tag>
-       <el-tag v-if="value === 'Again'" class="status-label again">
+       <el-tag v-else-if="value === 'Again'" class="status-label again">
         {{ $t('test_track.review.again') }}
       </el-tag>
       <el-tag v-else-if="value === 'Pass'" class="status-label pass">

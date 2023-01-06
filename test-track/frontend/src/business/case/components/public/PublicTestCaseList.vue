@@ -305,17 +305,22 @@ export default {
           isDisable: !this.isOwner
         },
         {
-          tip: this.$t('commons.copy'), icon: "el-icon-copy-document", type: "success",
-          exec: this.handleCopyPublic,
-          isTextButton: true,
-          permissions: ['PROJECT_TRACK_CASE:READ+COPY']
-        },
-        {
-          tip: this.$t('commons.remove'), icon: "el-icon-delete", type: "danger",
-          exec: this.handleDeleteToGc,
-          isTextButton: true,
-          permissions: ['PROJECT_TRACK_CASE:READ+DELETE'],
-          isDisable: !this.isOwner
+          isMoreOperate: true,
+          childOperate: [
+            {
+              tip: this.$t('commons.copy'), icon: "el-icon-copy-document",
+              exec: this.handleCopyPublic,
+              permissions: ['PROJECT_TRACK_CASE:READ+COPY']
+            },
+            {
+              tip: this.$t('commons.delete'), icon: "el-icon-delete",
+              exec: this.handleDeleteToGc,
+              permissions: ['PROJECT_TRACK_CASE:READ+DELETE'],
+              isDisable: !this.isOwner,
+              isDivide: true,
+              isActive: true
+            }
+          ]
         }
       ],
       page: getPageInfo(),
@@ -464,9 +469,18 @@ export default {
             // 删除提供列表删除和全部版本删除
             this.$refs.apiDeleteConfirm.open(testCase, this.$t('test_track.case.delete_confirm'));
           } else {
-            operationConfirm(this, this.$t('test_track.case.delete_confirm') + '\'' + testCase.name + '\'', () => {
-              this._handleDeleteVersion(testCase, false);
-            });
+            let title = this.$t('test_track.case.case_delete_confirm') + ": " + testCase.name + "?";
+            this.$confirm(this.$t('test_track.case.batch_delete_tip'), title, {
+                cancelButtonText: this.$t("commons.cancel"),
+                confirmButtonText: this.$t("commons.delete"),
+                customClass: 'custom-confirm-delete',
+                callback: action => {
+                  if (action === "confirm") {
+                    this._handleDeleteVersion(testCase, false);
+                  }
+                }
+              }
+            );
           }
         });
     },
@@ -475,7 +489,7 @@ export default {
         // 删除指定版本
         deletePublicTestCaseVersion(testCase.versionId, testCase.refId)
           .then(() => {
-            this.$success(this.$t('commons.delete_success'));
+            this.$success(this.$t('commons.delete_success'), false);
             this.$refs.apiDeleteConfirm.close();
             this.$emit("refreshPublic");
           })
@@ -485,7 +499,7 @@ export default {
         param.ids.push(testCase.id);
         testCasePublicBatchDeleteToGc(param)
           .then(() => {
-            this.$success(this.$t('commons.delete_success'));
+            this.$success(this.$t('commons.delete_success'), false);
             this.$refs.apiDeleteConfirm.close();
             this.$emit("refreshPublic");
           })
@@ -516,7 +530,7 @@ export default {
     },
     handleCopyPublic(testCase) {
       this.$refs.table.selectIds.push(testCase.id);
-      this.$refs.testBatchMove.open(this.treeNodes, this.$refs.table.selectIds, this.moduleOptions);
+      this.$refs.testBatchMove.open(false, testCase.name, this.treeNodes, this.$refs.table.selectIds, this.moduleOptions);
     },
     refresh() {
       this.$refs.table.clear();

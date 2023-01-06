@@ -306,4 +306,12 @@ export default {
 .el-popper[x-placement^=right] .popper__arrow::after {
   border: none;
 }
+
+.el-popper[x-placement^=left] .popper__arrow{
+  border: none;
+}
+
+.el-popper[x-placement^=left] .popper__arrow::after {
+  border: none;
+}
 </style>
