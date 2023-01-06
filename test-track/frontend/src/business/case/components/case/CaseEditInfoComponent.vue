@@ -25,7 +25,13 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="关联测试用例" name="associateTestCases">
-          <div class="content-conatiner">关联测试用例</div>
+          <div class="content-conatiner">
+            <case-test-relate
+              :case-id="caseId"
+              :read-only="readOnly"
+              :version-enable="versionEnable"
+            ></case-test-relate>
+          </div>
           <div class="comment-common">
             <case-comment-component :case-id="caseId"></case-comment-component>
           </div>
@@ -109,6 +115,7 @@
 </template>
 
 <script>
+import CaseTestRelate from "./CaseTestRelate";
 import CaseRelationshipViewer from "./CaseRelationshipViewer";
 import BaseEditItemComponent from "../BaseEditItemComponent";
 import CaseDetailComponent from "./CaseDetailComponent";
@@ -130,6 +137,7 @@ export default {
     CaseCommentComponent,
     CaseCommentViewer,
     CaseRelationshipViewer,
+    CaseTestRelate,
   },
   props: [
     "richTextDefaultOpen",

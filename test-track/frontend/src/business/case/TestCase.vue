@@ -42,7 +42,7 @@
     </div>
 
 
-    <div style="display: flex; height: calc(100vh - 144px)" v-if="!editable">
+    <div style="display: flex; height: calc(100vh - 144px)" v-if="!editable" class = "test-case-aside-layouyt">
       <!-- case-aside-container  -->
       <ms-aside-container v-show="isAsideHidden" :min-width="'0'">
         <test-case-node-tree
@@ -239,7 +239,7 @@
       </ms-main-container>
     </div>
     <!-- since v2.6 创建用例流程变更 -->
-    <ms-container v-if="editable">
+    <ms-container v-if="editable" class = "edit-layout">
       <div v-for="item in tabs" :key="item.name">
         <test-case-edit
           :currentTestCaseInfo="item.testCaseInfo"
@@ -264,7 +264,7 @@
     </ms-container>
 
     <!--  dialog  -->
-    <test-case-export-to-excel @exportTestCase="exportTestCase" ref="exportExcel"/>
+    <test-case-export-to-excel @exportTestCase="exportTestCase" ref="exportExcel" class="export-case-layout"/>
   </ms-container>
 </template>
 
@@ -1040,7 +1040,11 @@ export default {
   cursor: pointer;
 }
 
-:deep(.el-button--small span) {
+/* 作用域处理 */
+.test-case-aside-layouyt :deep(.el-button--small span),
+.back-layout :deep(.el-button--small span), 
+.top-btn-group-layout :deep(.el-button--small span), 
+.export-case-layout :deep(.el-button--small span) {
   font-family: 'PingFang SC';
   font-style: normal;
   font-weight: 400;
@@ -1050,9 +1054,19 @@ export default {
   top: -5px;
 }
 
+.edit-layout :deep(.el-button--small span){
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  text-align: center;
+  color:#783887;
+}
+
 .el-button--small {
   min-width: 80px;
   height: 32px;
   border-radius: 4px;
+  font-size: 14px;
 }
 </style>

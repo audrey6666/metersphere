@@ -47,33 +47,33 @@
 
       <div class="body-wrap">
         <div class="aside-wrap">
-          <!-- <span v-if="isAcrossSpace" class="menu-title">{{
-              "[" + $t("project.version.checkout") + $t("commons.space") + "]"
-            }}</span>
-            <el-select
-              v-if="isAcrossSpace"
-              filterable
-              slot="prepend"
-              v-model="workspaceId"
-              @change="changeWorkspace"
-              class="ms-header-workspace"
-              size="small"
-            >
-              <el-option
-                v-for="(item, index) in workspaceList"
-                :key="index"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-            <select-menu
-              :data="projects"
-              v-if="multipleProject"
-              width="155px"
-              :current-data="currentProject"
-              :title="$t('test_track.switch_project')"
-              @dataChange="changeProject"
-            /> -->
+          <span v-if="isAcrossSpace" class="menu-title">{{
+            "[" + $t("project.version.checkout") + $t("commons.space") + "]"
+          }}</span>
+          <el-select
+            v-if="isAcrossSpace"
+            filterable
+            slot="prepend"
+            v-model="workspaceId"
+            @change="changeWorkspace"
+            class="ms-header-workspace"
+            size="small"
+          >
+            <el-option
+              v-for="(item, index) in workspaceList"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+          <select-menu
+            :data="projects"
+            v-if="multipleProject"
+            width="155px"
+            :current-data="currentProject"
+            :title="$t('test_track.switch_project')"
+            @dataChange="changeProject"
+          />
           <slot name="aside"> </slot>
         </div>
 

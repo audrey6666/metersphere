@@ -120,6 +120,7 @@ export default {
         height: 32px;
         line-height: 32px;
         padding: 0px 18.17px 0px 18.17px !important;
+        font-size: 14px !important;
       }
       :deep(.el-icon-plus:before) {
         width: 11.67px;

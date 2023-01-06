@@ -280,6 +280,8 @@ export default {
       width: px2rem(24);
       margin-right: px2rem(14.67);
       img {
+        width: 100%;
+        height: 100%;
       }
     }
 
