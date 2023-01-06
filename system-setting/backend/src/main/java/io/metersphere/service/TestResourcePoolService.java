@@ -53,8 +53,6 @@ public class TestResourcePoolService {
     @Resource
     private MicroService microService;
     @Resource
-    private QuotaService quotaService;
-    @Resource
     private BaseQuotaService baseQuotaService;
 
     public TestResourcePoolDTO addTestResourcePool(TestResourcePoolDTO testResourcePool) {
@@ -289,8 +287,8 @@ public class TestResourcePoolService {
 
     public List<TestResourcePoolDTO> listWsValidQuotaResourcePools(String workspaceId) {
         List<TestResourcePoolDTO> list = listValidResourcePools();
-        if (quotaService != null) {
-            Set<String> pools = quotaService.getQuotaWsResourcePools(workspaceId);
+        if (baseQuotaService != null) {
+            Set<String> pools = baseQuotaService.getQuotaWsResourcePools(workspaceId);
             if (!pools.isEmpty()) {
                 return list.stream().filter(pool -> pools.contains(pool.getId())).collect(Collectors.toList());
             }

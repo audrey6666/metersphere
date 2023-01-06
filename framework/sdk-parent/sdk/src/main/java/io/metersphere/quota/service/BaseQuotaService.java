@@ -93,6 +93,23 @@ public class BaseQuotaService {
     }
 
     /**
+     * 工作空间下被限制使用的资源池
+     * @param workspaceId 工作空间ID
+     * @return 资源池名称Set
+     */
+    public Set<String> getQuotaWsResourcePools(String workspaceId) {
+        Set<String> pools = new HashSet<>();
+        Quota wsQuota = baseQuotaManageService.getWorkspaceQuota(workspaceId);
+        if (wsQuota != null) {
+            if (isValid(wsQuota, wsQuota.getResourcePool())) {
+                pools.addAll(Arrays.asList(wsQuota.getResourcePool().split(",")));
+            }
+        }
+        return pools;
+    }
+
+
+    /**
      * 增量为1的配额检查方法
      *
      * @param queryFunc        查询已存在数量的方法

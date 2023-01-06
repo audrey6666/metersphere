@@ -40,23 +40,6 @@ public class QuotaService {
     @Resource
     private QuotaMapper quotaMapper;
 
-
-    /**
-     * 工作空间下被限制使用的资源池
-     * @param workspaceId 工作空间ID
-     * @return 资源池名称Set
-     */
-    public Set<String> getQuotaWsResourcePools(String workspaceId) {
-        Set<String> pools = new HashSet<>();
-        Quota wsQuota = baseQuotaManageService.getWorkspaceQuota(workspaceId);
-        if (wsQuota != null) {
-            if (baseQuotaService.isValid(wsQuota, wsQuota.getResourcePool())) {
-                pools.addAll(Arrays.asList(wsQuota.getResourcePool().split(",")));
-            }
-        }
-        return pools;
-    }
-
     /**
      * 检查工作空间项目数量配额
      * @param workspaceId 工作空间ID
