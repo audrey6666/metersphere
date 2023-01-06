@@ -31,6 +31,7 @@
       </template>
     </ms-node-tree>
     <module-trash-button
+      v-if="showTrashBtn"
       :condition="condition"
       :total="total"
       :exe="enableTrash"/>
@@ -121,7 +122,11 @@ export default {
     showOperator: Boolean,
     total: Number,
     publicTotal: Number,
-    caseCondition: Object
+    caseCondition: Object,
+    showTrashBtn: {
+      type: Boolean,
+      default: true
+    }
   },
   watch: {
     treeNodes() {

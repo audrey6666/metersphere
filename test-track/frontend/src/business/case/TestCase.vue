@@ -268,7 +268,7 @@ import MsMainButtonGroup from "metersphere-frontend/src/components/new-ui/MsMain
 import {getCurrentProjectID, getCurrentWorkspaceId} from "metersphere-frontend/src/utils/token";
 import {hasLicense, hasPermission} from "metersphere-frontend/src/utils/permission";
 import {getUUID} from "metersphere-frontend/src/utils";
-import TestCaseNodeTree from "../module/TestCaseNodeTree";
+import TestCaseNodeTree from "@/business/module/TestCaseNodeTree";
 import MsTabButton from "metersphere-frontend/src/components/new-ui/MsTabButton";
 import TestCaseMinder from "../common/minder/TestCaseMinder";
 import IsChangeConfirm from "metersphere-frontend/src/components/IsChangeConfirm";

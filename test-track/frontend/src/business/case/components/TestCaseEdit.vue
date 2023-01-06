@@ -1,6 +1,6 @@
 <template>
   <div class="case-edit-wrap" style="min-width: 1100px">
-    <el-card :bodyStyle="{ padding: '0px' }" v-if="false">
+    <el-card :bodyStyle="{ padding: '0px' }" v-if="true">
       <div class="card-content">
         <div class="ms-main-div" @click="showAll">
           <ms-container v-loading="loading" style="overflow: auto">

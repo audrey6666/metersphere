@@ -2,7 +2,7 @@
   <div class="content-body-wrap">
     <!-- 非创建状态下 展示 -->
     <div class="tab-pane-wrap" v-if="!editable">
-      <el-tabs v-model="caseActiveName">
+      <el-tabs v-model="caseActiveName" @tab-click="tabClick">
         <el-tab-pane label="用例详情" name="detail">
           <div class="content-conatiner">
             <case-detail-component
@@ -50,7 +50,17 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="依赖关系" name="dependencies">
-          <div class="content-conatiner">依赖关系</div>
+          <div class="content-conatiner">
+            <case-relationship-viewer
+              @setCount="setRelationshipCount"
+              :read-only="readOnly"
+              :resource-id="caseId"
+              @openDependGraphDrawer="setRelationshipGraph"
+              :version-enable="versionEnable"
+              resource-type="TEST_CASE"
+              ref="relationship"
+            ></case-relationship-viewer>
+          </div>
           <div class="comment-common">
             <case-comment-component :case-id="caseId"></case-comment-component>
           </div>
@@ -99,6 +109,7 @@
 </template>
 
 <script>
+import CaseRelationshipViewer from "./CaseRelationshipViewer";
 import BaseEditItemComponent from "../BaseEditItemComponent";
 import CaseDetailComponent from "./CaseDetailComponent";
 import CaseBaseInfo from "./CaseBaseInfo";
@@ -118,6 +129,7 @@ export default {
     BaseEditItemComponent,
     CaseCommentComponent,
     CaseCommentViewer,
+    CaseRelationshipViewer,
   },
   props: [
     "richTextDefaultOpen",
@@ -185,6 +197,12 @@ export default {
     },
   },
   methods: {
+    tabClick(tab) {
+      //初始化数据
+      if (tab.name === "dependencies" && this.$refs.relationship) {
+        this.$refs.relationship.open();
+      }
+    },
     updateRemark(text) {
       this.form.remark = text;
     },

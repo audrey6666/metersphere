@@ -22,25 +22,26 @@
         <div class="wait-upload" v-else-if="isToUpload">等待上传</div>
       </div>
       <div class="options">
+        <!-- 预览 -->
+        <div class="into" v-if="enablePreview" @click="handlePreview">
+          <img src="/assets/figma/icon_visible_outlined.svg" alt="" />
+        </div>
         <!-- 下载 -->
         <div class="download" v-if="enableDownload" @click="handleDownload">
-          <img src="/assets/figma/icon_bottom-align_outlined" alt="" />
+          <img src="/assets/figma/icon_bottom-align_outlined.svg" alt="" />
         </div>
         <!-- 转储 -->
         <div class="retry" v-if="enableRetry" @click="handleRetry">
-          <img src="/assets/figma/icon_refresh_outlined" alt="" />
-        </div>
-        <!-- 预览 -->
-        <div class="into" v-if="enablePreview" @click="handlePreview">
-          <img src="/assets/figma/icon_into-item_outlined" alt="" />
+          <!-- <img src="/assets/figma/icon_refresh_outlined" alt="" /> -->
+          <img src="/assets/figma/icon_into-item_outlined.svg" alt="" />
         </div>
         <!-- 取消关联 -->
         <div class="unLink" v-if="enableUnLink" @click="handleUnLink">
-          <img src="/assets/figma/icon_unlink_outlined" alt="" />
+          <img src="/assets/figma/icon_unlink_outlined.svg" alt="" />
         </div>
         <!-- 删除 -->
         <div class="delete" v-if="enableDelete" @click="handleDelete">
-          <img src="/assets/figma/icon_delete-trash_outlined" alt="" />
+          <img src="/assets/figma/icon_delete-trash_outlined.svg" alt="" />
         </div>
       </div>
     </div>
