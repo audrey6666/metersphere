@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 基于form组件进行表单验证 -->
-    <el-form>
+    <el-form ref="caseDetailForm" :rules="rules" :model="form">
       <!-- case name -->
       <div class="case-name-row">
         <div class="case-name case-title-wrap">
@@ -14,6 +14,8 @@
               :editable="editable"
               trigger="click"
               :contentObject="{ content: form.name, contentType: 'TEXT' }"
+              :model="form"
+              :rules="rules"
               ref="nameRef"
             >
               <template slot="content" slot-scope="val">
@@ -40,6 +42,7 @@
           <div class="opt-row">
             <base-edit-item-component
               :editable="editable"
+              :autoSave="false"
               trigger="click"
               :contentObject="{
                 content: form.prerequisite,
@@ -87,6 +90,7 @@
           <div class="opt-row">
             <base-edit-item-component
               v-if="form.stepModel === 'TEXT'"
+              :autoSave="false"
               :editable="editable"
               trigger="click"
               :contentObject="{
@@ -127,6 +131,7 @@
           <div class="opt-row">
             <base-edit-item-component
               :editable="editable"
+              :autoSave="false"
               trigger="click"
               :contentObject="{
                 content: form.expectedResult,
@@ -158,6 +163,7 @@
           <div class="opt-row">
             <base-edit-item-component
               :editable="editable"
+              :autoSave="false"
               trigger="click"
               :contentObject="{
                 content: form.remark,
@@ -190,7 +196,7 @@
           <!-- tip -->
           <div class="opt-btn">
             <case-attachment-component
-              :caseId="form.id"
+              :caseId="caseId"
               :type="type"
               :isCopy="isCopy"
               :copyCaseId="copyCaseId"
@@ -223,7 +229,22 @@ export default {
     CaseAttachmentComponent,
   },
   data() {
-    return {};
+    return {
+      rules: {
+        name: [
+          {
+            required: true,
+            message: this.$t("test_track.case.input_name"),
+            trigger: "blur",
+          },
+          {
+            max: 255,
+            message: this.$t("test_track.length_less_than") + "255",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
   },
   props: {
     editable: Boolean,
@@ -249,6 +270,15 @@ export default {
     },
     handleSaveEvent() {
       //触发保存 TODO
+    },
+    valideForm() {
+      let isValidate = true;
+      this.$refs["caseDetailForm"].validate((valid) => {
+        if (!valid) {
+          isValidate = false;
+        }
+      });
+      return isValidate;
     },
   },
 };

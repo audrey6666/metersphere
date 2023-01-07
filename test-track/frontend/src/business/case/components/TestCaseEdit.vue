@@ -1,6 +1,6 @@
 <template>
   <div class="case-edit-wrap" style="min-width: 1100px">
-    <el-card :bodyStyle="{ padding: '0px' }" v-if="true">
+    <el-card :bodyStyle="{ padding: '0px' }" v-if="false">
       <div class="card-content">
         <div class="ms-main-div" @click="showAll">
           <ms-container v-loading="loading" style="overflow: auto">
@@ -230,12 +230,68 @@
             <img src="/assets/figma/icon_arrow-left_outlined.svg" alt="" />
           </div>
           <div class="case-name">{{ !editable ? form.name : "创建用例" }}</div>
-          <div class="case-edit">
-            <div class="case-level"></div>
-            <div class="case-version">
-              <div class="version-icon"></div>
-              <div class="version-title"></div>
+          <div class="case-edit" v-if="!editable">
+            <div class="case-level">
+              <priority-table-item :value="form.priority" />
             </div>
+            <div class="case-version">
+              <div class="version-icon">
+                <img
+                  src="/assets/figma/icon_moments-categories_outlined.svg"
+                  alt=""
+                />
+              </div>
+              <div class="version-title">V3.0.0{{ form.versionName }}</div>
+              <div class="version-suffix">版本</div>
+            </div>
+          </div>
+        </div>
+        <div class="header-opt-row" v-if="!editable">
+          <div
+            class="follow-row head-opt"
+            v-if="!showFollow"
+            @click="saveFollow"
+          >
+            <div class="icon-row">
+              <img src="/assets/figma/icon_collection_outlined.svg" alt="" />
+            </div>
+            <div class="label-row">关注</div>
+          </div>
+          <div
+            class="follow-row head-opt"
+            v-if="showFollow"
+            @click="saveFollow"
+          >
+            <div class="icon-row">
+              <img src="/assets/figma/icon_collect_filled.svg" alt="" />
+            </div>
+            <div class="label-row">已关注</div>
+          </div>
+          <div
+            class="add-public-row head-opt"
+            v-if="!casePublic"
+            @click="addPublic"
+          >
+            <div class="icon-row">
+              <img src="/assets/figma/icon_add-folder_outlined.svg" alt="" />
+            </div>
+            <div class="label-row">添加到公共用例库</div>
+          </div>
+          <div
+            class="add-public-row head-opt"
+            v-if="casePublic"
+            @click="removePublic"
+          >
+            <div class="icon-row">
+              <img src="/assets/figma/icon_yes_outlined.svg" alt="" />
+            </div>
+            <div class="label-row">已添加到公共用例库</div>
+          </div>
+          <div class="more-row head-opt">
+            <div class="icon-row">
+              <img src="/assets/figma/icon_more_outlined.svg" alt="" />
+            </div>
+            <div class="label-row">更多</div>
           </div>
         </div>
       </div>
@@ -255,7 +311,7 @@
           :type="type"
           :comments.sync="comments"
           @openComment="openComment"
-          :is-click-attachment-tab.sync="isClickAttachmentTab"
+          @getComments="getComments"
           :version-enable="versionEnable"
           :default-open="richTextDefaultOpen"
           ref="otherInfo"
@@ -265,6 +321,8 @@
         <div class="content-base-info-wrap">
           <case-base-info
             :editable="editable"
+            :case-id="form.id"
+            :project-id="projectIds"
             :form="form"
             :is-form-alive="isFormAlive"
             :isloading="loading"
@@ -277,6 +335,7 @@
             :custom-field-rules="customFieldRules"
             :test-case-template="testCaseTemplate"
             :default-open="richTextDefaultOpen"
+            :version-enable="versionEnable"
             ref="testCaseBaseInfo"
           ></case-base-info>
         </div>
@@ -386,9 +445,12 @@ import {
 
 import CaseEditInfoComponent from "./case/CaseEditInfoComponent";
 import CaseBaseInfo from "./case/CaseBaseInfo";
+import PriorityTableItem from "../../common/tableItems/planview/PriorityTableItem";
+
 export default {
   name: "TestCaseEdit",
   components: {
+    PriorityTableItem,
     CaseEditInfoComponent,
     CaseBaseInfo,
     CustomFiledFormItem,
@@ -625,6 +687,7 @@ export default {
   },
   beforeDestroy() {
     this.removeListener();
+    this.$EventBus.$off("handleSaveCaseWithEvent", this.handleSaveCaseWithEvent)
   },
   mounted() {
     this.getSelectOptions();
@@ -660,6 +723,8 @@ export default {
     }
   },
   created() {
+    this.$EventBus.$on("handleSaveCaseWithEvent", this.handleSaveCaseWithEvent)
+
     this.type = this.caseType;
     if (!this.projectList || this.projectList.length === 0) {
       //没有项目数据的话请求项目数据
@@ -728,6 +793,12 @@ export default {
     });
   },
   methods: {
+    handleSaveCaseWithEvent(formData, isPublic){
+      if(isPublic != undefined){
+        this.casePublic = isPublic;
+      }
+      this.saveCase();
+    },
     alert: alert,
     currentUser: () => {
       return getCurrentUser();
@@ -806,6 +877,14 @@ export default {
       if (this.form.id) {
         useStore().testCaseMap.set(this.form.id, 0);
       }
+    },
+    addPublic() {
+      this.casePublic = true;
+      this.saveCase();
+    },
+    removePublic() {
+      this.casePublic = false;
+      this.saveCase();
     },
     handleCommand(e) {
       if (e === "ADD_AND_CREATE") {
@@ -1381,11 +1460,12 @@ export default {
           }
         });
       }
+      let detailForm = this.$refs.otherInfo.validateForm();
       let baseInfoValidate = this.$refs.testCaseBaseInfo.validateForm();
-      if (!baseInfoValidate) {
+      let customValidate = this.$refs.testCaseBaseInfo.validateCustomForm();
+      if (!detailForm || !baseInfoValidate) {
         return false;
       }
-      let customValidate = this.$refs.testCaseBaseInfo.validateCustomForm();
       if (!customValidate) {
         let customFieldFormFields =
           this.$refs.testCaseBaseInfo.getCustomFields();
@@ -1396,7 +1476,8 @@ export default {
               this.currentValidateName =
                 this.currentValidateName + "," + customField.label;
             } else {
-              this.currentValidateName = customField.label;
+              this.currentValidateName =
+                customField.label || customField.labelFor;
             }
           }
         }
@@ -1488,10 +1569,6 @@ export default {
   margin-bottom: 10px;
 }
 
-.case-name {
-  min-width: 194px;
-}
-
 .container {
   height: 100vh;
 }
@@ -1569,8 +1646,10 @@ export default {
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       .header-content-row {
         display: flex;
+        align-items: center;
         .back {
           margin-left: px2rem(24);
           width: px2rem(20);
@@ -1582,7 +1661,6 @@ export default {
         }
 
         .case-name {
-          min-width: px2rem(64);
           height: px2rem(24);
           font-size: 16px;
           font-family: "PingFang SC";
@@ -1590,22 +1668,110 @@ export default {
           font-weight: 500;
           line-height: px2rem(24);
           color: #1f2329;
-          order: 1;
-          flex-grow: 0;
           margin-left: px2rem(8);
+          margin-right: px2rem(8);
         }
 
         .case-edit {
+          display: flex;
+          align-items: center;
           .case-level {
           }
 
           .case-version {
+            display: flex;
+            color: #646a73;
+            align-items: center;
+            margin-left: px2rem(8);
+
             .version-icon {
+              width: 14.17px;
+              height: 12.6px;
+              margin-right: px2rem(4.95);
+
+              img {
+                width: 100%;
+                height: 100%;
+              }
             }
 
             .version-title {
+              height: px2rem(22);
+              line-height: px2rem(22);
+            }
+            .version-suffix {
+              height: px2rem(22);
+              line-height: px2rem(22);
+              margin-left: px2rem(5);
             }
           }
+        }
+      }
+      .header-opt-row {
+        display: flex;
+        align-items: center;
+        // 公共处理
+        .head-opt:hover {
+          background: rgba(31, 35, 41, 0.1);
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .head-opt {
+          display: flex;
+          align-items: center;
+          .icon-row {
+            width: 14px;
+            height: 14px;
+            margin-right: px2rem(5);
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          .label-row {
+            height: px2rem(22);
+            font-family: "PingFang SC";
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: px2rem(22);
+            text-align: center;
+            color: #1f2329;
+          }
+        }
+
+        .follow-row.head-opt {
+          .icon-row {
+            img {
+            }
+          }
+
+          .label-row {
+          }
+          margin-right: px2rem(20.67);
+        }
+
+        .add-public-row.head-opt {
+          .icon-row {
+            img {
+            }
+          }
+
+          .label-row {
+          }
+          margin-right: px2rem(22.33);
+        }
+
+        .more-row.head-opt {
+          .icon-row {
+            img {
+            }
+          }
+
+          .label-row {
+          }
+          margin-right: px2rem(24);
         }
       }
     }

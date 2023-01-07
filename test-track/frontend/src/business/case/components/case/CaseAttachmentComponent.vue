@@ -153,7 +153,15 @@ export default {
       relateFiles: [],
       unRelateFiles: [],
       dumpFile: {},
+      result: {},
     };
+  },
+  watch: {
+    caseId() {
+      if (this.caseId) {
+        this.getFileMetaData();
+      }
+    },
   },
   methods: {
     associationFile() {
@@ -359,7 +367,7 @@ export default {
       cancelFile.status = "error";
     },
     getFileMetaData(id) {
-      this.$emit("update:isClickAttachmentTab", true);
+      //this.$emit("update:isClickAttachmentTab", true);
       // 保存用例后传入用例id，刷新文件列表，可以预览和下载
       this.fileList = [];
       this.tableData = [];

@@ -19,6 +19,8 @@
                   contentType: 'CUSTOM',
                 }"
                 :readonlyHoverEvent="true"
+                :model="form"
+                :rules="rules"
               >
                 <template v-slot:content="{ onClick, hoverEditable }">
                   <div :class="hoverEditable ? 'selectHover' : ''">
@@ -55,6 +57,7 @@ export default {
   name: "CaseCustomFiledFormRow",
   components: { CustomFiledComponent, BaseEditItemComponent },
   props: {
+    rules: Object,
     editable: Boolean,
     issueTemplate: {
       type: Object,
@@ -163,7 +166,7 @@ export default {
   }
   .side-content {
     width: px2rem(256);
-    height: 32px;
+    min-height: 32px;
     :deep(.el-select) {
       width: 100%;
     }

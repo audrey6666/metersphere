@@ -6,11 +6,13 @@
       @mouseleave="mouseLeaveEvent"
     >
       <div class="edit" v-show="edit">
-        <slot
-          name="content"
-          :onClick="clickContent"
-          :hoverEditable="hoverEditable"
-        ></slot>
+        <el-form :rules="rules" :model="model" ref="customForm">
+          <slot
+            name="content"
+            :onClick="clickContent"
+            :hoverEditable="hoverEditable"
+          ></slot>
+        </el-form>
       </div>
       <div class="readonly" v-show="!edit">
         <div
@@ -95,7 +97,24 @@
         <div class="empty" v-else @click="handleReadTextClick">暂无</div>
       </div>
     </div>
-    <div class="footer"></div>
+    <div class="footer">
+      <div
+        class="footer-row"
+        v-if="contentObject.contentType == 'RICHTEXT' && this.selfEditable"
+      >
+        <div class="save">
+          <el-button
+            size="small"
+            type="primary"
+            @click.stop="preProcessor(true)"
+            >保存</el-button
+          >
+        </div>
+        <div class="cancel" @click.stop="postProcessor">
+          <el-button size="small">取消</el-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -110,6 +129,9 @@ export default {
     };
   },
   props: {
+    rules: Object,
+    prop: String,
+    model: Object,
     editable: {
       type: Boolean,
       default: true,
@@ -140,6 +162,7 @@ export default {
   },
   mounted() {
     if (
+      this.contentObject.content &&
       this.contentObject.content.type &&
       (this.contentObject.content.type === "member" ||
         this.contentObject.content.type === "multipleMember")
@@ -158,6 +181,7 @@ export default {
         case "cascadingSelect":
         case "member":
         case "multipleMember":
+        case "input":
           type = "select";
           break;
         case "text":
@@ -200,13 +224,23 @@ export default {
       if (options.length > 0) {
         let option = options.find((item) => {
           if (this.contentObject.content.value) {
-            return item.value === this.contentObject.content.value;
+            return item.value == this.contentObject.content.value;
           }
-          return item.value === this.contentObject.content.defaultValue;
+          return item.value == this.contentObject.content.defaultValue;
         });
         if (option) {
           return this.getTranslateOption(option);
         }
+      }
+
+      if (
+        this.contentObject.content.type === "input" ||
+        this.contentObject.content.type === "richText"
+      ) {
+        return this.contentObject.content.defaultValue === "" ||
+          this.contentObject.content.defaultValue == null
+          ? "暂无"
+          : this.contentObject.content.defaultValue;
       }
       return "";
     },
@@ -244,13 +278,47 @@ export default {
       }
     },
     preSave() {
+      if (!this.autoSave) {
+        return;
+      }
+      this.preProcessor();
+      // this.$emit("validateForm", (val) => {
+      //   if (val) {
+      //     this.doSave();
+      //   }
+      // });
+    },
+    preProcessor(ignoreAutoSaveProp) {
+      if (this.editable) {
+        return;
+      }
       //先校验
-      // TODO 
-      //准备保存
-      if (this.autoSave && this.selfEditable) {
+      let isValidate = false;
+      if (this.$refs.customForm) {
+        this.$refs.customForm.validate((val) => {
+          isValidate = true;
+          if (val) {
+            this.doSave(ignoreAutoSaveProp);
+          }
+        });
+      }
+
+      if (!this.model || !this.rules || !isValidate) {
+        this.doSave(ignoreAutoSaveProp);
+      }
+    },
+    postProcessor() {
+      if (this.selfEditable) {
         this.selfEditable = false;
         this.hoverEditable = false;
-        console.log("preSave");
+      }
+    },
+    doSave(ignoreAutoSaveProp) {
+      //准备保存
+      if ((ignoreAutoSaveProp || this.autoSave) && this.selfEditable) {
+        this.postProcessor();
+        this.$emit("saveCase");
+        this.$EventBus.$emit("handleSaveCaseWithEvent", this.form, false);
       }
     },
     mouseLeaveEvent() {
@@ -379,6 +447,20 @@ export default {
   }
   .footer {
     width: 100%;
+    .footer-row {
+      margin-top: 8px;
+      display: flex;
+      .save {
+        margin-right: 12px;
+        el-button {
+        }
+      }
+
+      .cancel {
+        el-button {
+        }
+      }
+    }
   }
 }
 </style>

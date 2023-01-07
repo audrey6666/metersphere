@@ -205,10 +205,31 @@ export default {
     },
   },
   methods: {
+    getFileMetaData(id) {
+      if (!this.$refs.testCaseBaseInfo) {
+        return;
+      }
+      return this.$refs.testCaseBaseInfo.getFileMetaData(id);
+    },
+    validateForm() {
+      let isValidate = true;
+      if (this.$refs.testCaseBaseInfo) {
+        isValidate = this.$refs["testCaseBaseInfo"].valideForm();
+      }
+      return isValidate;
+    },
     tabClick(tab) {
       //初始化数据
       if (tab.name === "dependencies" && this.$refs.relationship) {
         this.$refs.relationship.open();
+      } else if (tab.name === "associatedDefects") {
+        this.$nextTick(() => {
+          this.$refs.issue.getIssues();
+        });
+      } else if (tab.name === "associateTestCases") {
+        this.$nextTick(() => {
+          this.getRelatedTest();
+        });
       }
     },
     updateRemark(text) {
@@ -241,7 +262,9 @@ export default {
       });
     },
     getRelatedTest() {
-      this.$refs.relateTest.initTable();
+      if (this.$refs.relateTest) {
+        this.$refs.relateTest.initTable();
+      }
     },
     visibleChange(flag) {
       if (flag) {

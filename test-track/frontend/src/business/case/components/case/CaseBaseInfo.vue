@@ -1,6 +1,6 @@
 <template>
   <div v-loading="isloading">
-    <el-form ref="caseFrom">
+    <el-form ref="caseFrom" :rules="rules" :model="form">
       <div class="module-row case-wrap" v-if="!publicEnable">
         <div class="case-title-wrap">
           <div class="name title-wrap">
@@ -18,6 +18,8 @@
               contentType: 'SELECT',
             }"
             :readonlyHoverEvent="true"
+            :model="form"
+            :rules="rules"
             ref="moduleRef"
           >
             <template v-slot:content="{ onClick, hoverEditable }">
@@ -50,52 +52,40 @@
           <div class="required required-item"></div>
         </div>
         <div class="side-content">
-          <el-form-item prop="projectId" v-if="publicEnable">
-            <el-select v-model="form.projectId" filterable clearable>
-              <el-option
-                v-for="item in projectList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
+          <base-edit-item-component
+            :editable="editable"
+            trigger="hover"
+            :contentObject="{
+              content: getProjectLabel(),
+              contentType: 'SELECT',
+            }"
+            :readonlyHoverEvent="true"
+            :model="form"
+            :rules="rules"
+          >
+            <template v-slot:content="{ onClick, hoverEditable }">
+              <div :class="hoverEditable ? 'selectHover' : ''">
+                <el-form-item prop="projectId">
+                  <el-select
+                    size="small"
+                    v-model="form.projectId"
+                    @click.native="onClick"
+                    filterable
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in projectList"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+            </template>
+          </base-edit-item-component>
         </div>
       </div>
-      <!-- 
-      <div class="case-level-row case-wrap">
-        <div class="case-title-wrap">
-          <div class="name title-wrap">用例等级</div>
-          <div class="required required-item"></div>
-        </div>
-        <div class="side-content">
-          <el-select v-model="form.text" size="small" width="100%"
-            ><el-option label="未规划用例" value="shanghai"></el-option>
-          </el-select>
-        </div>
-      </div>
-      <div class="case-status-row case-wrap">
-        <div class="case-title-wrap">
-          <div class="name title-wrap">用例状态</div>
-          <div class="required required-item"></div>
-        </div>
-        <div class="side-content">
-          <el-select v-model="form.text" size="small" width="100%"
-            ><el-option label="未规划用例" value="shanghai"></el-option>
-          </el-select>
-        </div>
-      </div>
-      <div class="maintainer-row case-wrap">
-        <div class="case-title-wrap">
-          <div class="name title-wrap">责任人</div>
-          <div class="required required-item"></div>
-        </div>
-        <div class="side-content">
-          <el-select v-model="form.text" size="small" width="100%"
-            ><el-option label="未规划用例" value="shanghai"></el-option>
-          </el-select>
-        </div>
-      </div> -->
     </el-form>
     <!-- 自定义字段 -->
     <el-form
@@ -110,19 +100,21 @@
     >
       <custom-filed-form-row
         :form="customFieldForm"
+        :rules="customFieldRules"
         :disabled="readOnly"
         :default-open="defaultOpen"
         :issue-template="testCaseTemplate"
         :editable="editable"
       />
     </el-form>
-    <el-form>
-      <div class="version-row case-wrap">
+    <el-form ref="baseCaseFrom" :rules="rules" :model="form">
+      <div class="version-row case-wrap" v-if="versionEnable">
         <div class="case-title-wrap">
           <div class="name title-wrap">版本</div>
           <div class="required required-item"></div>
         </div>
         <div class="side-content">
+          <!-- v-xpack -->
           <base-edit-item-component
             :editable="editable"
             trigger="hover"
@@ -131,6 +123,8 @@
               contentType: 'SELECT',
             }"
             :readonlyHoverEvent="true"
+            :model="form"
+            :rules="rules"
           >
             <template v-slot:content="{ onClick, hoverEditable }">
               <div :class="hoverEditable ? 'selectHover' : ''">
@@ -140,10 +134,14 @@
                     size="small"
                     width="100%"
                     @click.native="onClick"
-                    ><el-option
-                      label="V3.0.0"
-                      value="4eb81bac-3678-11ed-bd4f-44e517fe65ae"
-                    ></el-option>
+                    @change="changeVersion"
+                  >
+                    <el-option
+                      v-for="(version, index) in versionFilters"
+                      :key="index"
+                      :value="version.id"
+                      :label="version.name"
+                    />
                   </el-select>
                 </el-form-item>
               </div>
@@ -165,6 +163,8 @@
               contentType: 'INPUT',
             }"
             :readonlyHoverEvent="true"
+            :model="form"
+            :rules="rules"
           >
             <template v-slot:content="{ onClick, hoverEditable }">
               <div :class="hoverEditable ? 'selectHover' : ''">
@@ -197,6 +197,8 @@
               contentType: 'STORY',
             }"
             :readonlyHoverEvent="true"
+            :model="form"
+            :rules="rules"
           >
             <template v-slot:content="{ onClick, hoverEditable }">
               <div :class="hoverEditable ? 'selectHover' : ''">
@@ -254,6 +256,8 @@
               contentType: 'INPUT',
             }"
             :readonlyHoverEvent="true"
+            :model="form"
+            :rules="rules"
           >
             <template v-slot:content="{ onClick, hoverEditable }">
               <div :class="hoverEditable ? 'selectHover' : ''">
@@ -284,6 +288,8 @@
               contentType: 'TAG',
             }"
             :readonlyHoverEvent="true"
+            :model="form"
+            :rules="rules"
           >
             <template v-slot:content="{ onClick, hoverEditable }">
               <div :class="hoverEditable ? 'selectHover' : ''">
@@ -307,6 +313,8 @@
 </template>
 
 <script>
+import { getVersionFilters } from "@/business/utils/sdk-utils";
+import { hasLicense } from "metersphere-frontend/src/utils/permission";
 import MsFormDivider from "metersphere-frontend/src/components/MsFormDivider";
 import MsSelectTree from "metersphere-frontend/src/components/select-tree/SelectTree";
 import MsInputTag from "metersphere-frontend/src/components/MsInputTag";
@@ -314,7 +322,10 @@ import CustomFiledFormRow from "./CaseCustomFiledFormRow";
 import { useStore } from "@/store";
 import BaseEditItemComponent from "../BaseEditItemComponent";
 import { issueDemandList } from "@/api/issue";
-
+import {
+  getCurrentProjectID,
+  getCurrentUser,
+} from "metersphere-frontend/src/utils/token";
 export default {
   name: "CaseBaseInfo",
   components: {
@@ -401,6 +412,7 @@ export default {
       demandValue: [],
       demandLabel: "",
       demandOptions: [],
+      versionFilters: [],
     };
   },
   props: {
@@ -417,8 +429,12 @@ export default {
     customFieldRules: Object,
     testCaseTemplate: Object,
     defaultOpen: String,
+    versionEnable: Boolean,
   },
   computed: {
+    projectId() {
+      return getCurrentProjectID();
+    },
     isCustomNum() {
       return useStore().currentProjectIsCustomNum;
     },
@@ -437,10 +453,47 @@ export default {
   },
   mounted() {
     this.getDemandOptions();
+    this.getVersionOptions();
   },
   methods: {
+    validateAllForm(callback) {
+      callback(
+        this.editable ? true : this.validateForm() && this.validateCustomForm()
+      );
+    },
+    getVersionOptions() {
+      if (hasLicense()) {
+        getVersionFilters(getCurrentProjectID()).then(
+          (r) => (this.versionFilters = r.data)
+        );
+      }
+    },
+    changeVersion(data) {
+      //从versionFilters 中找到 版本名称
+      let version = this.versionFilters.filter((v) => {
+        return v.id === data;
+      });
+      if (version) {
+        this.form.versionName = version.name;
+      }
+    },
     getVersionLabel() {
-      return "V3.0.0";
+      let version = this.versionFilters.find((v) => {
+        return v.id === this.form.versionId;
+      });
+      if (version) {
+        return version.name;
+      }
+      return "";
+    },
+    getProjectLabel() {
+      let project = this.projectList.find((v) => {
+        return v.id === this.form.projectId;
+      });
+      if (project) {
+        return project.name;
+      }
+      return "";
     },
     getModuleLabel() {
       let module = this.treeNodes.find((v) => {
@@ -455,24 +508,20 @@ export default {
       this.form.module = id;
       this.form.nodePath = data.path;
     },
-    textBlur(options, refName) {
-      if (!this.editable && this.$refs[refName]) {
-        // this.$refs[refName].changeSelfEditable(false);
-        this.handleSaveEvent();
-      }
-    },
     mouseLeaveEvent(refName) {
       if (!this.editable && this.$refs[refName]) {
         this.$refs[refName].changeHoverEditable(false);
         this.handleSaveEvent();
       }
     },
-    handleSaveEvent() {
-      //触发保存 TODO
-    },
     validateForm() {
       let isValidate = true;
       this.$refs["caseFrom"].validate((valid) => {
+        if (!valid) {
+          isValidate = false;
+        }
+      });
+      this.$refs["baseCaseFrom"].validate((valid) => {
         if (!valid) {
           isValidate = false;
         }
