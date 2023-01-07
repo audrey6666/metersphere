@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import MsSearchBar from "metersphere-frontend/src/components/search/MsSearchBar";
+import MsSearchBar from "metersphere-frontend/src/components/new-ui/MsSearchBar";
 import MsNodeTree from "metersphere-frontend/src/components/new-ui/MsNodeTree";
 import {getTestCasePublicNodes} from "@/api/testCase";
 

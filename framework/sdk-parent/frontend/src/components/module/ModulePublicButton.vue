@@ -46,7 +46,6 @@ export default {
 
 .recycle {
   padding: 14px 0px 14px 13px px;
-  margin-top: 16px;
   height: 26px;
   line-height: 26px;
   height: 52px;

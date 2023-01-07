@@ -2,7 +2,7 @@
   <div>
 
     <slot name="header">
-      <el-input :placeholder="$t('test_track.module.search')" v-model="filterText" size="small" :clearable="true"/>
+      <el-input :placeholder="$t('test_track.module.search')" v-model="filterText" size="small" :clearable="true" class="search-input"/>
     </slot>
 
     <el-scrollbar>
@@ -680,7 +680,6 @@ export default {
 }
 
 .node-tree {
-  margin-top: 15px;
   height: calc(100vh - 330px);
 }
 
@@ -851,7 +850,7 @@ export default {
   margin-top: 0px;
 }
 
-.module-more-operate:hover {
-
+.search-input {
+  margin-bottom: 16px;
 }
 </style>

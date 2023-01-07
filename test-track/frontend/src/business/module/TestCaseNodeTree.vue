@@ -49,7 +49,7 @@ import MsNodeTree from "metersphere-frontend/src/components/new-ui/MsNodeTree";
 import TestCaseCreate from "@/business/case/components/TestCaseCreate";
 import TestCaseImport from "@/business/case/components/import/TestCaseImport";
 import TestCaseExport from "@/business/case/components/export/TestCaseExport";
-import MsSearchBar from "metersphere-frontend/src/components/search/MsSearchBar";
+import MsSearchBar from "metersphere-frontend/src/components/new-ui/MsSearchBar";
 import {buildTree, buildNodePath} from "metersphere-frontend/src/model/NodeTree";
 import {getCurrentProjectID} from "metersphere-frontend/src/utils/token";
 import ModuleTrashButton from "metersphere-frontend/src/components/ModuleTrashButton";

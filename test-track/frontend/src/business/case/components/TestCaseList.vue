@@ -417,7 +417,8 @@ export default {
         }, {
           name: this.$t('test_track.case.batch_delete_case'),
           handleClick: this.handleDeleteBatch,
-          permissions: ['PROJECT_TRACK_CASE:READ+BATCH_DELETE']
+          permissions: ['PROJECT_TRACK_CASE:READ+BATCH_DELETE'],
+          isDelete: true
         }
       ],
       operators: [],
@@ -444,12 +445,13 @@ export default {
       trashOperators: [
         {
           tip: this.$t('commons.reduction'),
-          icon: "el-icon-refresh-left",
+          isTextButton: true,
           exec: this.reduction,
           permissions: ['PROJECT_TRACK_CASE:READ+RECOVER']
         },
         {
-          tip: this.$t('commons.delete'), icon: "el-icon-delete", type: "danger",
+          isTextButton: true,
+          tip: this.$t('test_track.case.batch_delete_case'),
           exec: this.handleDelete,
           permissions: ['PROJECT_TRACK_CASE:READ+DELETE']
         }
@@ -551,6 +553,7 @@ export default {
       }
     },
     selectNodeIds() {
+      this.clearTableSelect();
       this.page.currentPage = 1;
       initCondition(this.condition, false);
       this.initTableData();
@@ -854,9 +857,18 @@ export default {
         });
     },
     handleDelete(testCase) {
-      operationConfirm(this, this.$t('test_track.case.delete_confirm') + '\'' + testCase.name + '\'', () => {
-        this._handleDelete(testCase);
-      });
+      let title = this.$t('test_track.case.case_delete_confirm') + ": " + testCase.name + "?";
+      this.$confirm(this.$t('test_track.case.batch_delete_tip'), title, {
+          cancelButtonText: this.$t("commons.cancel"),
+          confirmButtonText: this.$t("commons.delete"),
+          customClass: 'custom-confirm-delete',
+          callback: action => {
+            if (action === "confirm") {
+              this._handleDelete(testCase);
+            }
+          }
+        }
+      );
     },
     reduction(testCase) {
       let param = {};
@@ -866,7 +878,7 @@ export default {
         .then(() => {
           this.$emit('refresh');
           this.initTableData();
-          this.$success(this.$t('commons.save_success'));
+          this.$success(this.$t('commons.save_success'), false);
         });
     },
     handleDeleteToGc(testCase) {
@@ -897,20 +909,30 @@ export default {
         .then(() => {
           this.$emit('refresh');
           this.initTableData();
-          this.$success(this.$t('commons.save_success'));
+          this.clearTableSelect();
+          this.$success(this.$t('commons.save_success'), false);
         });
     },
     handleDeleteBatch() {
-      operationConfirm(this, this.$t('test_track.case.delete_confirm'), () => {
-        let param = buildBatchParam(this, this.$refs.table.selectIds);
-        testCaseBatchDelete(param)
-          .then(() => {
-            this.$refs.table.clear();
-            this.$emit("refresh");
-            this.initTableData();
-            this.$success(this.$t('commons.delete_success'));
-          });
-      });
+      let title = this.$t('test_track.case.batch_delete_confirm', [this.$refs.table.selectIds.length]);
+      this.$confirm(this.$t('test_track.case.batch_delete_tip'), title, {
+          cancelButtonText: this.$t("commons.cancel"),
+          confirmButtonText: this.$t("commons.delete"),
+          customClass: 'custom-confirm-delete',
+          callback: action => {
+            if (action === "confirm") {
+              let param = buildBatchParam(this, this.$refs.table.selectIds);
+              testCaseBatchDelete(param)
+                .then(() => {
+                  this.clearTableSelect();
+                  this.$emit("refresh");
+                  this.initTableData();
+                  this.$success(this.$t('commons.delete_success'), false);
+                });
+            }
+          }
+        }
+      );
     },
     generateGraph() {
       if (getSelectDataCounts(this.condition, this.total, this.$refs.table.selectRows) > 100) {
@@ -927,16 +949,16 @@ export default {
       let title = this.$t('test_track.case.batch_delete_confirm', [this.$refs.table.selectIds.length]);
       this.$confirm(this.$t('test_track.case.batch_delete_tip'), title, {
           cancelButtonText: this.$t("commons.cancel"),
-          confirmButtonText: this.$t("commons.confirm"),
+          confirmButtonText: this.$t("commons.delete"),
           customClass: 'custom-confirm-delete',
           callback: action => {
             if (action === "confirm") {
               let param = buildBatchParam(this, this.$refs.table.selectIds);
               testCaseBatchDeleteToGc(param)
                 .then(() => {
-                  this.$refs.table.clear();
+                  this.clearTableSelect();
                   this.$emit("refresh");
-                  this.$success(this.$t('commons.delete_success'));
+                  this.$success(this.$t('commons.delete_success'), false);
                 });
             }
           }
@@ -949,7 +971,7 @@ export default {
         .then(() => {
           this.$emit('refresh');
           this.initTableData();
-          this.$success(this.$t('commons.delete_success'));
+          this.$success(this.$t('commons.delete_success'), false);
           this.$emit('decrease', testCase.nodeId);
         });
     },

@@ -78,6 +78,7 @@
       <!-- trash-case-aside-container  -->
       <ms-aside-container v-if="showTrashNode">
         <test-case-trash-node-tree
+          :show-operator="false"
           :case-condition="trashCondition"
           @nodeSelectEvent="trashNodeChange"
           ref="trashNodeTree"/>
@@ -126,93 +127,6 @@
             @refresh="minderSaveRefresh"
             ref="minder"/>
         </ms-tab-button>
-        <!--      <el-tabs v-model="activeName" @tab-click="addTab" @tab-remove="closeConfirm">-->
-        <!--        <el-tab-pane name="trash" v-if="trashEnable" :label="$t('commons.trash')" :closable="true">-->
-        <!--          <ms-tab-button-->
-        <!--            :isShowChangeButton="false">-->
-        <!--            <template v-slot:version>-->
-        <!--              <version-select v-xpack :project-id="projectId" @changeVersion="changeTrashVersion" margin-left="-10"/>-->
-        <!--            </template>-->
-        <!--            <test-case-list-->
-        <!--              :checkRedirectID="checkRedirectID"-->
-        <!--              :isRedirectEdit="isRedirectEdit"-->
-        <!--              :tree-nodes="treeNodes"-->
-        <!--              :trash-enable="true"-->
-        <!--              :current-version="currentTrashVersion"-->
-        <!--              :version-enable="versionEnable"-->
-        <!--              @testCaseEdit="editTestCase"-->
-        <!--              @testCaseCopy="copyTestCase"-->
-        <!--              @refresh="refreshTrashNode"-->
-        <!--              @refreshAll="refreshAll"-->
-        <!--              @setCondition="setTrashCondition"-->
-        <!--              @search="refreshTreeByCaseFilter"-->
-        <!--              ref="testCaseTrashList">-->
-        <!--            </test-case-list>-->
-        <!--          </ms-tab-button>-->
-        <!--        </el-tab-pane>-->
-        <!--        <el-tab-pane-->
-        <!--          :key="item.name"-->
-        <!--          v-for="(item) in tabs"-->
-        <!--          :label="item.label"-->
-        <!--          :name="item.name"-->
-        <!--          closable>-->
-        <!--          <div class="ms-api-scenario-div" v-if="!item.isPublic">-->
-        <!--            <test-case-edit-->
-        <!--              :currentTestCaseInfo="item.testCaseInfo"-->
-        <!--              :version-enable="versionEnable"-->
-        <!--              @refresh="refreshAll"-->
-        <!--              @caseEdit="handleCaseCreateOrEdit($event,'edit')"-->
-        <!--              @caseCreate="handleCaseCreateOrEdit($event,'add')"-->
-        <!--              @checkout="checkout($event, item)"-->
-        <!--              :is-public="item.isPublic"-->
-        <!--              :read-only="testCaseReadOnly"-->
-        <!--              :tree-nodes="treeNodes"-->
-        <!--              :select-node="selectNode"-->
-        <!--              :select-condition="item.isPublic ? publicCondition : condition"-->
-        <!--              :public-enable="item.isPublic"-->
-        <!--              :case-type="type"-->
-        <!--              @addTab="addTab"-->
-        <!--              ref="testCaseEdit">-->
-        <!--            </test-case-edit>-->
-        <!--          </div>-->
-        <!--          <div class="ms-api-scenario-div" v-if="item.isPublic">-->
-        <!--            <test-case-edit-show-->
-        <!--              :currentTestCaseInfo="item.testCaseInfo"-->
-        <!--              :version-enable="versionEnable"-->
-        <!--              @refresh="refreshAll"-->
-        <!--              @caseEdit="handleCaseCreateOrEdit($event,'edit')"-->
-        <!--              @caseCreate="handleCaseCreateOrEdit($event,'add')"-->
-        <!--              :read-only="testCaseReadOnly"-->
-        <!--              @checkout="checkoutPublic($event, item)"-->
-        <!--              :tree-nodes="treeNodes"-->
-        <!--              :select-node="selectNode"-->
-        <!--              :select-condition="condition"-->
-        <!--              :type="type"-->
-        <!--              :public-enable="currentActiveName === 'default' ? false : true"-->
-        <!--              @addTab="addTabShow"-->
-        <!--              ref="testCaseEditShow">-->
-        <!--            </test-case-edit-show>-->
-        <!--          </div>-->
-        <!--          <template v-slot:version>-->
-        <!--            <version-select v-xpack :project-id="projectId" @changeVersion="changeVersion"/>-->
-        <!--          </template>-->
-        <!--        </el-tab-pane>-->
-        <!--        <el-tab-pane name="add" v-if="hasPermission('PROJECT_TRACK_CASE:READ+CREATE')">-->
-        <!--          <template v-slot:label>-->
-        <!--            <el-dropdown @command="handleCommand" v-permission="['PROJECT_TRACK_CASE:READ+CREATE']">-->
-        <!--              <el-button type="primary" plain icon="el-icon-plus" size="mini"/>-->
-        <!--              <el-dropdown-menu slot="dropdown">-->
-        <!--                <el-dropdown-item command="ADD" v-permission="['PROJECT_TRACK_CASE:READ+CREATE']">-->
-        <!--                  {{ $t('test_track.case.create') }}-->
-        <!--                </el-dropdown-item>-->
-        <!--                <el-dropdown-item command="CLOSE_ALL">{{ $t('api_test.definition.request.close_all_label') }}-->
-        <!--                </el-dropdown-item>-->
-        <!--              </el-dropdown-menu>-->
-        <!--            </el-dropdown>-->
-        <!--          </template>-->
-        <!--        </el-tab-pane>-->
-
-        <!--      </el-tabs>-->
 
         <is-change-confirm
           @confirm="changeConfirm"
@@ -235,6 +149,27 @@
             @setCondition="setPublicCondition"
             @search="refreshTreeByCaseFilter"
             ref="testCasePublicList"/>
+        </el-card>
+      </ms-main-container>
+
+      <!-- trash-main-container  -->
+      <ms-main-container v-if="showTrashNode">
+        <el-card class="card-content">
+          <test-case-list
+            :checkRedirectID="checkRedirectID"
+            :isRedirectEdit="isRedirectEdit"
+            :tree-nodes="treeNodes"
+            :trash-enable="true"
+            :current-version="currentTrashVersion"
+            :version-enable="versionEnable"
+            @testCaseEdit="editTestCase"
+            @testCaseCopy="copyTestCase"
+            @refresh="refreshTrashNode"
+            @refreshAll="refreshAll"
+            @setCondition="setTrashCondition"
+            @search="refreshTreeByCaseFilter"
+            ref="testCaseTrashList">
+          </test-case-list>
         </el-card>
       </ms-main-container>
     </div>
@@ -1042,8 +977,8 @@ export default {
 
 /* 作用域处理 */
 .test-case-aside-layouyt :deep(.el-button--small span),
-.back-layout :deep(.el-button--small span), 
-.top-btn-group-layout :deep(.el-button--small span), 
+.back-layout :deep(.el-button--small span),
+.top-btn-group-layout :deep(.el-button--small span),
 .export-case-layout :deep(.el-button--small span) {
   font-family: 'PingFang SC';
   font-style: normal;

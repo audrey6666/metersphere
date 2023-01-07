@@ -124,7 +124,7 @@ export default {
     batch_edit_btn: '编辑',
     batch_move_case: '批量移动',
     batch_move_btn: '移动到',
-    batch_delete_case: '批量删除',
+    batch_delete_case: '徹底刪除',
     batch_delete_btn: '删除',
     batch_copy: '批量复制',
     batch_copy_btn: '复制到',

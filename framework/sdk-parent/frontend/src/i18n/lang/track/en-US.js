@@ -140,7 +140,7 @@ export default {
     public_warning: 'The public library configuration is not enabled',
     generate_dependencies: 'Generate graph',
     generate_dependencies_warning: 'For a better experience, it is recommended to check the data below 100',
-    batch_delete_case: 'Batch delete',
+    batch_delete_case: 'Delete completely',
     batch_delete_btn: 'Delete',
     batch_unlink: 'Batch Unlink',
     unlink: 'Unlink',
