@@ -24,7 +24,7 @@
               )
             }}</el-dropdown-item>
             <!-- v-xpack -->
-            <el-dropdown-item command="ui" v-xpack>{{
+            <el-dropdown-item command="ui">{{
               $t("api_test.home_page.failed_case_list.table_value.case_type.ui")
             }}</el-dropdown-item>
             <el-dropdown-item command="performance">{{
@@ -237,6 +237,7 @@ export default {
       if (key === undefined || target === undefined) {
         return false;
       }
+      target = target + "";
       return target.indexOf(key) !== -1;
     },
   },

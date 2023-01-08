@@ -1,5 +1,5 @@
 <template>
-  <!-- 表格头部 搜索栏 -->
+  <!-- 表格头部搜索栏 -->
   <div class="side-content-box">
     <div class="search-wrap">
       <div class="search-lable-row">

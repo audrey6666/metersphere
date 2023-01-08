@@ -28,6 +28,30 @@
         <slot name="footer"></slot>
         <div class="options">
           <div class="options-btn">
+            <div class="check-row" v-if="selectCounts > 0">
+              <div class="label">已选择 {{ selectCounts }} 条</div>
+              <div class="clear" @click="clearSelect">清空</div>
+            </div>
+            <div class="cancel">
+              <el-button size="small" @click="visible = false">{{
+                $t("commons.cancel")
+              }}</el-button>
+            </div>
+            <div class="submit">
+              <el-button
+                size="small"
+                v-prevent-re-click
+                :type="selectCounts > 0 ? 'primary' : 'info'"
+                @click="submit"
+                @keydown.enter.native.prevent
+              >
+                {{ $t("commons.confirm") }}
+              </el-button>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="options">
+          <div class="options-btn">
             <div class="cancel">
               <el-button size="small" @click="visible = false">{{
                 $t("commons.cancel")
@@ -45,7 +69,7 @@
               </el-button>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="empty-file" v-if="emptyObj.isEmpty">
@@ -105,6 +129,7 @@ export default {
       typeFilters: [],
       showView: "list",
       visible: false,
+      selectCounts: null,
     };
   },
   methods: {
@@ -112,10 +137,17 @@ export default {
       this.visible = false;
     },
     open() {
+      this.selectCounts = null;
       this.visible = true;
     },
     submit() {
+      if (!this.selectCounts) {
+        return;
+      }
       this.$emit("confirm");
+    },
+    clearSelect() {
+      this.$emit("clearSelect");
     },
   },
 };
@@ -210,5 +242,46 @@ export default {
 .empty-file {
   height: 100%;
   width: 100%;
+}
+</style>
+<style scoped lang="scss">
+.options {
+  height: 80px;
+  background: #ffffff;
+  box-shadow: 0px -1px 4px rgba(31, 35, 41, 0.1);
+  overflow: hidden;
+}
+.options-btn {
+  display: flex;
+  margin-top: 24px;
+  height: 32px;
+  margin-right: 24px;
+  float: right;
+}
+.options-btn .submit {
+  margin-left: 12px;
+}
+.check-row {
+  display: flex;
+  line-height: 32px;
+}
+.check-row .label {
+  font-family: "PingFang SC";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  text-align: center;
+  color: #646a73;
+}
+.check-row .clear {
+  font-family: "PingFang SC";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  text-align: center;
+  color: #783887;
+  cursor: pointer;
+  margin-left: 16px;
+  margin-right: 16px;
 }
 </style>

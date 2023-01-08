@@ -2,14 +2,27 @@
   <ms-drawer-component
     :title="$t('关联现有缺陷')"
     @confirm="save"
+    @clearSelect="clearSelection"
     ref="relevanceDialog"
   >
     <div slot="header">
-      <ms-search
-        :base-search-tip="$t('commons.search_by_name_or_id')"
-        :condition.sync="page.condition"
-        @search="getIssues"
-      />
+      <div class="header-search-row">
+        <div class="simple-row">
+          <ms-new-ui-search
+            :condition.sync="page.condition"
+            @search="getIssues"
+            :base-search-tip="$t('commons.search_by_name_or_id')"
+          />
+        </div>
+        <div class="adv-row">
+          <!-- 高级搜索框  -->
+          <ms-table-adv-search
+            :condition.sync="page.condition"
+            @search="getIssues"
+            ref="advanceSearch"
+          />
+        </div>
+      </div>
     </div>
     <div slot="content">
       <ms-table
@@ -20,6 +33,7 @@
         :page-size.sync="page.pageSize"
         :show-select-all="false"
         @handlePageChange="getIssues"
+        @selectCountChange="setSelectCounts"
         @refresh="getIssues"
         ref="table"
       >
@@ -105,6 +119,7 @@
 }
 </style>
 <script>
+import MsNewUiSearch from "metersphere-frontend/src/components/new-ui/MsSearch";
 import MsEditDialog from "metersphere-frontend/src/components/MsEditDialog";
 import HomePagination from "@/business/home/components/pagination/HomePagination";
 import MsTable from "metersphere-frontend/src/components/new-ui/MsTable";
@@ -122,6 +137,7 @@ import { getCurrentProjectID } from "metersphere-frontend/src/utils/token";
 import { TEST_CASE_RELEVANCE_ISSUE_LIST } from "@/business/utils/sdk-utils";
 import MsSearch from "metersphere-frontend/src/components/search/MsSearch";
 import MsDrawerComponent from "../common/MsDrawerComponent";
+import MsTableAdvSearch from "metersphere-frontend/src/components/new-ui/MsTableAdvSearch";
 
 export default {
   name: "CaseIssueRelateList",
@@ -134,6 +150,8 @@ export default {
     MsSearch,
     MsDrawerComponent,
     HomePagination,
+    MsTableAdvSearch,
+    MsNewUiSearch,
   },
   data() {
     return {
@@ -142,6 +160,7 @@ export default {
       }),
       visible: false,
       isThirdPart: false,
+      selectCounts: null,
     };
   },
   computed: {
@@ -163,6 +182,14 @@ export default {
     });
   },
   methods: {
+    clearSelection() {
+      if (this.$refs.table) {
+        this.$refs.table.clearSelectRows();
+      }
+    },
+    setSelectCounts(data) {
+      this.$refs.relevanceDialog.selectCounts = data;
+    },
     open() {
       this.getIssues();
       this.visible = true;
@@ -192,4 +219,36 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import "@/business/style/index.scss";
+.header-search-row {
+  display: flex;
+  margin: 0 px2rem(24);
+  .simple-row {
+    width: px2rem(888);
+    margin-right: px2rem(12);
+    :deep(.el-input--small) {
+      width: 100% !important;
+    }
+  }
+  .simple-row > div {
+    width: 100%;
+  }
+  .adv-row {
+    width: px2rem(52);
+    height: 32px;
+    :deep(button.el-button.el-button--default.el-button--mini) {
+      box-sizing: border-box;
+      width: 32px;
+      height: 32px;
+      background: #ffffff;
+      border: 1px solid #bbbfc4;
+      border-radius: 4px;
+      flex: none;
+      order: 5;
+      align-self: center;
+      flex-grow: 0;
+    }
+  }
+}
+</style>

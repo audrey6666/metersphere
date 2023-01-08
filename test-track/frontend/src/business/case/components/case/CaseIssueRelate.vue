@@ -33,7 +33,11 @@
         </el-dropdown>
       </div>
       <div class="search-right-row">
-        <el-input size="small" placeholder="通过ID或名称搜索"></el-input>
+        <ms-new-ui-search
+          :condition.sync="condition"
+          @search="search"
+          baseSearchTip="通过ID或名称搜索"
+        />
       </div>
     </div>
     <div class="table-data">
@@ -176,6 +180,7 @@ import {
   getIssuePartTemplateWithProject,
   getIssuesByCaseId,
   issueStatusChange,
+  getIssuesByCaseIdWithSearch,
 } from "@/api/issue";
 import {
   getCustomFieldValue,
@@ -187,6 +192,7 @@ import {
   getCurrentWorkspaceId,
 } from "metersphere-frontend/src/utils/token";
 import { operationConfirm } from "@/business/utils/sdk-utils";
+import MsNewUiSearch from "metersphere-frontend/src/components/new-ui/MsSearch";
 
 export default {
   name: "CaseIssueRelate",
@@ -197,6 +203,7 @@ export default {
     MsTableColumn,
     MsTable,
     TestPlanIssueEdit,
+    MsNewUiSearch,
   },
   data() {
     return {
@@ -210,13 +217,14 @@ export default {
       operators: [
         {
           tip: this.$t("test_track.case.unlink"),
-          icon: "el-icon-unlock",
+          isTextButton: true,
           type: "danger",
           exec: this.deleteIssue,
         },
       ],
       status: [],
       issueRelateVisible: false,
+      condition: {},
     };
   },
   props: {
@@ -273,6 +281,9 @@ export default {
     });
   },
   methods: {
+    search() {
+      this.getIssues();
+    },
     statusChange(param) {
       issueStatusChange(param).then(() => {
         this.getIssues();
@@ -284,10 +295,12 @@ export default {
     },
     getIssues() {
       if (!this.isCopy) {
-        let result = getIssuesByCaseId(
+        this.page.result = true;
+        let result = getIssuesByCaseIdWithSearch(
           this.planId ? "PLAN_FUNCTIONAL" : "FUNCTIONAL",
           this.getCaseResourceId(),
-          this.page
+          this.page,
+          this.condition
         );
         if (result) {
           this.page.result = result;

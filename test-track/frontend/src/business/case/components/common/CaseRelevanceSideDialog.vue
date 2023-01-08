@@ -191,6 +191,9 @@ export default {
     },
 
     save() {
+      if (!this.selectCounts) {
+        return;
+      }
       this.$emit("save", this.checked);
     },
 
