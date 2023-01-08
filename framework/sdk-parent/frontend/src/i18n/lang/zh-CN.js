@@ -885,6 +885,8 @@ const message = {
     log_desc: '项目全部操作过程',
     code_segment_desc: '自定义代码片段',
     test_case_custom_id: '测试用例自定义ID',
+    re_review: '重新提审',
+    re_review_info: '评审中的用例发生变更，用例状态自动切换为重新提审',
     test_case_custom_id_info: '用例ID默认为系统自增ID',
     scenario_custom_id: '场景自定义ID',
     scenario_custom_id_info: '场景用例ID默认为系统自增ID',

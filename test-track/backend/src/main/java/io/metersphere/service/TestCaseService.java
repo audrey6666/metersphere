@@ -412,7 +412,28 @@ public class TestCaseService {
         testCase.setLatest(null);
 
         testCaseMapper.updateByPrimaryKeySelective(testCase);
+
+        reReviewTestReviewTestCase(testCase);
+
         return testCaseMapper.selectByPrimaryKey(testCase.getId());
+    }
+
+    /**
+     * 如果启用重新提审，并且前置条件或步骤发生变化，则触发重新提审
+     * @param testCase
+     */
+    private void reReviewTestReviewTestCase(EditTestCaseRequest testCase) {
+        ProjectConfig config = baseProjectApplicationService.getProjectConfig(testCase.getProjectId());
+        Boolean reReview = config.getReReview();
+        if (BooleanUtils.isTrue(reReview)) {
+            TestCaseWithBLOBs originCase = testCaseMapper.selectByPrimaryKey(testCase.getId());
+            if (!StringUtils.equals(originCase.getPrerequisite(), testCase.getPrerequisite())   // 前置条件添加发生变化
+            || !StringUtils.equals(originCase.getSteps(), testCase.getSteps())                  // 步骤发生变化
+            || !StringUtils.equals(originCase.getStepDescription(), testCase.getStepDescription())
+            || !StringUtils.equals(originCase.getExpectedResult(), testCase.getExpectedResult())) {
+                testReviewTestCaseService.reReviewByCaseId(testCase.getId());
+            }
+        }
     }
 
     /**

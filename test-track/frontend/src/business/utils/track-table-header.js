@@ -147,6 +147,9 @@ const TRACK_HEADER = {
     {id: 'createTime', key: '6', label: 'commons.create_time'},
     {id: 'endTime', key: '7', label: 'test_track.review.end_time'},
     {id: 'tags', key: '8', label: 'commons.tag'},
+    // {id: 'testRate', key: '9', label: 'review.review_rate'},
+    {id: 'caseCount', key: 'a', label: 'api_test.definition.api_case_number'},
+    {id: 'passRate', key: 'b', label: 'commons.pass_rate'},
   ],
   //用例评审-功能用例
   TEST_CASE_REVIEW_FUNCTION_TEST_CASE: [

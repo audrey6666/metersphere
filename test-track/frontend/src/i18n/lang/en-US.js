@@ -67,6 +67,12 @@ const message = {
   },
   table: {
     all_case_content: "All case"
+  },
+  review: {
+    result_distribution: "Result Distribution",
+    review_pass_rule: 'Review Pass Criteria',
+    review_pass_rule_all: 'All Pass',
+    review_pass_rule_single: 'Single Pass',
   }
 }
 export default {

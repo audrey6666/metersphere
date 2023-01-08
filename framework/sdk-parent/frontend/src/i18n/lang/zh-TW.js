@@ -884,6 +884,8 @@ const message = {
     test_case_custom_id_info: '用例ID默認為系統自增ID',
     scenario_custom_id: '場景自定義ID',
     scenario_custom_id_info: '場景用例ID默認為系統自增ID',
+    re_review: '重新提審',
+    re_review_info: '評審中的用例發生變更，用例狀態自動切換為重新提審',
     version: {
       name: '版本',
       read: '查看',

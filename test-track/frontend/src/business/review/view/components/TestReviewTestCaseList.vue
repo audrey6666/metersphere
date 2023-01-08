@@ -282,11 +282,10 @@ export default {
         }
       ],
       typeArr: [
-        {id: 'status', name: this.$t('test_track.review_view.execute_result')},
+        {id: 'reviewStatus', name: this.$t('test_track.review_view.execute_result')},
       ],
       valueArr: {
-        status: [
-          {name: this.$t('test_track.review.prepare'), id: 'Prepare'},
+        reviewStatus: [
           {name: this.$t('test_track.review.again'), id: 'Again'},
           {name: this.$t('test_track.review.pass'), id: 'Pass'},
           {name: this.$t('test_track.review.un_pass'), id: 'UnPass'},
@@ -523,6 +522,9 @@ export default {
     batchEdit(form) {
       let reviewId = this.reviewId;
       let param = buildBatchParam(this, this.$refs.table.selectIds);
+      if (form.type === 'reviewStatus') {
+        param.status = form.value;
+      }
       param.ids = Array.from(this.$refs.table.selectRows).map(row => row.caseId);
       param[form.type] = form.value;
       param.reviewId = reviewId;
@@ -546,7 +548,7 @@ export default {
             this.$post('/test/case/review/edit/status/' + reviewId);
             this.$success(this.$t('commons.save_success'));
             this.$emit('refresh');
-          })
+          });
       }
     },
     openTestReport() {

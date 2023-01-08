@@ -67,6 +67,12 @@ const message = {
   },
   table: {
     all_case_content: "全部用例"
+  },
+  review: {
+    result_distribution: "結果分布",
+    review_pass_rule: '評審通過標準',
+    review_pass_rule_all: '全部通過',
+    review_pass_rule_single: '單人通過',
   }
 }
 

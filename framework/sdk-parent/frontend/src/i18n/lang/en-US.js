@@ -886,6 +886,8 @@ const message = {
       edit_version: 'Edit version',
       version_closed: 'Closed',
       version_open: 'Open',
+      re_review: 'ReReview',
+      re_review_info: 'Use case under review changes, use case state automatically switches to reReview ',
       publish_time: 'Publish time',
       start_time: 'Start time',
       end_time: 'End time',

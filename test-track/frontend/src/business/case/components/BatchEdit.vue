@@ -71,12 +71,18 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="form.type=== 'status' && this.showDescription" :label="$t('commons.description')" :label-width="formLabelWidth" prop="description">
+        <el-form-item v-if="form.type === 'status' && this.showDescription"
+                      :label="$t('commons.description')" :label-width="formLabelWidth" prop="description">
           <el-input v-model="form.description"
                     type="textarea"
                     :autosize="{ minRows: 2, maxRows: 4}"
                     :rows="2"
                     :placeholder="$t('commons.input_un_pass_reason')"/>
+        </el-form-item>
+
+        <el-form-item v-if="form.type === 'reviewStatus'"
+                      :label="$t('原因')" :label-width="formLabelWidth" prop="description">
+          <comment-edit-input :placeholder="'请输入原因'" :data="form" ref="commentEditInput"/>
         </el-form-item>
 
       </el-form>
@@ -99,10 +105,12 @@ import MsInputTag from "metersphere-frontend/src/components/MsInputTag";
 import {getOwnerProjects} from "@/business/utils/sdk-utils";
 import {getApiScenarioEnvByProjectId} from "@/api/remote/api/api-automation";
 import {getCustomField} from "@/api/custom-field";
+import CommentEditInput from "@/business/review/view/components/commnet/CommentEditInput";
 
 export default {
   name: "BatchEdit",
   components: {
+    CommentEditInput,
     CustomFiledComponent,
     EnvPopover,
     MsDialogFooter,
@@ -183,6 +191,10 @@ export default {
   },
   methods: {
     submit(form) {
+      if (!this.validateReviewStatus()) {
+        return;
+      }
+
       this.$refs[form].validate(async (valid) => {
         if (valid) {
           this.form.projectEnvMap = this.projectEnvMap;
@@ -204,6 +216,13 @@ export default {
           return false;
         }
       });
+    },
+    validateReviewStatus() {
+      if (this.form.type === 'reviewStatus' && this.form.value === 'UnPass' && !this.form.description) {
+        this.$refs.commentEditInput.inputLight();
+        return false;
+      }
+      return true;
     },
     setProjectEnvMap(projectEnvMap) {
       this.projectEnvMap = projectEnvMap;
@@ -313,6 +332,14 @@ export default {
         this.showDescription = true;
       } else {
         this.showDescription = false;
+      }
+
+      if (this.form.type === 'reviewStatus') {
+        if (val === 'UnPass') {
+          this.rules.description.required = true;
+        } else {
+          this.rules.description.required = false;
+        }
       }
     },
     getApiScenarioProjectId(row) {

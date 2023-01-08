@@ -342,6 +342,7 @@ export default {
     pass: "通過",
     un_pass: "未通過",
     prepare: '未評審',
+    underway: "評審中",
     again: "重新提審",
     comment: "評論",
     my_review: "我的評審",

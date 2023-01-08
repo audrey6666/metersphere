@@ -70,6 +70,14 @@
         <ms-update-time-column
           :field="item"/>
 
+         <ms-table-column
+           prop="caseCount"
+           :field="item"
+           :fields-width="fieldsWidth"
+           :label="$t('api_test.definition.api_case_number')"
+           min-width="200px">
+        </ms-table-column>
+
         <ms-table-column
           prop="endTime"
           :field="item"
@@ -77,6 +85,14 @@
           <template v-slot:default="scope">
             <span>{{ scope.row.endTime | datetimeFormat }}</span>
           </template>
+        </ms-table-column>
+
+         <ms-table-column
+           prop="passRate"
+           :field="item"
+           :fields-width="fieldsWidth"
+           :label="$t('commons.pass_rate')"
+           min-width="120px">
         </ms-table-column>
       </span>
 
@@ -234,6 +250,7 @@ export default {
             if (item.tags && item.tags.length > 0) {
               item.tags = JSON.parse(item.tags);
             }
+            item.passRate = item.passRate + '%';
           });
           for (let i = 0; i < this.tableData.length; i++) {
             let param = {id: this.tableData[i].id};

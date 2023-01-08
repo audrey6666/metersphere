@@ -1,19 +1,22 @@
 <template>
     <span>
-      <el-tag v-if="value === 'Prepare'" class="status-label prepare">
+      <el-tag v-if="value === 'Prepare'" type="info" plain class="status-label">
         {{ $t('test_track.review.prepare') }}
       </el-tag>
-       <el-tag v-else-if="value === 'Again'" class="status-label again">
-        {{ $t('test_track.review.again') }}
-      </el-tag>
-      <el-tag v-else-if="value === 'Pass'" class="status-label pass">
+      <el-tag v-else-if="value === 'Pass'" type="success" plain class="status-label">
         {{ $t('test_track.review.pass') }}
       </el-tag>
-      <el-tag v-else-if="value === 'UnPass'" class="status-label unPass">
+      <el-tag v-else-if="value === 'UnPass'" type="danger" plain class="status-label">
         {{ $t('test_track.review.un_pass') }}
       </el-tag>
-      <el-tag v-else class="status-label prepare">
-        {{value}}
+      <el-tag v-else-if="value === 'Underway'" class="status-label underway">
+        {{ $t('test_track.review.underway') }}
+      </el-tag>
+      <el-tag v-else-if="value === 'Again'" class="status-label again">
+        {{ $t('test_track.review.again') }}
+      </el-tag>
+      <el-tag v-else class="status-label" type="info" plain>
+        {{ value }}
       </el-tag>
     </span>
 </template>
@@ -43,23 +46,8 @@ export default {
   border-color: transparent;
 }
 
-.prepare {
-  background-color: rgba(31, 35, 41, 0.1);
-  color: #646A73;
-}
-
-.again {
-  background-color: rgba(116, 72, 146, 0.1);
-  color: #744892FF;
-}
-
-.pass {
-  background-color: rgba(52, 199, 36, 0.2);
-  color: #2EA121;
-}
-
-.unPass {
-  background-color: rgba(245, 74, 69, 0.2);
-  color: #D83931;
+.underway {
+  color: #783887;
+  background: rgba(120, 56, 135, 0.2);;
 }
 </style>
