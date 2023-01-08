@@ -162,6 +162,23 @@ button.el-button.el-button--default.el-button--small.el-button--danger {
   min-width: 100px;
 }
 
+.el-message--error {
+  background: linear-gradient(0deg, rgba(245, 74, 69, 0.08), rgba(245, 74, 69, 0.08)), #FFFFFF;
+  border: 1px solid #F54A45;
+  box-shadow: 0px 4px 8px rgba(31, 35, 41, 0.1);
+  border-radius: 4px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 20px;
+  height: 54px;
+  min-width: 100px;
+}
+
 .el-message__content {
   font-family: 'PingFang SC';
   font-style: normal;

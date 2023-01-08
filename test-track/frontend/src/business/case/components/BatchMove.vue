@@ -86,7 +86,7 @@ export default {
     },
     save() {
       if (!this.currentKey) {
-        this.$warning(this.$t('test_track.case.input_module'));
+        this.$warning(this.$t('test_track.case.input_module'), false);
         return;
       }
       let param = {};

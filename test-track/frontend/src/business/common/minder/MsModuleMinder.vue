@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-loading="loading" :class="[isFullScreen ? 'full-screen' : 'minder']">
-      <ms-full-screen-button :is-full-screen.sync="isFullScreen"/>
+      <ms-full-screen-button :is-full-screen.sync="isFullScreen" @toggleMinderFullScreen="toggleMinderFullScreen"/>
       <minder-editor
         v-if="isActive"
         class="minder-container"
@@ -298,6 +298,9 @@ export default {
         template: "default"
       };
       return importJson;
+    },
+    toggleMinderFullScreen(isFullScreen) {
+      this.$emit("toggleMinderFullScreen", isFullScreen)
     }
   }
 }
@@ -338,9 +341,9 @@ export default {
 .full-screen {
   position: fixed;
   top: 0px;
-  left: 0px;
+  left: 42px;
   padding: 12px;
-  width: 100%;
+  width: calc(100% - 50px);
   background: white;
   height: 100vh;
   z-index: 1999;

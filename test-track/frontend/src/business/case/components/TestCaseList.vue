@@ -1083,7 +1083,7 @@ export default {
       }
       testCaseBatchEdit(param)
         .then(() => {
-          this.$success(this.$t('commons.save_success'));
+          this.$success(this.$t('commons.save_success'), false);
           this.refresh();
         });
     },
@@ -1133,7 +1133,7 @@ export default {
       param.demandName = form.demandName;
       testCaseBatchRelateDemand(param)
         .then(() => {
-          this.$success(this.$t('commons.save_success'));
+          this.$success(this.$t('commons.save_success'), false);
           this.refresh();
         });
     },
@@ -1186,7 +1186,7 @@ export default {
       this.loading = true;
       func(param)
         .then(() => {
-          this.$success(this.$t('commons.save_success'));
+          this.$success(this.$t('commons.save_success'), false);
           this.$refs.testBatchMove.close();
           this.refresh();
         });

@@ -18,7 +18,13 @@
           <el-cascader v-model="demandValue" :show-all-levels="false" :options="demandOptions"
                        clearable filterable :filter-method="filterDemand" style="width: 100%;">
             <template slot-scope="{ data }">
-              <span class="demand-span" :title="data.label">{{ data.label }}</span>
+              <div class="story-box">
+                <div class="story-platform">{{ data.platform }}</div>
+                <div class="story-label" v-if="data.value === 'other'">
+                  {{ $t("test_track.case.other") }}
+                </div>
+                <div class="story-label" v-else>{{ data.label }}</div>
+              </div>
             </template>
           </el-cascader>
         </el-form-item>
@@ -138,11 +144,11 @@ export default {
     },
     submit() {
       if (!this.form.demandId) {
-        this.$warning(this.$t('test_track.demand.relate_is_null_warn'));
+        this.$warning(this.$t('test_track.demand.relate_is_null_warn'), false);
         return;
       }
       if (this.form.demandId === 'other' && !this.form.demandName) {
-        this.$warning(this.$t('test_track.demand.relate_name_is_null_warn'));
+        this.$warning(this.$t('test_track.demand.relate_name_is_null_warn'), false);
         return;
       }
       this.$emit('batchRelate', this.form);
@@ -206,5 +212,29 @@ export default {
   min-width: 80px;
   height: 32px;
   border-radius: 4px;
+}
+
+/* 关联需求下拉框 */
+.story-box {
+  display: flex;
+}
+
+.story-platform {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #783887;
+  padding: 1px 6px;
+  gap: 4px;
+  width: 49px;
+  height: 24px;
+  background: rgba(120, 56, 135, 0.2);
+  border-radius: 2px;
+  margin-right: 8px;
+}
+
+.story-label {
+  line-height: 22px;
+  color: #1f2329;
 }
 </style>

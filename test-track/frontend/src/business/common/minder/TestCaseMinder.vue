@@ -23,6 +23,7 @@
       :disabled="disabled"
       :get-extra-node-count="getMinderTreeExtraNodeCount()"
       @afterMount="handleAfterMount"
+      @toggleMinderFullScreen="toggleMinderFullScreen"
       @save="save"
       ref="minder"
     />
@@ -263,6 +264,9 @@ export default {
       });
 
       addIssueHotBox(this);
+    },
+    toggleMinderFullScreen(isFullScreen) {
+      this.$emit("toggleMinderFullScreen", isFullScreen)
     },
     getParam() {
       return {

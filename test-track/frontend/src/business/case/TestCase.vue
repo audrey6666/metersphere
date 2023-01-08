@@ -1,25 +1,25 @@
 <template>
   <ms-container v-if="renderComponent" v-loading="loading">
-    <div class="top-btn-group-layout" v-if="!showPublicNode && !showTrashNode" style="margin-bottom: 16px">
+    <div class="top-btn-group-layout" v-if="!showPublicNode && !showTrashNode && !editable" style="margin-bottom: 16px">
       <el-button size="small" icon="el-icon-plus" v-permission="['PROJECT_TRACK_CASE:READ+BATCH_EDIT']" @click="handleCreateCase" class="iconBtn" type="primary">
         {{$t('test_track.case.create_case')}}
       </el-button>
-      <el-dropdown @command="handleExportCommand" placement="bottom-start" style="margin-left: 12px">
-        <el-button size="small" v-permission="['PROJECT_TRACK_CASE:READ+IMPORT']">
+      <el-dropdown @command="handleImportCommand" placement="bottom-start" style="margin-left: 12px">
+        <el-button size="small" v-permission="['PROJECT_TRACK_CASE:READ+IMPORT']" class="btn-dropdown">
           {{$t('commons.import')}}
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="excel">
-            <span class="export-model">{{$t('test_track.case.export.export_to_excel')}}</span>
-            <span class="export-tips">{{$t('test_track.case.export.export_to_excel_tips')}}</span>
+            <span class="export-model">{{$t('test_track.case.import.import_by_excel')}}</span>
+            <span class="export-tips">{{$t('test_track.case.export.export_to_excel_tips1')}}</span>
           </el-dropdown-item>
           <el-dropdown-item style="margin-top: 10px" command="xmind">
-            <span class="export-model">{{$t('test_track.case.export.export_to_xmind')}}</span>
+            <span class="export-model">{{$t('test_track.case.import.import_by_xmind')}}</span>
             <span class="export-tips">{{$t('test_track.case.export.export_to_xmind_tips')}}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-dropdown @command="handleExportCommand" placement="bottom-start" style="margin-left: 12px">
+      <el-dropdown @command="handleExportCommand" placement="bottom-start" style="margin-left: 12px" class="btn-dropdown">
         <el-button size="small" v-permission="['PROJECT_TRACK_CASE:READ+EXPORT']">
           {{$t('commons.export')}}
         </el-button>
@@ -41,10 +41,9 @@
       <span class="back-content">{{showPublicNode? $t('project.case_public') : $t('commons.trash')}}</span>
     </div>
 
-
     <div style="display: flex; height: calc(100vh - 144px)" v-if="!editable" class = "test-case-aside-layouyt">
       <!-- case-aside-container  -->
-      <ms-aside-container v-show="isAsideHidden" :min-width="'0'">
+      <ms-aside-container v-show="isAsideHidden" :min-width="'0'" :enable-aside-hidden.sync="enableAsideHidden">
         <test-case-node-tree
           :type="'edit'"
           :total='total'
@@ -125,6 +124,7 @@
             :active-name="activeName"
             v-if="activeDom === 'right'"
             @refresh="minderSaveRefresh"
+            @toggleMinderFullScreen="toggleMinderFullScreen"
             ref="minder"/>
         </ms-tab-button>
 
@@ -200,12 +200,16 @@
     </ms-container>
 
     <!--  dialog  -->
+    <!-- export case -->
     <test-case-export-to-excel @exportTestCase="exportTestCase" ref="exportExcel" class="export-case-layout"/>
+    <!-- import case -->
+    <test-case-common-import-new ref="caseImport" @refreshAll="refreshAll"/>
   </ms-container>
 </template>
 
 <script>
 import TestCaseExportToExcel from "@/business/case/components/export/TestCaseExportToExcel";
+import TestCaseCommonImportNew from "@/business/case/components/import/TestCaseCommonImportNew";
 import TestCaseEdit from "./components/TestCaseEdit";
 import TestCaseList from "./components/TestCaseList";
 import SelectMenu from "../common/SelectMenu";
@@ -239,7 +243,7 @@ export default {
   components: {
     PublicTestCaseList, TestCaseTrashNodeTree, TestCasePublicNodeTree, IsChangeConfirm, TestCaseMinder, MsTabButton, TestCaseNodeTree,
     MsMainContainer, MsAsideContainer, MsContainer, TestCaseList, TestCaseEdit, SelectMenu, TestCaseEditShow, 'VersionSelect': MxVersionSelect,
-    MsMainButtonGroup, TestCaseExportToExcel
+    MsMainButtonGroup, TestCaseExportToExcel, TestCaseCommonImportNew
   },
   comments: {},
   data() {
@@ -270,7 +274,8 @@ export default {
       versionEnable: false,
       isAsideHidden: true,
       ignoreTreeNodes: false,
-      hasRefreshDefault: true
+      hasRefreshDefault: true,
+      enableAsideHidden: false
     };
   },
   created() {
@@ -404,6 +409,16 @@ export default {
           break;
         default:
           this.addTab({name: 'add'});
+          break;
+      }
+    },
+    handleImportCommand(e) {
+      switch (e) {
+        case "excel":
+          this.$refs.caseImport.open("excel");
+          break;
+        case "xmind":
+          this.$refs.caseImport.open("xmind");
           break;
       }
     },
@@ -774,6 +789,9 @@ export default {
       }
       this.$refs.nodeTree.list();
     },
+    toggleMinderFullScreen(isFullScreen) {
+      this.enableAsideHidden = isFullScreen;
+    },
     refreshPublic() {
       if (this.$refs.testCasePublicList) {
         this.$refs.testCasePublicList.initTableData([]);
@@ -1011,5 +1029,9 @@ export default {
   height: 32px;
   border-radius: 4px;
   font-size: 14px;
+}
+
+.el-dropdown-menu__item:hover {
+  background-color: rgba(31, 35, 41, 0.1)!important;
 }
 </style>

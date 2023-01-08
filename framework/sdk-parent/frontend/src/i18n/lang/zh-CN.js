@@ -157,7 +157,7 @@ const message = {
     not_filled: '未填写',
     please_select: '请选择',
     search_by_name: '根据名称搜索',
-    search_by_name_or_id: '根据 ID/名称 搜索',
+    search_by_name_or_id: '通过ID或名称搜索',
     search_by_id_name_tag_path: '根据 ID/名称/标签/路径 搜索',
     search_by_id_name_tag: '根据 ID/名称/标签 搜索',
     personal_information: '个人信息',

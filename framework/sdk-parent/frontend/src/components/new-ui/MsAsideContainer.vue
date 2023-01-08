@@ -6,7 +6,7 @@
               'min-width': minWidth + 'px',
               // 'height': calHeight,
              }">
-    <div v-if="enableAsideHidden" class="hiddenBottom" :style="{'top': hiddenBottomTop ? hiddenBottomTop : 0}" @click="asideHidden = !asideHidden">
+    <div v-if="!enableAsideHidden" class="hiddenBottom" :style="{'top': hiddenBottomTop ? hiddenBottomTop : 0}" @click="asideHidden = !asideHidden">
       <i v-if="!asideHidden" class="el-icon-d-arrow-left"/>
       <i v-if="asideHidden" class="el-icon-d-arrow-right"/>
     </div>
@@ -56,6 +56,9 @@ export default {
   watch: {
     asideHidden() {
       this.$emit('setAsideHidden', this.asideHidden);
+    },
+    enableAsideHidden() {
+      console.log(this.enableAsideHidden);
     }
   },
   computed: {
@@ -64,7 +67,7 @@ export default {
     },
     containerCalHeight() {
       return this.height ? (this.height - 30 + 'px') : (this.enableAutoHeight ? null : 'calc(100vh - 154px)')
-    },
+    }
   },
   created() {
     this.id = getUUID();
