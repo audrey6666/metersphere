@@ -1,9 +1,12 @@
 <template>
   <ms-drawer-component
+    :enableSelect="false"
     :title="$t('test_track.issue.create_issue')"
     @confirm="confirm"
+    @saveAndReset="saveAndReset"
     ref="msEditDialog"
     :enablePagination="false"
+    :enableSaveAndReset="true"
   >
     <div slot="content">
       <issue-edit-detail
@@ -68,6 +71,7 @@ export default {
   props: {
     planId: String,
     caseId: String,
+    copyCaseId: String,
     planCaseId: String,
     isMinder: Boolean,
   },
@@ -88,6 +92,9 @@ export default {
     },
     refresh(data) {
       this.$emit("refresh", data);
+    },
+    saveAndReset() {
+      this.$refs.issueEditDetail.save(true);
     },
   },
 };

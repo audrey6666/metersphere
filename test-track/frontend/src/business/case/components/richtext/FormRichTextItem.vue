@@ -5,6 +5,9 @@
     :prop="prop"
     :label-width="labelWidth"
   >
+    <div slot="label" class="required-item" v-if="slotTitleRequired">
+      {{ slotTitleRequired }}
+    </div>
     <ms-mark-down-text
       :prop="prop"
       :data="data"
@@ -21,6 +24,7 @@ export default {
   name: "FormRichTextItem",
   components: { MsMarkDownText },
   props: {
+    slotTitleRequired: String,
     data: Object,
     prop: String,
     disabled: Boolean,
@@ -66,5 +70,15 @@ export default {
 }
 :deep(.op-icon) {
   padding: 0px !important;
+}
+.required-item:after {
+  content: "*";
+  color: #f54a45;
+  margin-left: px2rem(4);
+  width: px2rem(8);
+  height: 32px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 32px;
 }
 </style>

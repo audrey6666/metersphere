@@ -45,6 +45,7 @@
             <case-issue-relate
               :plan-id="planId"
               :is-copy="isCopy"
+              :copy-case-id="copyCaseId"
               :read-only="readOnly && !isTestPlan"
               :plan-case-id="planId ? this.form.id : null"
               :case-id="caseId"

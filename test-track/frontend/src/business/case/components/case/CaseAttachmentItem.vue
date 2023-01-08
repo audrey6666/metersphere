@@ -23,24 +23,28 @@
       </div>
       <div class="options">
         <!-- 预览 -->
-        <div class="into" v-if="enablePreview" @click="handlePreview">
+        <div class="into opt-item" v-if="enablePreview" @click="handlePreview">
           <img src="/assets/figma/icon_visible_outlined.svg" alt="" />
         </div>
         <!-- 下载 -->
-        <div class="download" v-if="enableDownload" @click="handleDownload">
+        <div
+          class="download opt-item"
+          v-if="enableDownload"
+          @click="handleDownload"
+        >
           <img src="/assets/figma/icon_bottom-align_outlined.svg" alt="" />
         </div>
         <!-- 转储 -->
-        <div class="retry" v-if="enableRetry" @click="handleRetry">
+        <div class="retry opt-item" v-if="enableRetry" @click="handleRetry">
           <!-- <img src="/assets/figma/icon_refresh_outlined" alt="" /> -->
           <img src="/assets/figma/icon_into-item_outlined.svg" alt="" />
         </div>
         <!-- 取消关联 -->
-        <div class="unLink" v-if="enableUnLink" @click="handleUnLink">
+        <div class="unLink opt-item" v-if="enableUnLink" @click="handleUnLink">
           <img src="/assets/figma/icon_unlink_outlined.svg" alt="" />
         </div>
         <!-- 删除 -->
-        <div class="delete" v-if="enableDelete" @click="handleDelete">
+        <div class="delete opt-item" v-if="enableDelete" @click="handleDelete">
           <img src="/assets/figma/icon_delete-trash_outlined.svg" alt="" />
         </div>
       </div>
@@ -57,7 +61,7 @@
       >
       </el-progress>
       <el-progress
-        v-else-if="!isError && !isExpired && !isToUpload"
+        v-else-if="!isError && !isExpired && !isToUpload && !isComplete"
         :color="fileItem.progress >= 100 ? '' : uploadProgressColor"
         type="line"
         :format="clearPercentage(fileItem)"
@@ -158,7 +162,7 @@ export default {
         this.isComplete &&
         !(
           !this.fileItem.id ||
-          !this.isToRelate ||
+          this.isToRelate ||
           this.fileItem.isRelatedDeleted
         ) &&
         (fileType === "JPG" ||
@@ -176,7 +180,9 @@ export default {
       );
     },
     isComplete() {
-      return this.fileItem.proccess === 100;
+      return isNaN(this.fileItem.progress)
+        ? true
+        : parseInt(this.fileItem.progress) >= 100;
     },
     isSuccess() {
       return this.fileItem.status === "success";
@@ -211,7 +217,7 @@ export default {
         case "txt":
           src = "icon_file-text_colorful";
           break;
-        case "excel":
+        case "xlsx":
           src = "icon_file-excel_colorful";
           break;
         case "word":
@@ -232,7 +238,10 @@ export default {
         case "csv":
           src = "icon_file-CSV_colorful";
           break;
+        case "gif":
         case "png":
+        case "jpg":
+        case "jpge":
           src = "icon_file-image_colorful";
           break;
         case "sql":
@@ -241,9 +250,18 @@ export default {
 
         // 视频资源
         case "mp4":
+        case "flv":
+        case "mp3":
           src = "icon_file-vedio_colorful";
           break;
-
+        case "zip":
+        case "jar":
+        case "jtl":
+        case "gz":
+        case "tar":
+        case "jmx":
+          src = "icon_file-all-zip_colorful";
+          break;
         default:
           // 未知
           src = "icon_file-unknow_colorful";
@@ -277,11 +295,11 @@ export default {
     .icon {
       margin-top: px2rem(11.5);
       margin-left: px2rem(18.67);
-      width: px2rem(24);
+      width: px2rem(37);
       margin-right: px2rem(14.67);
       img {
         width: 100%;
-        height: 100%;
+        /* height: 100%; */
       }
     }
 
@@ -340,11 +358,16 @@ export default {
     .options {
       width: px2rem(112);
       display: flex;
-      justify-content: space-around;
+      justify-content: flex-end;
       align-items: center;
       img {
         width: 13.33px;
         height: 13.33px;
+      }
+
+      .opt-item {
+        margin-right: 20px;
+        cursor: pointer;
       }
       .download {
         img {

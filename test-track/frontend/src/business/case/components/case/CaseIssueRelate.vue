@@ -230,6 +230,7 @@ export default {
   props: {
     planId: String,
     caseId: String,
+    copyCaseId: String,
     planCaseId: String,
     readOnly: Boolean,
     isCopy: Boolean,

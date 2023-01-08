@@ -37,11 +37,20 @@
                 $t("commons.cancel")
               }}</el-button>
             </div>
+            <div
+              class="cancel"
+              v-if="enableSaveAndReset"
+              style="margin-left: 12px"
+            >
+              <el-button size="small" @click="saveAndReset">{{
+                $t("保存并新建")
+              }}</el-button>
+            </div>
             <div class="submit">
               <el-button
                 size="small"
                 v-prevent-re-click
-                :type="selectCounts > 0 ? 'primary' : 'info'"
+                :type="selectCounts > 0 || !enableSelect ? 'primary' : 'info'"
                 @click="submit"
                 @keydown.enter.native.prevent
               >
@@ -107,6 +116,10 @@ export default {
       type: String,
       default: "primary",
     },
+    enableSelect: {
+      type: Boolean,
+      default: true,
+    },
     emptyObj: {
       type: Object,
       default() {
@@ -116,6 +129,10 @@ export default {
           label: "暂无数据",
         };
       },
+    },
+    enableSaveAndReset: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -141,13 +158,16 @@ export default {
       this.visible = true;
     },
     submit() {
-      if (!this.selectCounts) {
+      if (!this.selectCounts && this.enableSelect) {
         return;
       }
       this.$emit("confirm");
     },
     clearSelect() {
       this.$emit("clearSelect");
+    },
+    saveAndReset() {
+      this.$emit("saveAndReset");
     },
   },
 };

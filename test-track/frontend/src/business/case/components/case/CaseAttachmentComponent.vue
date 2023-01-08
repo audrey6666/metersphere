@@ -99,10 +99,15 @@
         :isCopy="isCopy"
         :readOnly="readOnly"
         :is-delete="isDelete"
+        @handleRetry="handleUpload"
+        @handleUnLink="handleUnRelate"
+        @handleDelete="handleDelete"
+        @handleDump="handleDump"
       ></case-attachment-viewer>
     </div>
 
     <ms-file-metadata-list ref="metadataList" @checkRows="checkRows" />
+    <ms-file-batch-move ref="module" @setModuleId="setModuleId" />
   </div>
 </template>
 <script>
@@ -126,23 +131,30 @@ import {
   unrelatedAttachment,
   uploadIssueAttachment,
 } from "@/api/attachment";
+import MsFileBatchMove from "metersphere-frontend/src/components/environment/commons/variable/FileBatchMove";
 
 export default {
   name: "CaseAttachmentComponent",
   components: {
     CaseAttachmentViewer,
     MsFileMetadataList,
+    MsFileBatchMove,
   },
-  props: [
-    "caseId",
-    "readOnly",
-    "projectId",
-    "isCopy",
-    "copyCaseId",
-    "type",
-    "isClickAttachmentTab",
-    "isDelete",
-  ],
+  props: {
+    caseId: String,
+    readOnly: Boolean,
+    projectId: String,
+    isCopy: Boolean,
+    copyCaseId: String,
+    type: String,
+    isClickAttachmentTab: Boolean,
+    isDelete: Boolean,
+    belongType: {
+      type: String,
+      default: "testcase",
+    },
+    issueId: String,
+  },
   data() {
     return {
       tableData: [],
@@ -155,6 +167,11 @@ export default {
       dumpFile: {},
       result: {},
     };
+  },
+  computed: {
+    targetId() {
+      return this.belongType === "issue" ? this.issueId : this.caseId;
+    },
   },
   watch: {
     caseId() {
@@ -214,7 +231,7 @@ export default {
     async uploadFile(param, progressCallback) {
       let progress = 0;
       let file = param.file;
-      let data = { belongId: this.caseId, belongType: "testcase" };
+      let data = { belongId: this.targetId, belongType: this.belongType };
       let CancelToken = axios.CancelToken;
       let self = this;
 
@@ -337,8 +354,8 @@ export default {
                 // 已经关联的记录
                 this.unRelateFiles.push(file.id);
                 let data = {
-                  belongType: "testcase",
-                  belongId: this.caseId,
+                  belongType: this.belongType,
+                  belongId: this.targetId,
                   metadataRefIds: this.unRelateFiles,
                 };
                 unrelatedAttachment(data).then(() => {
@@ -372,13 +389,13 @@ export default {
       this.fileList = [];
       this.tableData = [];
       let testCaseId;
-      if (this.isCopy) {
+      if (this.isCopy && !this.belongType === "issue") {
         testCaseId = this.copyCaseId;
       } else {
-        testCaseId = id ? id : this.caseId;
+        testCaseId = id ? id : this.targetId;
       }
       if (testCaseId) {
-        let data = { belongType: "testcase", belongId: testCaseId };
+        let data = { belongType: this.belongType, belongId: testCaseId };
         this.result.loading = true;
         attachmentList(data).then((response) => {
           this.result.loading = false;
@@ -434,8 +451,8 @@ export default {
           let metadataRefIds = [];
           rows.forEach((row) => metadataRefIds.push(row.id));
           let data = {
-            belongType: "testcase",
-            belongId: this.caseId,
+            belongType: this.belongType,
+            belongId: this.targetId,
             metadataRefIds: metadataRefIds,
           };
           this.result.loading = true;
@@ -464,6 +481,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.upload-default {
+  width: 100%;
+}
 .opt-tip {
   font-family: "PingFang SC";
   font-style: normal;
@@ -471,7 +491,7 @@ export default {
   font-size: 14px;
   line-height: 22px;
   /* identical to box height, or 157% */
-
+  width: 100%;
   color: #8f959e;
 }
 .el-button--small {

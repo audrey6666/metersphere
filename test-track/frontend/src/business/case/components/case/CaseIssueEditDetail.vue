@@ -3,357 +3,129 @@
     <el-form
       :model="form"
       :rules="rules"
-      label-position="right"
+      label-position="top"
       label-width="80px"
+      :hide-required-asterisk="true"
       ref="form"
     >
-      <!-- 未开启第三方 -->
-      <div class="not-enable-third-wrap" v-if="!enableThirdPartTemplate"></div>
-      <div class="enable-third-wrap" v-else></div>
+      <!-- 标题 -->
+      <div class="title-row" v-if="!enableThirdPartTemplate">
+        <el-form-item :label="$t('commons.title')" prop="title">
+          <div slot="label" class="required-item">
+            {{ $t("commons.title") }}
+          </div>
+          <el-input
+            v-model="form.title"
+            autocomplete="off"
+            class="top-input-class"
+          >
+          </el-input>
+        </el-form-item>
+      </div>
       <!-- 自定义字段 -->
-      <div class="custom-field-wrap"></div>
-      
+      <div class="custom-field-wrap">
+        <el-form
+          :model="customFieldForm"
+          :rules="customFieldRules"
+          ref="customFieldForm"
+          class="case-form"
+        >
+          <custom-filed-form-item
+            :form="customFieldForm"
+            :default-open="richTextDefaultOpen"
+            :form-label-width="formLabelWidth"
+            :issue-template="issueTemplate"
+          />
+        </el-form>
+        <!-- 未开启第三方 -->
+        <div class="plat-form-trans-wrap split-wrap" v-if="platformTransitions">
+          <el-form-item
+            :label-width="formLabelWidth"
+            :label="$t('test_track.issue.platform_status')"
+            prop="platformStatus"
+          >
+            <el-select
+              v-model="form.platformStatus"
+              filterable
+              :placeholder="
+                $t('test_track.issue.please_choose_platform_status')
+              "
+            >
+              <el-option
+                v-for="(transition, index) in platformTransitions"
+                :key="index"
+                :label="transition.label"
+                :value="transition.value"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+        <div
+          class="not-enable-third-wrap split-wrap"
+          v-if="!enableThirdPartTemplate && hasTapdId"
+        >
+          <el-form-item
+            :label-width="formLabelWidth"
+            :label="$t('test_track.issue.tapd_current_owner')"
+            prop="tapdUsers"
+          >
+            <el-select
+              v-model="form.tapdUsers"
+              multiple
+              filterable
+              :placeholder="$t('test_track.issue.please_choose_current_owner')"
+            >
+              <el-option
+                v-for="(userInfo, index) in tapdUsers"
+                :key="index"
+                :label="userInfo.user"
+                :value="userInfo.user"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+      </div>
+      <div class="content-wrap">
+        <form-rich-text-item
+          v-if="!enableThirdPartTemplate"
+          :slotTitleRequired="$t('custom_field.issue_content')"
+          :data="form"
+          :default-open="richTextDefaultOpen"
+          prop="description"
+        />
+      </div>
+      <div class="remark-wrap">
+        <form-rich-text-item
+          v-if="!enableThirdPartTemplate"
+          :title="$t('commons.remark')"
+          :data="form"
+          :default-open="richTextDefaultOpen"
+          prop="remark"
+        />
+      </div>
+      <el-form-item :label="$t('test_track.case.attachment')"></el-form-item>
     </el-form>
 
     <!-- 附件 -->
-
-
-    <!-- origin -->
-    <el-main
-      v-loading="result.loading"
-      class="container"
-      :style="isCaseEdit ? '' : 'height: calc(100vh - 42px)'"
-    >
-      <el-scrollbar>
-        <el-form
-          :model="form"
-          :rules="rules"
-          label-position="right"
-          label-width="80px"
-          ref="form"
-        >
-          <ms-form-divider :title="$t('test_track.plan_view.base_info')" />
-          <el-form-item
-            v-if="!enableThirdPartTemplate"
-            :label="$t('commons.title')"
-            prop="title"
-          >
-            <el-row>
-              <el-col :span="22">
-                <el-input
-                  v-model="form.title"
-                  autocomplete="off"
-                  class="top-input-class"
-                ></el-input>
-              </el-col>
-              <el-col :span="2">
-                <el-tooltip
-                  :content="$t('commons.follow')"
-                  placement="bottom"
-                  effect="dark"
-                  v-if="!showFollow"
-                >
-                  <i
-                    class="el-icon-star-off"
-                    style="
-                      color: #783987;
-                      font-size: 25px;
-                      margin-left: 15px;
-                      cursor: pointer;
-                      position: relative;
-                      top: 5px;
-                    "
-                    @click="saveFollow"
-                  />
-                </el-tooltip>
-                <el-tooltip
-                  :content="$t('commons.cancel')"
-                  placement="bottom"
-                  effect="dark"
-                  v-if="showFollow"
-                >
-                  <i
-                    class="el-icon-star-on"
-                    style="
-                      color: #783987;
-                      font-size: 28px;
-                      margin-left: 15px;
-                      cursor: pointer;
-                      position: relative;
-                      top: 5px;
-                    "
-                    @click="saveFollow"
-                  />
-                </el-tooltip>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <div v-else style="text-align: right; margin-bottom: 5px">
-            <el-tooltip
-              :content="$t('commons.follow')"
-              placement="bottom"
-              effect="dark"
-              v-if="!showFollow"
-            >
-              <i
-                class="el-icon-star-off"
-                style="
-                  color: #783987;
-                  font-size: 25px;
-                  margin-left: 15px;
-                  cursor: pointer;
-                  position: relative;
-                  top: 5px;
-                "
-                @click="saveFollow"
-              />
-            </el-tooltip>
-            <el-tooltip
-              :content="$t('commons.cancel')"
-              placement="bottom"
-              effect="dark"
-              v-if="showFollow"
-            >
-              <i
-                class="el-icon-star-on"
-                style="
-                  color: #783987;
-                  font-size: 28px;
-                  margin-left: 15px;
-                  cursor: pointer;
-                  position: relative;
-                  top: 5px;
-                "
-                @click="saveFollow"
-              />
-            </el-tooltip>
-          </div>
-
-          <!-- 自定义字段 -->
-          <el-form
-            :model="customFieldForm"
-            :rules="customFieldRules"
-            ref="customFieldForm"
-            class="case-form"
-          >
-            <custom-filed-form-item
-              :form="customFieldForm"
-              :default-open="richTextDefaultOpen"
-              :form-label-width="formLabelWidth"
-              :issue-template="issueTemplate"
-            />
-          </el-form>
-
-          <el-row v-if="platformTransitions">
-            <el-col :span="8">
-              <el-form-item
-                :label-width="formLabelWidth"
-                :label="$t('test_track.issue.platform_status')"
-                prop="platformStatus"
-              >
-                <el-select
-                  v-model="form.platformStatus"
-                  filterable
-                  :placeholder="
-                    $t('test_track.issue.please_choose_platform_status')
-                  "
-                >
-                  <el-option
-                    v-for="(transition, index) in platformTransitions"
-                    :key="index"
-                    :label="transition.label"
-                    :value="transition.value"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <form-rich-text-item
-            v-if="!enableThirdPartTemplate"
-            :title="$t('custom_field.issue_content')"
-            :data="form"
-            :default-open="richTextDefaultOpen"
-            prop="description"
-          />
-
-          <el-row v-if="!enableThirdPartTemplate" class="custom-field-row">
-            <el-col :span="8" v-if="hasTapdId">
-              <el-form-item
-                :label-width="formLabelWidth"
-                :label="$t('test_track.issue.tapd_current_owner')"
-                prop="tapdUsers"
-              >
-                <el-select
-                  v-model="form.tapdUsers"
-                  multiple
-                  filterable
-                  :placeholder="
-                    $t('test_track.issue.please_choose_current_owner')
-                  "
-                >
-                  <el-option
-                    v-for="(userInfo, index) in tapdUsers"
-                    :key="index"
-                    :label="userInfo.user"
-                    :value="userInfo.user"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <ms-form-divider :title="$t('test_track.case.other_info')" />
-
-          <el-tabs
-            class="other-info-tabs"
-            v-loading="result.loading"
-            v-model="tabActiveName"
-          >
-            <el-tab-pane
-              :label="$t('test_track.review_view.relevance_case')"
-              name="relateTestCase"
-            >
-              <el-form-item v-if="!isCaseEdit" style="margin-left: -80px">
-                <test-case-issue-list
-                  :issues-id="form.id"
-                  ref="testCaseIssueList"
-                />
-              </el-form-item>
-            </el-tab-pane>
-
-            <el-tab-pane
-              :label="$t('test_track.case.attachment')"
-              name="attachment"
-            >
-              <el-row>
-                <el-col :span="22" style="margin-bottom: 10px">
-                  <div class="upload-default" @click.stop>
-                    <el-popover placement="right" trigger="hover">
-                      <div>
-                        <el-upload
-                          multiple
-                          action=""
-                          :auto-upload="true"
-                          :file-list="fileList"
-                          :show-file-list="false"
-                          :before-upload="beforeUpload"
-                          :http-request="handleUpload"
-                          :on-exceed="handleExceed"
-                          :on-success="handleSuccess"
-                          :on-error="handleError"
-                          :disabled="readOnly || type === 'copy'"
-                        >
-                          <el-button
-                            :disabled="readOnly || type === 'copy'"
-                            type="text"
-                          >
-                            {{ $t("permission.project_file.local_upload") }}
-                          </el-button>
-                        </el-upload>
-                      </div>
-                      <el-button
-                        type="text"
-                        :disabled="readOnly || type === 'copy'"
-                        @click="associationFile"
-                      >
-                        {{ $t("permission.project_file.associated_files") }}
-                      </el-button>
-                      <i class="el-icon-plus" slot="reference" />
-                    </el-popover>
-                  </div>
-                  <div class="local-upload-tips">
-                    <span slot="tip" class="el-upload__tip">
-                      {{ $t("test_track.case.upload_tip") }}
-                    </span>
-                  </div>
-                </el-col>
-              </el-row>
-              <el-row style="margin-top: 10px">
-                <el-col :span="22">
-                  <test-case-attachment
-                    :table-data="tableData"
-                    :read-only="readOnly"
-                    :is-delete="isDelete"
-                    :is-copy="type === 'copy'"
-                    @handleDelete="handleDelete"
-                    @handleCancel="handleCancel"
-                    @handleUnRelate="handleUnRelate"
-                    @handleDump="handleDump"
-                  />
-                </el-col>
-              </el-row>
-            </el-tab-pane>
-
-            <el-tab-pane
-              :label="$t('test_track.review.comment')"
-              name="comment"
-            >
-              <el-tooltip
-                class="item-tabs"
-                effect="dark"
-                :content="$t('test_track.review.comment')"
-                placement="top-start"
-                slot="label"
-              >
-                <span>
-                  {{ $t("test_track.review.comment") }}
-                  <div
-                    class="el-step__icon is-text ms-api-col ms-header"
-                    v-if="comments && comments.length > 0"
-                  >
-                    <div class="el-step__icon-inner">{{ comments.length }}</div>
-                  </div>
-                </span>
-              </el-tooltip>
-              <el-row style="margin-top: 10px" v-if="type !== 'add'">
-                <el-col :span="20" :offset="1"
-                  >{{ $t("test_track.review.comment") }}:
-                  <el-button
-                    icon="el-icon-plus"
-                    type="mini"
-                    @click="openComment"
-                  ></el-button>
-                </el-col>
-              </el-row>
-              <el-row style="margin-top: 10px">
-                <el-col :span="20" :offset="1">
-                  <review-comment-item
-                    v-for="(comment, index) in comments"
-                    :key="index"
-                    :comment="comment"
-                    @refresh="getComments"
-                    api-url="/issues"
-                  />
-                  <div v-if="comments.length === 0" style="text-align: center">
-                    <i
-                      class="el-icon-chat-line-square"
-                      style="font-size: 15px; color: #8a8b8d"
-                    >
-                      <span style="font-size: 15px; color: #8a8b8d">
-                        {{ $t("test_track.comment.no_comment") }}
-                      </span>
-                    </i>
-                  </div>
-                </el-col>
-              </el-row>
-            </el-tab-pane>
-          </el-tabs>
-
-          <issue-comment
-            :issues-id="form.id"
-            @getComments="getComments"
-            ref="issueComment"
-          />
-          <ms-file-metadata-list ref="metadataList" @checkRows="checkRows" />
-          <ms-file-batch-move ref="module" @setModuleId="setModuleId" />
-        </el-form>
-      </el-scrollbar>
-    </el-main>
+    <div class="atta-wrap">
+      <case-attachment-component
+        :caseId="caseId"
+        type="add"
+        :isCopy="type === 'copy'"
+        :copyCaseId="copyCaseId"
+        :readOnly="readOnly"
+        :projectId="projectId"
+        :isDelete="isDelete"
+        belongType="issue"
+        :issueId="issueId"
+        ref="attachmentComp"
+      ></case-attachment-component>
+    </div>
   </div>
 </template>
 
 <script>
+import CaseAttachmentComponent from "@/business/case/components/case/CaseAttachmentComponent";
 import TemplateComponentEditHeader from "@/business/plan/view/comonents/report/TemplateComponentEditHeader";
 import MsFormDivider from "metersphere-frontend/src/components/MsFormDivider";
 import FormRichTextItem from "../richtext/FormRichTextItem";
@@ -420,6 +192,7 @@ export default {
     TestCaseAttachment,
     MsFileMetadataList,
     MsFileBatchMove,
+    CaseAttachmentComponent,
   },
   data() {
     return {
@@ -527,6 +300,7 @@ export default {
       },
     },
     caseId: String,
+    copyCaseId: String,
     planId: String,
     planCaseId: String,
     isMinder: Boolean,
@@ -686,10 +460,10 @@ export default {
         } else if (this.type === "edit" && data.id != null) {
           this.getFileMetaData(data.id);
         }
-        this.getComments();
+        // this.getComments();
       });
     },
-    save() {
+    save(reset) {
       let isValidate = true;
       this.$refs["form"].validate((valid) => {
         if (!valid) {
@@ -704,7 +478,7 @@ export default {
         }
       });
       if (isValidate) {
-        this._save();
+        this._save(reset);
       }
     },
     buildPram() {
@@ -750,12 +524,16 @@ export default {
       }
       return param;
     },
-    _save() {
+    _save(reset) {
       let param = this.buildPram();
       this.parseOldFields(param);
       let option = this.getOption(param);
       saveOrUpdateIssue(option.url, option.data).then((response) => {
-        this.$emit("close");
+        if (reset) {
+          this.resetForm();
+        } else {
+          this.$emit("close");
+        }
         this.$success(this.$t("commons.save_success"));
         this.$emit("refresh", response.data);
       });
@@ -797,36 +575,6 @@ export default {
           "Content-Type": undefined,
         },
       };
-    },
-    saveFollow() {
-      if (!this.form.follows) {
-        this.form.follows = [];
-      }
-      if (this.showFollow) {
-        this.showFollow = false;
-        for (let i = 0; i < this.form.follows.length; i++) {
-          if (this.form.follows[i] === this.currentUser().id) {
-            this.form.follows.splice(i, 1);
-            break;
-          }
-        }
-        if (this.url === "issues/update") {
-          saveFollow(this.issueId, this.form.follows).then(() => {
-            this.$success(this.$t("commons.cancel_follow_success"));
-          });
-        }
-      } else {
-        this.showFollow = true;
-        if (!this.form.follows) {
-          this.form.follows = [];
-        }
-        this.form.follows.push(this.currentUser().id);
-        if (this.url === "issues/update") {
-          saveFollow(this.issueId, this.form.follows).then(() => {
-            this.$success(this.$t("commons.follow_success"));
-          });
-        }
-      }
     },
     fileValidator(file) {
       return file.size < 500 * 1024 * 1024;
@@ -1114,20 +862,6 @@ export default {
         });
       }
     },
-    openComment() {
-      if (!this.issueId) {
-        this.$warning(this.$t("test_track.issue.save_before_open_comment"));
-        return;
-      }
-      this.$refs.issueComment.open();
-    },
-    getComments() {
-      if (this.issueId) {
-        getComments(this.issueId).then((response) => {
-          this.comments = response.data;
-        });
-      }
-    },
   },
 };
 </script>
@@ -1194,5 +928,90 @@ export default {
   position: relative;
   left: 25px;
   top: 8px;
+}
+</style>
+<style scoped lang="scss">
+@import "@/business/style/index.scss";
+:deep(.el-form-item__label) {
+  padding: 0 0 0 8px !important;
+}
+
+.case-wrap {
+  margin-left: px2rem(24);
+  margin-top: px2rem(24);
+}
+.case-title-wrap {
+  display: flex;
+  .title-wrap {
+    font-weight: 500;
+    height: 22px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #1f2329;
+  }
+  margin-bottom: px2rem(8);
+}
+.side-content {
+  width: px2rem(256);
+  height: 32px;
+  :deep(.el-select) {
+    width: 100%;
+  }
+  :deep(.el-cascader) {
+    width: 100%;
+  }
+}
+
+.required-item:after {
+  content: "*";
+  color: #f54a45;
+  margin-left: px2rem(4);
+  width: px2rem(8);
+  height: 32px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 32px;
+}
+.required-item {
+  font-weight: 500;
+  font-size: 14px;
+  color: #1f2329;
+}
+
+.add-issue-box {
+  padding: 0 24px 24px 24px;
+}
+.atta-wrap {
+  width: 100%;
+}
+.custom-field-wrap {
+  display: flex;
+  flex-wrap: wrap;
+
+  :deep(.el-form-item:not(:first-child)) {
+    width: 301px;
+    margin-right: 12px;
+  }
+  :deep(.el-form-item__content > div) {
+    width: 301px;
+  }
+  // .el-form-item:not(:first-child):not(:last-child) {
+  //   margin: 0 24px; /* 设置左右间距为 24px */
+  // }
+
+  // .el-form-item:nth-child(3n + 1) {
+  //   margin-left: 0; /* 第一个元素不需要左边距 */
+  // }
+
+  // .el-form-item:nth-child(3n) {
+  //   margin-right: 0; /* 最后一个元素不需要右边距 */
+  // }
+}
+
+:deep(.opt-tip) {
+  width: 300px;
+}
+:deep(.viewer-box) {
+  width: px2rem(900);
 }
 </style>
