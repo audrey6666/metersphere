@@ -202,6 +202,26 @@ export default {
           });
       }
     },
+    async waitList() {
+      if (this.projectId) {
+        this.caseCondition.casePublic = false;
+        this.loading = true;
+        await getTestCaseNodesByCaseFilter(this.projectId, this.caseCondition)
+          .then(r => {
+            this.loading = false;
+            this.treeNodes = r.data;
+            this.treeNodes.forEach(node => {
+              node.name = node.name === '未规划用例' ? this.$t('api_test.unplanned_case') : node.name
+              buildTree(node, {path: ''});
+            });
+            this.setModuleOptions();
+            if (this.$refs.nodeTree) {
+              this.$refs.nodeTree.filter(this.condition.filterText);
+            }
+            this.setCurrentKey();
+          });
+      }
+    },
     setCurrentKey() {
       if (this.$refs.nodeTree) {
         this.$refs.nodeTree.setCurrentKey(this.currentNode);

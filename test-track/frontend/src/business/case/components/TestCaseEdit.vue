@@ -226,10 +226,15 @@
       <!-- 创建 or 编辑用例 -->
       <div class="edit-header-container">
         <div class="header-content-row">
-          <div class="back">
+          <div class="back" @click="$emit('closeTab')">
             <img src="/assets/figma/icon_arrow-left_outlined.svg" alt="" />
           </div>
-          <div class="case-name">{{ !editable ? form.name : "创建用例" }}</div>
+          <div
+            @click.stop="openNewTab"
+            :class="editable ? 'case-name' : ['case-name-hover', 'case-name']"
+          >
+            {{ !editable ? form.name : "创建用例" }}
+          </div>
           <div class="case-edit" v-if="!editable">
             <div class="case-level">
               <priority-table-item :value="form.priority" />
@@ -344,8 +349,15 @@
       <div class="edit-footer-container" v-if="editable">
         <template>
           <!-- 保存 -->
-          <div class="save-btn-row">
-            <el-button size="small" @click="handleCommand">保存</el-button>
+          <div
+            class="save-btn-row"
+            v-if="
+              this.path === '/test/case/add' || (this.isPublic && this.isXpack)
+            "
+          >
+            <el-button size="small" @click="handleCommand" :disabled="readOnly">
+              {{ $t("commons.save") }}</el-button
+            >
           </div>
           <!-- 保存并添加到公共用例库 -->
           <div
@@ -353,7 +365,9 @@
             v-if="this.isPublic && this.isXpack"
             @click="handleCommand('ADD_AND_PUBLIC')"
           >
-            <el-button size="small">保存并添加到公共用例库</el-button>
+            <el-button size="small" :disabled="readOnly">{{
+              $t("test_track.case.save_add_public")
+            }}</el-button>
           </div>
           <!-- 保存并新建 -->
           <div class="save-create-row">
@@ -365,7 +379,7 @@
                 (this.isPublic && this.isXpack)
               "
               :disabled="readOnly"
-              >保存并新建</el-button
+              >{{ $t("test_track.case.save_create_continue") }}</el-button
             >
           </div>
         </template>
@@ -687,7 +701,10 @@ export default {
   },
   beforeDestroy() {
     this.removeListener();
-    this.$EventBus.$off("handleSaveCaseWithEvent", this.handleSaveCaseWithEvent)
+    this.$EventBus.$off(
+      "handleSaveCaseWithEvent",
+      this.handleSaveCaseWithEvent
+    );
   },
   mounted() {
     this.getSelectOptions();
@@ -723,7 +740,7 @@ export default {
     }
   },
   created() {
-    this.$EventBus.$on("handleSaveCaseWithEvent", this.handleSaveCaseWithEvent)
+    this.$EventBus.$on("handleSaveCaseWithEvent", this.handleSaveCaseWithEvent);
 
     this.type = this.caseType;
     if (!this.projectList || this.projectList.length === 0) {
@@ -793,8 +810,18 @@ export default {
     });
   },
   methods: {
-    handleSaveCaseWithEvent(formData, isPublic){
-      if(isPublic != undefined){
+    openNewTab() {
+      if (this.editable || !this.form.id) {
+        return;
+      }
+      let TestCaseData = this.$router.resolve({
+        path: "/track/case/edit/" + this.form.id,
+        query: { caseId: this.form.id },
+      });
+      window.open(TestCaseData.href, "_blank");
+    },
+    handleSaveCaseWithEvent(formData, isPublic) {
+      if (isPublic != undefined) {
         this.casePublic = isPublic;
       }
       this.saveCase();
@@ -888,17 +915,15 @@ export default {
     },
     handleCommand(e) {
       if (e === "ADD_AND_CREATE") {
-        this.$refs["caseFrom"].validate((valid) => {
-          if (!valid) {
-            this.saveCase();
-          } else {
-            this.saveCase(function (t) {
-              let tab = {};
-              tab.name = "add";
-              t.$emit("addTab", tab);
-            });
-          }
-        });
+        if (!this.validateForm()) {
+          this.saveCase();
+        } else {
+          this.saveCase(function (t) {
+            let tab = {};
+            tab.name = "add";
+            t.$emit("addTab", tab);
+          });
+        }
       } else if (e === "ADD_AND_PUBLIC") {
         this.casePublic = true;
         this.saveCase();
@@ -1116,8 +1141,12 @@ export default {
       if (this.validateForm()) {
         this._saveCase(callback);
       } else {
-        this.$refs.versionHistory.loading = false;
-        this.$refs.selectPropDialog.close();
+        if (this.$refs.versionHistory) {
+          this.$refs.versionHistory.loading = false;
+        }
+        if (this.$refs.selectPropDialog) {
+          this.$refs.selectPropDialog.close();
+        }
       }
     },
     _saveCase(callback) {
@@ -1223,12 +1252,15 @@ export default {
       customFields.forEach((item) => {
         if (item.name === "用例等级") {
           param.priority = item.defaultValue;
+          this.form.priority = item.defaultValue;
         }
         if (item.name === "责任人") {
           param.maintainer = item.defaultValue;
+          this.form.maintainer = item.defaultValue;
         }
         if (item.name === "用例状态") {
           param.status = item.defaultValue;
+          this.form.status = item.defaultValue;
         }
       });
     },
@@ -1654,6 +1686,7 @@ export default {
           margin-left: px2rem(24);
           width: px2rem(20);
           height: px2rem(20);
+          cursor: pointer;
           img {
             width: 100%;
             height: 100%;
@@ -1670,6 +1703,12 @@ export default {
           color: #1f2329;
           margin-left: px2rem(8);
           margin-right: px2rem(8);
+          cursor: pointer;
+        }
+        .case-name-hover:hover {
+          cursor: pointer;
+          background: rgba(31, 35, 41, 0.1);
+          border-radius: 4px;
         }
 
         .case-edit {

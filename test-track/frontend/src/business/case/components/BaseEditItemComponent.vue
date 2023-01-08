@@ -6,13 +6,24 @@
       @mouseleave="mouseLeaveEvent"
     >
       <div class="edit" v-show="edit">
-        <el-form :rules="rules" :model="model" ref="customForm">
+        <el-form
+          :rules="rules"
+          :model="model"
+          ref="customForm"
+          v-if="!editable"
+        >
           <slot
             name="content"
             :onClick="clickContent"
             :hoverEditable="hoverEditable"
           ></slot>
         </el-form>
+        <slot
+          name="content"
+          :onClick="clickContent"
+          :hoverEditable="hoverEditable"
+          v-if="editable"
+        ></slot>
       </div>
       <div class="readonly" v-show="!edit">
         <div
@@ -107,11 +118,11 @@
             size="small"
             type="primary"
             @click.stop="preProcessor(true)"
-            >保存</el-button
+            >{{ $t("commons.save") }}</el-button
           >
         </div>
         <div class="cancel" @click.stop="postProcessor">
-          <el-button size="small">取消</el-button>
+          <el-button size="small">{{ $t("commons.cancel") }}</el-button>
         </div>
       </div>
     </div>
@@ -278,7 +289,7 @@ export default {
       }
     },
     preSave() {
-      if (!this.autoSave) {
+      if (!this.autoSave || this.editable) {
         return;
       }
       this.preProcessor();
@@ -299,6 +310,7 @@ export default {
           isValidate = true;
           if (val) {
             this.doSave(ignoreAutoSaveProp);
+            return;
           }
         });
       }

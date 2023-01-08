@@ -191,6 +191,7 @@
           :public-enable="item.isPublic"
           :case-type="type"
           @addTab="addTab"
+          @closeTab="closeTab"
           :editable="item.edit"
           ref="testCaseEdit"
         >
@@ -390,6 +391,9 @@ export default {
     handleCreateCase(){
       this.handleCommand("ADD");
     },
+    closeTab(){
+      this.handleTabClose();
+    },
     handleCommand(e) {
       switch (e) {
         case "ADD":
@@ -500,6 +504,8 @@ export default {
         this.activeName = name;
         this.currentActiveName = 'default'
         this.type = 'add';
+        //清空之前的
+        this.tabs = [];
         this.tabs.push({ edit: true, label: label, name: name, testCaseInfo: {testCaseModuleId: "", id: getUUID()}});
       }
       if (tab.name === 'edit' || tab.name === 'show') {
@@ -636,9 +642,11 @@ export default {
     closeExport() {
       this.$refs.nodeTree.closeExport();
     },
-    init(route) {
+    async init(route) {
       let path = route.path;
       if (path.indexOf("/track/case/edit") >= 0 || path.indexOf("/track/case/create") >= 0) {
+        // 解决路由跳转 模块树不显示问题
+        await this.$refs.nodeTree.waitList();
         this.testCaseReadOnly = false;
         let caseId = this.$route.query.caseId;
         if (!this.projectId) {
@@ -646,11 +654,11 @@ export default {
           return;
         }
         if (caseId) {
-          getTestCase(caseId)
-            .then(response => {
-              let testCase = response.data;
-              this.editTestCase(testCase);
-            });
+            getTestCase(caseId)
+              .then(response => {
+                let testCase = response.data;
+                this.editTestCase(testCase);
+              });
         } else {
           this.addTab({name: 'add'});
         }

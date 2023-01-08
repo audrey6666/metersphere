@@ -204,6 +204,7 @@
               :projectId="projectId"
               :isClickAttachmentTab="isClickAttachmentTab"
               :isDelete="!isTestPlan"
+              ref="attachmentComp"
             ></case-attachment-component>
           </div>
         </div>
@@ -279,6 +280,11 @@ export default {
         }
       });
       return isValidate;
+    },
+    getFileMetaData(id){
+      if(this.$refs.attachmentComp){
+        this.$refs.attachmentComp.getFileMetaData(id);
+      }
     },
   },
 };

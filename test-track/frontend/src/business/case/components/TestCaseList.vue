@@ -819,8 +819,19 @@ export default {
         .then(r => {
           let testCase = r.data;
           testCase.trashEnable = this.trashEnable;
-          this.$emit('testCaseEdit', testCase);
+          // this.$emit('testCaseEdit', testCase);
+          this.openNewTab(testCase.id); 
         });
+    },
+    openNewTab(caseId) {
+      if (!caseId) {
+        return;
+      }
+      let TestCaseData = this.$router.resolve({
+        path: "/track/case/edit/" + caseId,
+        query:{caseId},
+      });
+      window.open(TestCaseData.href, "_blank");
     },
     getCase(id) {
       this.$refs.testCasePreview.open();
