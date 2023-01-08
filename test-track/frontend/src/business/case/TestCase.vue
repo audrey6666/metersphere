@@ -41,7 +41,7 @@
       <span class="back-content">{{showPublicNode? $t('project.case_public') : $t('commons.trash')}}</span>
     </div>
 
-    <div style="display: flex; height: calc(100vh - 144px)" v-if="!editable" class = "test-case-aside-layouyt">
+    <div style="display: flex; height: calc(100vh - 130px)" v-if="!editable" class = "test-case-aside-layouyt">
       <!-- case-aside-container  -->
       <ms-aside-container v-show="isAsideHidden" :min-width="'0'" :enable-aside-hidden.sync="enableAsideHidden">
         <test-case-node-tree

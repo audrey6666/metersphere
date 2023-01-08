@@ -35,7 +35,8 @@ export default {
 }
 
 .ms-container {
-  margin: 16px 24px 24px 24px;
+  padding: 16px 24px 24px 24px;
   display: block;
+  background-color: #F5F6F7
 }
 </style>
