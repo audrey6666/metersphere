@@ -100,7 +100,7 @@
         :readOnly="readOnly"
         :is-delete="isDelete"
         @handleRetry="handleUpload"
-        @handleUnLink="handleUnRelate"
+        @handleUnRelate="handleUnRelate"
         @handleDelete="handleDelete"
         @handleDump="handleDump"
       ></case-attachment-viewer>

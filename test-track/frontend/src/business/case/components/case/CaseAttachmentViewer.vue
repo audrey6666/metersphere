@@ -8,6 +8,8 @@
       >
         <case-attachment-item
           :fileItem="item"
+          :isDelete="isDelete"
+          :isCopy="isCopy"
           :readOnly="readOnly"
           :index="index"
           @handleDownload="handleDownload"

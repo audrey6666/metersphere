@@ -139,7 +139,7 @@ export default {
       return (
         !(
           this.readOnly ||
-          !this.isDelete ||
+          // !this.isDelete ||
           this.isCopy ||
           (!this.fileItem.id && !this.isToUpload)
         ) &&

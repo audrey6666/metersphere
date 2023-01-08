@@ -193,6 +193,7 @@
           @addTab="addTab"
           @closeTab="closeTab"
           :editable="item.edit"
+          @testCaseCopy="copyTestCase"
           ref="testCaseEdit"
         >
         </test-case-edit>
@@ -533,6 +534,7 @@ export default {
         }
         this.activeName = name;
         label = tab.testCaseInfo.name;
+        this.tabs = [];
         this.tabs.push({ edit: false, label: label, name: name, testCaseInfo: tab.testCaseInfo, isPublic: tab.isPublic});
       }
 

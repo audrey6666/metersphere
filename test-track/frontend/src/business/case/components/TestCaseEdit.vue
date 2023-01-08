@@ -239,15 +239,33 @@
             <div class="case-level">
               <priority-table-item :value="form.priority" />
             </div>
-            <div class="case-version">
-              <div class="version-icon">
-                <img
-                  src="/assets/figma/icon_moments-categories_outlined.svg"
-                  alt=""
-                />
-              </div>
-              <div class="version-title">V3.0.0{{ form.versionName }}</div>
-              <div class="version-suffix">版本</div>
+            <div class="case-version" v-xpack>
+              <!--  版本历史 -->
+              <mx-version-history
+                ref="versionHistory"
+                :version-data="versionData"
+                :current-id="currentTestCaseInfo.id"
+                :is-read="currentTestCaseInfo.trashEnable || readOnly"
+                @confirmOtherInfo="confirmOtherInfo"
+                :current-project-id="currentProjectId"
+                :has-latest="hasLatest"
+                @setLatest="setLatest"
+                @compare="compare"
+                @checkout="checkout"
+                @create="create"
+                @del="del"
+              >
+                <div class="version-box case-version" slot="versionLabel">
+                  <div class="version-icon">
+                    <img
+                      src="/assets/figma/icon_moments-categories_outlined.svg"
+                      alt=""
+                    />
+                  </div>
+                  <div class="version-title">{{ form.versionName }}</div>
+                  <div class="version-suffix">版本</div>
+                </div>
+              </mx-version-history>
             </div>
           </div>
         </div>
@@ -296,7 +314,31 @@
             <div class="icon-row">
               <img src="/assets/figma/icon_more_outlined.svg" alt="" />
             </div>
-            <div class="label-row">更多</div>
+            <div class="label-row">
+              <el-popover
+                placement="bottom-start"
+                trigger="hover"
+                popper-class="case-step-item-popover"
+                :visible-arrow="false"
+              >
+                <div class="opt-row">
+                  <div class="copy-row sub-opt-row" @click.stop="copyRow">
+                    <div class="icon">
+                      <i class="el-icon-copy-document"></i>
+                    </div>
+                    <div class="title">复制</div>
+                  </div>
+                  <div class="split"></div>
+                  <div class="delete-row sub-opt-row" @click.stop="deleteRow">
+                    <div class="icon">
+                      <i class="el-icon-delete"></i>
+                    </div>
+                    <div class="title">删除</div>
+                  </div>
+                </div>
+                <div slot="reference">更多</div>
+              </el-popover>
+            </div>
           </div>
         </div>
       </div>
@@ -385,6 +427,10 @@
         </template>
       </div>
     </div>
+    <version-create-other-info-select
+      @confirmOtherInfo="confirmOtherInfo"
+      ref="selectPropDialog"
+    ></version-create-other-info-select>
   </div>
 </template>
 
@@ -445,6 +491,7 @@ import {
   hasTestCaseOtherInfo,
   testCaseEditFollows,
   testCaseGetByVersionId,
+  testCaseDeleteToGc,
 } from "@/api/testCase";
 
 import {
@@ -491,8 +538,7 @@ export default {
     MsContainer,
     MsAsideContainer,
     MsMainContainer,
-    MxVersionHistory: () =>
-      import("metersphere-frontend/src/components/version/MxVersionHistory"),
+    MxVersionHistory: () => import("./common/CaseVersionHistory"),
   },
   data() {
     return {
@@ -1437,6 +1483,36 @@ export default {
       that.newData.readOnly = true;
       that.oldData.readOnly = true;
     },
+    compareBranch(t1, t2) {
+      testCaseGetByVersionId(t1.id, t2.refId).then((response) => {
+        let p1 = getTestCase(response.data.id);
+        let p2 = getTestCase(t2.id);
+        let that = this;
+        Promise.all([p1, p2]).then((r) => {
+          if (r[0] && r[1]) {
+            that.newData = r[0].data;
+            that.oldData = r[1].data;
+            that.newData.createTime = t1.createTime;
+            that.oldData.createTime =
+              this.$refs.versionHistory.versionOptions.filter(
+                (v) => v.id === that.oldData.versionId
+              )[0].createTime;
+            that.newData.versionName = that.versionData.filter(
+              (v) => v.id === that.newData.id
+            )[0].versionName;
+            that.oldData.versionName = that.versionData.filter(
+              (v) => v.id === that.oldData.id
+            )[0].versionName;
+            that.newData.userName = response.data.createName;
+            that.oldData.userName = that.versionData.filter(
+              (v) => v.id === that.oldData.id
+            )[0].createName;
+            this.setSpecialPropForCompare(that);
+            that.dialogVisible = true;
+          }
+        });
+      });
+    },
     compare(row) {
       testCaseGetByVersionId(row.id, this.currentTestCaseInfo.refId).then(
         (response) => {
@@ -1546,11 +1622,12 @@ export default {
     },
     del(row) {
       let that = this;
-      this.$alert(
+      this.$confirm(
         this.$t("test_track.case.delete_confirm") + " " + row.name + " ？",
         "",
         {
           confirmButtonText: this.$t("commons.confirm"),
+          customClass: "custom-confirm-delete",
           callback: (action) => {
             if (action === "confirm") {
               deleteTestCaseVersion(row.id, this.form.refId).then(() => {
@@ -1591,6 +1668,24 @@ export default {
     confirmOtherInfo(selectedOtherInfo) {
       this.selectedOtherInfo = selectedOtherInfo;
       this.saveCase();
+    },
+    copyRow() {
+      this.$emit("copyRow", this.testCase);
+      this.handleCopy(this.testCase);
+    },
+    handleCopy(testCase) {
+      getTestCase(testCase.id).then((r) => {
+        let testCase = r.data;
+        testCase.name = "copy_" + testCase.name;
+        //复制的时候只复制当前版本
+        testCase.id = getUUID();
+        testCase.refId = null;
+        testCase.versionId = null;
+        this.$emit("testCaseCopy", testCase);
+      });
+    },
+    deleteRow() {
+      this.$emit("deleteRow", this.testCase);
     },
   },
 };
@@ -1717,6 +1812,11 @@ export default {
           .case-level {
           }
 
+          .case-version:hover {
+            cursor: pointer;
+            background: rgba(31, 35, 41, 0.1);
+            border-radius: 4px;
+          }
           .case-version {
             display: flex;
             color: #646a73;

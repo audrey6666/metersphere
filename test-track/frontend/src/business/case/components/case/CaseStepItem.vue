@@ -32,6 +32,7 @@
             :rows="defaultRows"
             :placeholder="$t('commons.input_content')"
             @input="resizeTextarea(scope)"
+            @blur="onInputBlur"
           />
         </template>
       </el-table-column>
@@ -51,6 +52,7 @@
             :disabled="readOnly"
             :placeholder="$t('commons.input_content')"
             @input="resizeTextarea(scope)"
+            @blur="onInputBlur"
           />
         </template>
       </el-table-column>
@@ -58,7 +60,7 @@
         <template v-slot:default="scope">
           <el-popover
             placement="bottom-start"
-            trigger="click"
+            trigger="hover"
             popper-class="case-step-item-popover"
             :visible-arrow="false"
           >
@@ -141,6 +143,7 @@ export default {
   data() {
     return {
       defaultRows: 2,
+      TIMER: -1,
     };
   },
   created() {
@@ -162,6 +165,16 @@ export default {
     },
   },
   methods: {
+    saveCase() {
+      this.$EventBus.$emit("handleSaveCaseWithEvent", this.form);
+    },
+    onInputBlur() {
+      clearTimeout(this.TIMER);
+      this.TIMER = setTimeout(() => {
+        this.$emit("saveCase");
+        this.saveCase();
+      }, 500);
+    },
     handleAddStepStandAlone() {
       let step = {};
       let index = this.form.steps.length || 0;
@@ -193,6 +206,13 @@ export default {
         }
       });
       this.form.steps.splice(index + 1, 0, step);
+      if (data.desc && data.result) {
+        clearTimeout(this.TIMER);
+        this.TIMER = setTimeout(() => {
+          this.$emit("saveCase");
+          this.saveCase();
+        }, 500);
+      }
     },
     handleDeleteStep(index, data) {
       if (index == 0 && data.length <= 1) {
@@ -204,6 +224,11 @@ export default {
           step.num--;
         }
       });
+      clearTimeout(this.TIMER);
+      this.TIMER = setTimeout(() => {
+        this.$emit("saveCase");
+        this.saveCase();
+      }, 500);
     },
     // 同一行文本框高度保持一致
     resizeTextarea(scope) {

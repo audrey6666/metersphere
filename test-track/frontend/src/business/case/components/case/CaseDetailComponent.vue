@@ -281,8 +281,8 @@ export default {
       });
       return isValidate;
     },
-    getFileMetaData(id){
-      if(this.$refs.attachmentComp){
+    getFileMetaData(id) {
+      if (this.$refs.attachmentComp) {
         this.$refs.attachmentComp.getFileMetaData(id);
       }
     },
