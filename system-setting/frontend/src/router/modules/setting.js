@@ -68,14 +68,14 @@ const Setting = {
     },
     {
       path: 'project/quota',
-      component: () => import('../../business/workspace/quota/MxProjectQuota'),
+      component: () => import('../../business/workspace/quota/MsProjectQuota'),
       meta: {
         workspace: true, valid: true, title: 'commons.quota', permissions: ['WORKSPACE_QUOTA:READ'],
       },
     },
     {
       path: 'workspace/quota',
-      component: () => import('../../business/system/quota/MxWorkspaceQuota'),
+      component: () => import('../../business/system/quota/MsWorkspaceQuota'),
       meta: {system: true, valid: true, title: 'commons.quota', permissions: ['SYSTEM_QUOTA:READ']}
     },
     {

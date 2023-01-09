@@ -1,31 +1,33 @@
 <template>
   <div class="quota-container" v-loading="loading">
     <div class="quota-top">
-      <default-quota :title="$t('quota.default.workspace')"
+      <default-quota :title="this.$t('quota.default.project')"
                         :quota="defaultQuota" :resources="resources"
                         @confirm="saveDefaultQuota" :quota-type="quotaType"/>
     </div>
     <div class="quota-bottom">
-      <quota-list :resources="resources" :default-quota="defaultQuota" :quota-type="quotaType" ref="quotaList"/>
+      <quota-list :resources="resources"
+                  :default-quota="defaultQuota"
+                  :quota-type="quotaType"
+                  @refresh="getDefaultQuota"
+                  ref="quotaList"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import DefaultQuota from "./DefaultQuota";
-import MsTableHeader from "metersphere-frontend/src/components/MsTableHeader";
-import MsTableOperators from "metersphere-frontend/src/components/MsTableOperators";
-import MsTablePagination from "metersphere-frontend/src/components/pagination/TablePagination";
-import QuotaList from "./QuotaList";
-import {getAllValidResourcePool, getWorkspaceDefaultQuota, saveWorkspaceDefaultQuota} from "../../../api/quota";
+
+
+import QuotaList from "../../system/quota/QuotaList";
+import DefaultQuota from "../../system/quota/DefaultQuota";
+import {getCurrentWorkspaceId} from "metersphere-frontend/src/utils/token";
+import {getProjectDefaultQuota, getWorkspaceValidResourcePool, saveProjectDefaultQuota} from "../../../api/quota";
 import {QUOTA_TYPE} from "../../../common/constants";
 
 export default {
-  name: "MxWorkspaceQuota",
+  name: "MsProjectQuota",
   components: {
-    MsTableOperators,
-    MsTablePagination,
-    MsTableHeader,
     DefaultQuota,
     QuotaList,
   },
@@ -35,18 +37,13 @@ export default {
       defaultQuota: {},
       resources: [],
       QUOTA_TYPE,
-      quotaType: QUOTA_TYPE.WORKSPACE
+      quotaType: QUOTA_TYPE.PROJECT
     }
   },
   methods: {
-    getResourcePool() {
-      getAllValidResourcePool().then(res => {
-        this.resources = res.data;
-      });
-    },
     getDefaultQuota(func) {
       this.defaultQuota = {};
-      this.loading = getWorkspaceDefaultQuota()
+      this.loading = getProjectDefaultQuota(getCurrentWorkspaceId())
         .then(res => {
           this.defaultQuota = res.data;
           if (func && typeof func === 'function') {
@@ -55,7 +52,8 @@ export default {
         });
     },
     saveDefaultQuota(obj) {
-      this.loading = saveWorkspaceDefaultQuota(obj)
+      obj.id = getCurrentWorkspaceId();
+      this.loading = saveProjectDefaultQuota(obj)
         .then(() => {
           this.$success(this.$t("commons.save_success"));
           this.getDefaultQuota();
@@ -63,10 +61,13 @@ export default {
         .catch(() => {
           this.getDefaultQuota();
         });
-    },
+    }
   },
   mounted() {
-    this.getResourcePool();
+    getWorkspaceValidResourcePool(getCurrentWorkspaceId())
+      .then(res => {
+        this.resources = res.data;
+      });
     this.getDefaultQuota();
   }
 }

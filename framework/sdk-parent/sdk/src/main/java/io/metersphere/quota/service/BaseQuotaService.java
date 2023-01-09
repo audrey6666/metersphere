@@ -157,7 +157,6 @@ public class BaseQuotaService {
         if (quota == null) {
             return true;
         }
-        // todo
         Object quotaCount = null;
         if (StringUtils.equals(API, checkType)) {
             quotaCount = quota.getApi();
