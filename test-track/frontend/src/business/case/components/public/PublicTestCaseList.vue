@@ -33,6 +33,7 @@
       :row-order-func="editTestCaseOrder"
       :fields.sync="fields"
       :field-key="tableHeaderKey"
+      :enable-header-drag="true"
       @handlePageChange="initTableData"
       @order="initTableData"
       @filter="search"

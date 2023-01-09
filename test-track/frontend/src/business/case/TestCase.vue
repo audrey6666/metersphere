@@ -426,7 +426,7 @@ export default {
     handleExportCommand(e) {
       switch (e) {
         case "excel":
-          this.openExportDialog(this.$refs.testCaseList.selectCounts, true)
+          this.openExportDialog(0, true)
           break;
         case "xmind":
           this.exportTestCase(e, {exportAll: true})
@@ -651,7 +651,7 @@ export default {
     },
     exportTestCase(type, param) {
       if (this.activeDom !== 'left') {
-        this.$warning(this.$t('test_track.case.export.export_tip'));
+        this.$warning(this.$t('test_track.case.export.xmind_export_tip'), false);
         return;
       }
       this.$refs.testCaseList.exportTestCase(type, param);

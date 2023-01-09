@@ -208,6 +208,7 @@ export default {
     export: {
       export: "導出用例",
       export_tip: "請切換成用例列錶勾選用例導出！",
+      xmind_export_tip: "請切換成用例列錶導出！",
       export_field_select_tips: "選擇導出範圍",
       export_to_excel: "導出Excel表格",
       export_to_excel_tips: "支持xls文件",

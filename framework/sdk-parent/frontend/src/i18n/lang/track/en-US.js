@@ -218,6 +218,7 @@ export default {
     export: {
       export: "Export cases",
       export_tip: "Switch to Case List and check Use Case Export",
+      xmind_export_tip: "Switch to Case List and export！",
       export_field_select_tips: "please select export fields",
       export_to_excel: "Export excel",
       export_to_excel_tips: "support xls",

@@ -33,6 +33,7 @@
       :screen-height="screenHeight"
       :batch-operators="batchButtons"
       :remember-order="true"
+      :enable-header-drag="true"
       :enable-order-drag="enableOrderDrag"
       :row-order-group-id="projectId"
       :row-order-func="editTestCaseOrder"
@@ -820,7 +821,7 @@ export default {
           let testCase = r.data;
           testCase.trashEnable = this.trashEnable;
           // this.$emit('testCaseEdit', testCase);
-          this.openNewTab(testCase.id); 
+          this.openNewTab(testCase.id);
         });
     },
     openNewTab(caseId) {
@@ -1016,6 +1017,7 @@ export default {
       }
       this.$refs.testCaseImport.open();
     },
+
     exportTestCase(exportType, fieldParam) {
       if (!this.projectId) {
         this.$warning(this.$t('commons.check_project_tip'));

@@ -15,6 +15,7 @@
       :row-style='rowStyle'
       :cell-class-name="addPaddingColClass"
       :highlight-current-row="highlightCurrentRow"
+      :border="enableHeaderDrag"
       @sort-change="sort"
       @filter-change="filter"
       @select-all="handleSelectAll"
@@ -274,7 +275,13 @@ export default {
     // 自定义排序，需要传资源所属的项目id或者测试计划id，并且传排序的方法
     rowOrderGroupId: String,
     rowOrderFunc: Function,
-    refreshBySearch: Boolean // 是否通过搜索刷新的列表
+    refreshBySearch: Boolean, // 是否通过搜索刷新的列表,
+    enableHeaderDrag: {
+      type: Boolean,
+      default() {
+        return true;
+      }
+    }
   },
   created() {
   },

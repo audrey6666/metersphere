@@ -209,6 +209,7 @@ export default {
     export: {
       export: "导出用例",
       export_tip: "请切换成用例列表勾选用例导出！",
+      xmind_export_tip: "请切换成用例列表导出！",
       export_field_select_tips: "选择导出范围",
       export_to_excel: "导出Excel表格",
       export_to_excel_tips: "支持xls文件",

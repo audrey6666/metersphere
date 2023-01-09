@@ -9,8 +9,12 @@
           <span class="table-header-custom-tips">{{ $t('commons.header_custom_select_tips') }}</span>
           <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">{{$t('group.check_all')}}</el-checkbox>
           <el-checkbox-group v-model="checkedFieldsLabel" @change="handleCheckedChange">
-            <el-checkbox v-for="field in allHeaderFieldsLabel" :label="field.label" :key="field.id"
-                         :disabled="field.disable ? field.disable : false">{{ field.label }}</el-checkbox>
+            <draggable v-model="allHeaderFieldsLabel" @update="handleDrag">
+              <el-checkbox v-for="field in allHeaderFieldsLabel" :label="field.label" :key="field.id" :disabled="field.disable ? field.disable : false">
+                {{ field.label }}
+                <svg-icon icon-class="icon_drag_outlined" class-name="drag" />
+              </el-checkbox>
+            </draggable>
           </el-checkbox-group>
         </div>
       </el-scrollbar>
@@ -25,9 +29,13 @@
 <script>
 import {SYSTEM_FIELD_NAME_MAP} from "../../utils/table-constants";
 import {getAllFieldWithCustomFields, getCustomTableHeader, saveCustomTableHeader} from "../../utils/tableUtils";
+import draggable from 'vuedraggable'
 
 export default {
   name: "MsTableHeaderCustomPopover.vue",
+  components: {
+    draggable
+  },
   props: {
     // 列表头部自定义参数与MsTable一致, field: 展示字段, customFields: 自定义字段(可为空), fieldKey: 页面列表字段设置唯一标识
     fields: Array,
@@ -45,7 +53,7 @@ export default {
   },
   methods: {
     openOrClose() {
-      let allFields = getAllFieldWithCustomFields(this.fieldKey, this.customFields);
+      let allFields = getCustomTableHeader(this.fieldKey, this.customFields);
       this.allHeaderFieldsLabel = allFields;
       let checkFields = JSON.parse(JSON.stringify(this.fields));
       checkFields.forEach(it => {
@@ -69,6 +77,9 @@ export default {
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.allHeaderFieldsLabel.length;
       this.isHeaderFieldReset = true;
     },
+    handleDrag(e) {
+      this.isHeaderFieldReset = true;
+    },
     getFieldsLabel(fields) {
       return fields.map(f => f['label']);
     },
@@ -78,8 +89,7 @@ export default {
     setHeader() {
       if (this.isHeaderFieldReset) {
         let checkFields = [];
-        let allFields = getAllFieldWithCustomFields(this.fieldKey, this.customFields);
-        allFields.forEach(field => {
+        this.allHeaderFieldsLabel.forEach(field => {
           if (this.checkedFieldsLabel.indexOf(field['label']) !== -1) {
             checkFields.push(field)
           }
@@ -142,7 +152,7 @@ export default {
   height: 14px;
 }
 
-:deep(.el-checkbox) {
+.content :deep(.el-checkbox) {
   width: 238px;
   height: 32px;
   background: #FFFFFF;
@@ -158,29 +168,56 @@ export default {
   margin-right: 0 !important;
 }
 
-:deep(span.el-checkbox__input) {
+.content :deep(.el-checkbox:hover) {
+  background-color: rgba(31, 35, 41, 0.1);;
+}
+
+.content :deep(.el-checkbox:hover .svg-icon.drag) {
+  display: block;
+}
+
+.content :deep(span.el-checkbox__input) {
   width: 16px;
   height: 16px;
   margin: 8px 8px 8px 11px;
 }
 
-:deep(span.el-checkbox__inner) {
+.content :deep(.el-checkbox__input.is-checked + .el-checkbox__label) {
+  color: #1F2329;
+}
+
+.content :deep(span.el-checkbox__inner) {
   width: 16px;
   height: 16px;
 }
 
-:deep(span.el-checkbox__inner::after) {
+.content :deep(span.el-checkbox__inner::after) {
   left: 5px;
   position: absolute;
   top: 2px;
 }
 
-:deep(span.el-checkbox__label) {
+.content :deep(span.el-checkbox__label) {
   padding: 0px;
+  width: 80%;
+  position: relative;
+  top: 1px;
 }
 
 .content {
   max-height: 387px
+}
+
+.svg-icon.drag {
+  float: right;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: center;
+  fill: currentColor;
+  overflow: hidden;
+  position: relative;
+  top: 1px;
+  display: none;
 }
 </style>
 
