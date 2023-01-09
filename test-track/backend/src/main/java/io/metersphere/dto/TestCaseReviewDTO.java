@@ -1,6 +1,7 @@
 package io.metersphere.dto;
 
 import io.metersphere.base.domain.TestCaseReview;
+import io.metersphere.base.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +17,5 @@ public class TestCaseReviewDTO extends TestCaseReview {
     private Double passRate;
     private Integer caseCount;
     private List<CountMapDTO> statusCountItems;
+    private List<User> reviewers;
 }

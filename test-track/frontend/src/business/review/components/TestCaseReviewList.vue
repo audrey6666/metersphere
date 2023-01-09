@@ -245,13 +245,18 @@ export default {
         .then((response) => {
           let data = response.data;
           this.page.total = data.itemCount;
-          this.tableData = data.listObject;
-          this.tableData.forEach(item => {
+          let tableData = data.listObject;
+          tableData.forEach(item => {
             if (item.tags && item.tags.length > 0) {
               item.tags = JSON.parse(item.tags);
             }
             item.passRate = item.passRate + '%';
+            if (item.reviewers) {
+              item.reviewer = item.reviewers.map(reviewer => reviewer.name).join("、");
+              item.userIds = item.reviewers.map(reviewer => reviewer.id);
+            }
           });
+          this.tableData = tableData;
           for (let i = 0; i < this.tableData.length; i++) {
             let param = {id: this.tableData[i].id};
             getTestCaseReviewProject(param)
@@ -259,15 +264,7 @@ export default {
                 let arr = res.data;
                 let projectIds = arr.filter(d => d.id !== this.tableData[i].projectId).map(data => data.id);
                 this.$set(this.tableData[i], "projectIds", projectIds);
-              })
-            getTestCaseReviewReviewer(param)
-              .then((res) => {
-                let arr = res.data;
-                let reviewer = arr.map(data => data.name).join("、");
-                let userIds = arr.map(data => data.id);
-                this.$set(this.tableData[i], "reviewer", reviewer);
-                this.$set(this.tableData[i], "userIds", userIds);
-              })
+              });
             getTestCaseReviewFollow(param)
               .then((res) => {
                 let arr = res.data;

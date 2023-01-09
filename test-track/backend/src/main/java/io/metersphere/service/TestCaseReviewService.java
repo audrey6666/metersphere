@@ -140,16 +140,13 @@ public class TestCaseReviewService {
 
     public List<TestCaseReviewDTO> listCaseReview(QueryCaseReviewRequest request) {
         request.setOrders(ServiceUtils.getDefaultOrder(request.getOrders()));
-        /*String projectId = request.getProjectId();
-        if (StringUtils.isBlank(projectId)) {
-            return new ArrayList<>();
-        }*/
         //update   reviewerId
         if (StringUtils.equalsIgnoreCase(request.getReviewerId(), "currentUserId")) {
             request.setReviewerId(SessionUtils.getUserId());
         }
         List<TestCaseReviewDTO> list = extTestCaseReviewMapper.list(request);
         calcReviewRate(list);
+        setReviews(list);
         return list;
     }
 
@@ -236,6 +233,32 @@ public class TestCaseReviewService {
             return userMapper.selectByExample(userExample);
         }
         return new ArrayList<>();
+    }
+
+    public void setReviews(List<TestCaseReviewDTO> reviewList) {
+        List<String> reviewIds = reviewList.stream().map(TestCaseReviewDTO::getId)
+                .collect(Collectors.toList());
+
+        TestCaseReviewUsersExample testCaseReviewUsersExample = new TestCaseReviewUsersExample();
+        testCaseReviewUsersExample.createCriteria().andReviewIdIn(reviewIds);
+        List<TestCaseReviewUsers> testCaseReviewUsers = testCaseReviewUsersMapper.selectByExample(testCaseReviewUsersExample);
+
+        List<String> userIds = testCaseReviewUsers
+                .stream()
+                .map(TestCaseReviewUsers::getUserId)
+                .collect(Collectors.toList());
+
+        Map<String, User> userMap = ServiceUtils.getUserMap(userIds);
+        Map<String, List<TestCaseReviewUsers>> reviewUserMap = testCaseReviewUsers.stream()
+                .collect(Collectors.groupingBy(TestCaseReviewUsers::getReviewId));
+
+        reviewList.forEach(item -> {
+            List<TestCaseReviewUsers> reviewUsers = reviewUserMap.get(item.getId());
+            if (CollectionUtils.isNotEmpty(reviewUsers)) {
+                item.setReviewers(new ArrayList<>());
+                reviewUsers.forEach(reviewUser -> item.getReviewers().add(userMap.get(reviewUser.getUserId())));
+            }
+        });
     }
 
     public List<User> getFollowByReviewId(TestCaseReview request) {
