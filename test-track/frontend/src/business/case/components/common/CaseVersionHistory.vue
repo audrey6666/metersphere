@@ -22,7 +22,9 @@
               </div>
             </div>
             <div class="version-detail">
-              <div class="creator">{{ item.createUserName }} 创建</div>
+              <div class="creator">
+                {{ item.createUserName }} {{ $t("commons.create") }}
+              </div>
             </div>
           </div>
           <div

@@ -33,7 +33,7 @@
 <script>
 import TestCaseRelateApiList from "@/business/case/components/TestCaseRelateApiList";
 import TestCaseRelevanceBase from "@/business/case/components/common/CaseRelevanceSideDialog";
-import MsApiScenarioModule from "@/business/plan/view/comonents/api/module/ApiScenarioModule";
+import MsApiScenarioModule from "./ApiScenarioModule";
 import TestCaseRelateScenarioList from "./CaseRelateScenarioList";
 import { saveCaseRelevanceScenario } from "@/api/testCase";
 

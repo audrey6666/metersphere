@@ -4,7 +4,7 @@
       <div class="header-img-row">{{ getShortName(comment.authorName) }}</div>
       <div class="info">
         <div class="username">{{ comment.authorName }}</div>
-        <div class="fiexed">发布了评论</div>
+        <div class="fiexed">{{$t('case.commented')}}</div>
         <div class="time">{{ comment.createTime | datetimeFormat }}</div>
 
         <template v-if="!readOnly">
@@ -13,13 +13,13 @@
             <div class="icon">
               <i class="el-icon-edit"></i>
             </div>
-            <div class="label">编辑</div>
+            <div class="label">{{$t('commons.edit')}}</div>
           </div>
           <div class="remove opt-row" @click="deleteComment">
             <div class="icon">
               <i class="el-icon-delete"></i>
             </div>
-            <div class="label">删除</div>
+            <div class="label">{{$t('commons.delete')}}</div>
           </div>
         </template>
       </div>

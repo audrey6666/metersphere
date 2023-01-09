@@ -5,7 +5,7 @@
       <!-- case name -->
       <div class="case-name-row">
         <div class="case-name case-title-wrap">
-          <div class="name title-wrap">用例名称</div>
+          <div class="name title-wrap">{{ $t("case.case_name") }}</div>
           <div class="required required-item"></div>
         </div>
         <div class="content-wrap">
@@ -22,7 +22,7 @@
                 <el-form-item prop="name">
                   <el-input
                     size="small"
-                    placeholder="请输入用例名称"
+                    :placeholder="$t('case.please_enter_the_case_name')"
                     v-model="form.name"
                     @blur="textBlur(val, 'nameRef')"
                   ></el-input>
@@ -36,7 +36,7 @@
       <!-- pre condition -->
       <div class="pre-condition-row">
         <div class="condition-name case-title-wrap">
-          <div class="name title-wrap">前置条件</div>
+          <div class="name title-wrap">{{ $t("case.preconditions") }}</div>
         </div>
         <div class="content-wrap">
           <div class="opt-row">
@@ -55,7 +55,7 @@
                     :disabled="readOnly"
                     :data="form"
                     :default-open="richTextDefaultOpen"
-                    placeholder="请输入前置条件"
+                    :placeholder="$t('case.please_enter_preconditions')"
                     prop="prerequisite"
                   />
                 </div>
@@ -105,6 +105,7 @@
                     :disabled="readOnly"
                     :data="form"
                     :default-open="richTextDefaultOpen"
+                    :placeholder="$t('case.please_enter_a_text_description')"
                   />
                 </div>
               </template>
@@ -143,6 +144,7 @@
                   <form-rich-text-item
                     v-if="form.stepModel === 'TEXT'"
                     prop="expectedResult"
+                    :placeholder="$t('case.please_enter_expected_results')"
                     :disabled="readOnly"
                     :data="form"
                     :default-open="richTextDefaultOpen"
@@ -175,6 +177,7 @@
                   <form-rich-text-item
                     class="remark-item"
                     :disabled="readOnly"
+                    :placeholder="$t('case.please_enter_comments')"
                     :data="form"
                     :default-open="richTextDefaultOpen"
                     prop="remark"
@@ -189,7 +192,7 @@
       <!-- 附件 -->
       <div class="attachment-row">
         <div class="attachment-name case-title-wrap">
-          <div class="name title-wrap">附件</div>
+          <div class="name title-wrap">{{ $t("case.attachment") }}</div>
         </div>
         <div class="content-wrap">
           <!-- 添加附件 -->
@@ -408,6 +411,10 @@ export default {
             border-radius: 4px;
             box-shadow: none !important;
           }
+          :deep(.v-note-wrapper:hover) {
+            border: 1px solid #783887 !important;
+          }
+
           :deep(.v-note-show) {
             min-height: 65px;
           }

@@ -36,7 +36,10 @@
           </div>
         </template>
       </ms-table-column>
-      <ms-table-column prop="originalValue" :label="$t('变更前内容')">
+      <ms-table-column
+        prop="originalValue"
+        :label="$t('case.content_before_change')"
+      >
         <template v-slot:default="scope">
           <div v-if="scope.row.details && scope.row.details.columns">
             <div v-for="detail in scope.row.details.columns" :key="detail.id">
@@ -49,14 +52,18 @@
               </div>
               <el-tooltip :content="detail.originalValue" v-else>
                 <div class="current-value">
-                  {{ detail.originalValue ? detail.originalValue : "空值" }}
+                  {{
+                    detail.originalValue
+                      ? detail.originalValue
+                      : $t("case.empty_tip")
+                  }}
                 </div>
               </el-tooltip>
             </div>
           </div>
         </template>
       </ms-table-column>
-      <ms-table-column prop="newValue" :label="$t('变更后内容')">
+      <ms-table-column prop="newValue" :label="$t('case.content_after_change')">
         <template v-slot:default="scope">
           <div v-if="scope.row.details && scope.row.details.columns">
             <div v-for="detail in scope.row.details.columns" :key="detail.id">
@@ -69,7 +76,7 @@
               </div>
               <el-tooltip :content="detail.newValue" v-else>
                 <div class="current-value">
-                  {{ detail.newValue ? detail.newValue : "空值" }}
+                  {{ detail.newValue ? detail.newValue : $t("case.empty_tip") }}
                 </div>
               </el-tooltip>
             </div>

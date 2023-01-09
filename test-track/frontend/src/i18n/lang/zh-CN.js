@@ -1,6 +1,6 @@
 import el from "element-ui/lib/locale/lang/zh-CN"; // 加载element的内容
 import fu from "fit2cloud-ui/src/locale/lang/zh-CN"; // 加载fit2cloud的内容
-import mf from "metersphere-frontend/src/i18n/lang/zh-CN"
+import mf from "metersphere-frontend/src/i18n/lang/zh-CN";
 
 const message = {
   home: {
@@ -32,9 +32,9 @@ const message = {
         this_week: "本周",
         load_error: "加载失败",
         no_data: "暂无数据",
-        no_search_data: '没有找到相关内容',
+        no_search_data: "没有找到相关内容",
       },
-      case_finished_review_pass_tip: "已评审通过的案例/所有完成评审的案例*100%"
+      case_finished_review_pass_tip: "已评审通过的案例/所有完成评审的案例*100%",
     },
     case_review_dashboard: {
       case_count: "用例数量",
@@ -60,25 +60,72 @@ const message = {
       un_closed_count: "遗留缺陷数",
       total_count: "缺陷总数",
       case_count: "用例总数",
-    }
+    },
   },
   plan: {
     batch_delete_tip: "批量删除测试计划，是否继续?",
   },
   table: {
-    all_case_content: "全部用例"
+    all_case_content: "全部用例",
   },
   review: {
     result_distribution: "结果分布",
-    review_pass_rule: '评审通过标准',
-    review_pass_rule_all: '全部通过',
-    review_pass_rule_single: '单人通过',
-  }
-}
+    review_pass_rule: "评审通过标准",
+    review_pass_rule_all: "全部通过",
+    review_pass_rule_single: "单人通过",
+  },
+  case: {
+    use_case_detail: "用例详情",
+    associate_test_cases: "关联测试用例",
+    dependencies: "依赖关系",
+    comment: "评论",
+    change_record: "变更记录",
+    case_name: "用例名称",
+    please_enter_the_case_name: "请输入用例名称",
+    preconditions: "前置条件",
+    please_enter_preconditions: "请输入前置条件",
+    attachment: "附件",
+    none: "暂无",
+    commented: "发布了评论",
+    add_attachment: "添加附件",
+    file_size_limit: "支持任意类型文件，文件大小不超过 500MB",
+    add_steps: "添加步骤",
+    copy_this_step: "复制该步骤",
+    more: "更多",
+    follow: "关注",
+    followed: "已关注",
+    add_to_public_case: "添加到公共用例库",
+    added_to_public_case: "已添加到公共用例库",
+    make_comment: "发表评论",
+    please_enter_comment: "请输入评论",
+    associated_defect: "关联缺陷",
+    create_defect: "创建缺陷",
+    associate_existing_defects: "关联现有缺陷",
+    search_by_id: "通过ID或名称搜索",
+    relieve: "解除依赖",
+    content_before_change: "变更前内容",
+    content_after_change: "变更后内容",
+    empty_tip: "空值",
+    all_case: "全部用例",
+    all_scenes: "全部场景",
+    all_api: "全部接口",
+    associated_files:"关联文件",
+    empty_file: "暂无文件",
+    upload_file: "上传文件",
+    selected: "已选择",
+    strip: "条",
+    clear: "清空",
+    please_enter_a_text_description: "请输入文本描述",
+    please_enter_expected_results: "请输入预期结果",
+    please_enter_comments: "请输入备注",
+    disassociate: "取消关联",
+
+  },
+};
 
 export default {
   ...el,
   ...fu,
   ...mf,
-  ...message
+  ...message,
 };

@@ -102,15 +102,15 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: px2rem(690);
+    max-height: px2rem(690);
     .table-data-row {
-      height: px2rem(621);
+      /* height: px2rem(620); */
       :deep(.test-content) {
-        height: px2rem(621) !important;
-        min-height: px2rem(621) !important;
+        /* height: px2rem(620) !important; */
+        /* min-height: px2rem(621) !important; */
       }
       :deep(.el-table__body-wrapper) {
-        height: px2rem(470) !important;
+        /* height: px2rem(470) !important; */
       }
     }
     .pagenation-wrap {

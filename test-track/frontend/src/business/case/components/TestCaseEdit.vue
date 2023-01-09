@@ -263,7 +263,7 @@
                     />
                   </div>
                   <div class="version-title">{{ form.versionName }}</div>
-                  <div class="version-suffix">版本</div>
+                  <div class="version-suffix">{{ $t("commons.version") }}</div>
                 </div>
               </mx-version-history>
             </div>
@@ -278,7 +278,7 @@
             <div class="icon-row">
               <img src="/assets/figma/icon_collection_outlined.svg" alt="" />
             </div>
-            <div class="label-row">关注</div>
+            <div class="label-row">{{ $t("case.follow") }}</div>
           </div>
           <div
             class="follow-row head-opt"
@@ -288,7 +288,7 @@
             <div class="icon-row">
               <img src="/assets/figma/icon_collect_filled.svg" alt="" />
             </div>
-            <div class="label-row">已关注</div>
+            <div class="label-row">{{ $t("case.followed") }}</div>
           </div>
           <div
             class="add-public-row head-opt"
@@ -298,7 +298,7 @@
             <div class="icon-row">
               <img src="/assets/figma/icon_add-folder_outlined.svg" alt="" />
             </div>
-            <div class="label-row">添加到公共用例库</div>
+            <div class="label-row">{{ $t("case.add_to_public_case") }}</div>
           </div>
           <div
             class="add-public-row head-opt"
@@ -308,7 +308,7 @@
             <div class="icon-row">
               <img src="/assets/figma/icon_yes_outlined.svg" alt="" />
             </div>
-            <div class="label-row">已添加到公共用例库</div>
+            <div class="label-row">{{ $t("case.added_to_public_case") }}</div>
           </div>
           <div class="more-row head-opt">
             <div class="icon-row">
@@ -326,17 +326,17 @@
                     <div class="icon">
                       <i class="el-icon-copy-document"></i>
                     </div>
-                    <div class="title">复制</div>
+                    <div class="title">{{ $t("commons.copy") }}</div>
                   </div>
                   <div class="split"></div>
                   <div class="delete-row sub-opt-row" @click.stop="deleteRow">
                     <div class="icon">
                       <i class="el-icon-delete"></i>
                     </div>
-                    <div class="title">删除</div>
+                    <div class="title">{{ $t("commons.delete") }}</div>
                   </div>
                 </div>
-                <div slot="reference">更多</div>
+                <div slot="reference">{{ $t("case.more") }}</div>
               </el-popover>
             </div>
           </div>

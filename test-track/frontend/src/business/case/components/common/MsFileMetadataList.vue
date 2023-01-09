@@ -11,7 +11,7 @@
   >
     <template slot="title">
       <div style="color: #1f2329; font-size: 16px; font-weight: 500">
-        关联文件
+        {{ $t("case.associated_files") }}
       </div>
     </template>
     <div class="file-box" v-if="metadataArr.length > 0">
@@ -122,8 +122,8 @@
         <div class="options">
           <div class="options-btn">
             <div class="check-row" v-if="selectRows">
-              <div class="label">已选择 {{ selectRowsCount }} 条</div>
-              <div class="clear" @click="clearSelect">清空</div>
+              <div class="label">{{$t('case.selected')}} {{ selectRowsCount }} {{$t('case.strip')}}</div>
+              <div class="clear" @click="clearSelect">{{$t('case.clear')}}</div>
             </div>
             <div class="cancel">
               <el-button size="small" @click="visible = false">{{
@@ -257,12 +257,14 @@
             style="height: 100px; width: 100px; margin-bottom: 8px"
             src="/assets/figma/icon_none.svg"
           />
-          <div class="label" style="color: #646a73">暂无文件</div>
+          <div class="label" style="color: #646a73">
+            {{ $t("case.empty_file") }}
+          </div>
         </div>
         <div class="upload-file" style="margin-top: 16px">
-          <el-button type="primary" size="small" icon="el-icon-upload2"
-            >上传文件</el-button
-          >
+          <el-button type="primary" size="small" icon="el-icon-upload2">{{
+            $t("case.upload_file")
+          }}</el-button>
         </div>
       </div>
     </div>

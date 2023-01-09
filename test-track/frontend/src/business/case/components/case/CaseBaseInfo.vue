@@ -110,7 +110,7 @@
     <el-form ref="baseCaseFrom" :rules="rules" :model="form">
       <div class="version-row case-wrap" v-if="versionEnable">
         <div class="case-title-wrap">
-          <div class="name title-wrap">版本</div>
+          <div class="name title-wrap">{{ $t("commons.version") }}</div>
           <div class="required required-item"></div>
         </div>
         <div class="side-content">
@@ -656,7 +656,7 @@ export default {
 }
 .case-edit-wrap {
   :deep(.el-form-item__content) {
-    line-height: px2rem(32);
+    /* line-height: px2rem(32); */
   }
   .case-edit-box {
     width: px2rem(1328);

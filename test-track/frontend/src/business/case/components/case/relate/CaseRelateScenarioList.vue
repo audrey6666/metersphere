@@ -1,6 +1,6 @@
 <template>
   <div>
-    <case-side-dialog-content :tableCount="total" label="关联场景">
+    <case-side-dialog-content :tableCount="total" :label="$t('case.all_scenes')">
       <template v-slot:simpleSearch>
         <!-- 简单搜索框 -->
         <ms-new-ui-search :condition.sync="condition" @search="initTable" />

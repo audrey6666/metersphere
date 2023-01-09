@@ -46,7 +46,7 @@
 
       <ms-table-column
         prop="targetName"
-        :label="$t('用例名称')"
+        :label="$t('case.case_name')"
         sortable
         min-width="256px"
         width="256px"
@@ -134,7 +134,7 @@ export default {
       data: [],
       operators: [
         {
-          tip: this.$t("解除依赖"),
+          tip: this.$t("case.relieve"),
           isTextButton: true,
           exec: this.handleDelete,
           isDisable: this.readOnly,

@@ -72,7 +72,7 @@
                 <div class="icon">
                   <i class="el-icon-copy-document"></i>
                 </div>
-                <div class="title">复制该步骤</div>
+                <div class="title">{{ $t("case.copy_this_step") }}</div>
               </div>
               <div class="split"></div>
               <div
@@ -87,7 +87,7 @@
                 <div class="icon">
                   <i class="el-icon-delete"></i>
                 </div>
-                <div class="title">删除</div>
+                <div class="title">{{ $t("commons.delete") }}</div>
               </div>
             </div>
             <i slot="reference" class="el-icon-more"></i>
@@ -125,7 +125,9 @@
       <div class="add-icon" @click="handleAddStepStandAlone">
         <i class="el-icon-plus"></i>
       </div>
-      <div class="add-label" @click="handleAddStepStandAlone">添加步骤</div>
+      <div class="add-label" @click="handleAddStepStandAlone">
+        {{ $t("case.add_steps") }}
+      </div>
     </div>
   </el-form-item>
 </template>

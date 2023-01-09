@@ -37,7 +37,7 @@
     <div class="side-content-box">
       <div class="search-wrap">
         <div class="search-lable-row">
-          <div class="label">全部用例 (</div>
+          <div class="label">{{ $t("case.all_case") }} (</div>
           <div class="total-count">{{ page.total }})</div>
         </div>
         <div class="search-opt-row">

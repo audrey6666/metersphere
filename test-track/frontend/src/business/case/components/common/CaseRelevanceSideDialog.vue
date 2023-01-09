@@ -3,7 +3,7 @@
     <el-drawer
       :close-on-click-modal="false"
       :visible.sync="visible"
-      :size="width"
+      :size="widthCacl"
       @close="close"
       destroy-on-close
       :full-screen="isFullScreen"
@@ -45,69 +45,71 @@
         </ms-dialog-header>
       </template> -->
 
-      <div class="body-wrap">
-        <div class="aside-wrap">
-          <span v-if="isAcrossSpace" class="menu-title">{{
-            "[" + $t("project.version.checkout") + $t("commons.space") + "]"
-          }}</span>
-          <el-select
-            v-if="isAcrossSpace"
-            filterable
-            slot="prepend"
-            v-model="workspaceId"
-            @change="changeWorkspace"
-            class="ms-header-workspace"
-            size="small"
-          >
-            <el-option
-              v-for="(item, index) in workspaceList"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
+      <div class="content-box">
+        <div class="body-wrap">
+          <div class="aside-wrap">
+            <span v-if="isAcrossSpace" class="menu-title"
+              >{{ $t("commons.space") }}:</span
+            >
+            <el-select
+              v-if="isAcrossSpace"
+              filterable
+              slot="prepend"
+              v-model="workspaceId"
+              @change="changeWorkspace"
+              class="ms-header-workspace"
+              size="small"
+            >
+              <el-option
+                v-for="(item, index) in workspaceList"
+                :key="index"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+            <select-menu
+              :data="projects"
+              v-if="multipleProject"
+              width="155px"
+              :current-data="currentProject"
+              :title="$t('项目')"
+              @dataChange="changeProject"
             />
-          </el-select>
-          <select-menu
-            :data="projects"
-            v-if="multipleProject"
-            width="155px"
-            :current-data="currentProject"
-            :title="$t('test_track.switch_project')"
-            @dataChange="changeProject"
-          />
-          <slot name="aside"> </slot>
-        </div>
+            <slot name="aside"> </slot>
+          </div>
 
-        <div class="content-wrap">
-          <slot></slot>
+          <div class="content-wrap">
+            <slot></slot>
+          </div>
         </div>
-      </div>
-      <div class="footer-wrap">
-        <slot name="options">
-          <div class="options">
-            <div class="options-btn">
-              <div class="check-row" v-if="selectCounts > 0">
-                <div class="label">已选择 {{ selectCounts }} 条</div>
-                <div class="clear" @click="clearSelect">清空</div>
-              </div>
-              <div class="cancel">
-                <el-button size="small" @click="visible = false">{{
-                  $t("commons.cancel")
-                }}</el-button>
-              </div>
-              <div class="submit">
-                <el-button
-                  size="small"
-                  v-prevent-re-click
-                  :type="selectCounts > 0 ? 'primary' : 'info'"
-                  @click="save"
-                  @keydown.enter.native.prevent
-                >
-                  {{ $t("commons.confirm") }}
-                </el-button>
+        <div class="footer-wrap">
+          <slot name="options">
+            <div class="options">
+              <div class="options-btn">
+                <div class="check-row" v-if="selectCounts > 0">
+                  <div class="label">{{$t('case.selected')}} {{ selectCounts }} {{$t('case.strip')}}</div>
+                  <div class="clear" @click="clearSelect">{{$t('case.clear')}}</div>
+                </div>
+                <div class="cancel">
+                  <el-button size="small" @click="visible = false">{{
+                    $t("commons.cancel")
+                  }}</el-button>
+                </div>
+                <div class="submit">
+                  <el-button
+                    size="small"
+                    v-prevent-re-click
+                    :type="selectCounts > 0 ? 'primary' : 'info'"
+                    @click="save"
+                    @keydown.enter.native.prevent
+                  >
+                    {{ $t("commons.confirm") }}
+                  </el-button>
+                </div>
               </div>
             </div>
-          </div>
-        </slot>
+          </slot>
+        </div>
       </div>
     </el-drawer>
   </div>
@@ -115,7 +117,7 @@
 
 <script>
 import MsDialogHeader from "metersphere-frontend/src/components/MsDialogHeader";
-import SelectMenu from "@/business/common/SelectMenu";
+import SelectMenu from "./SelectMenu";
 import {
   getCurrentProjectID,
   getCurrentUserId,
@@ -179,6 +181,17 @@ export default {
     multipleProject: {
       type: Boolean,
       default: true,
+    },
+  },
+  computed: {
+    widthCacl() {
+      if (!isNaN(this.width)) {
+        //计算rem
+        let remW = (this.width / 1440) * 100;
+        let standW = (1200 / 1440) * 100;
+        return remW > standW ? remW : standW + "%";
+      }
+      return this.width;
     },
   },
   methods: {
@@ -269,8 +282,8 @@ export default {
 <style scoped>
 .menu-title {
   color: darkgrey;
-  margin-left: 10px;
   margin-right: 10px;
+  margin-bottom: 17px;
 }
 
 .ms-header-workspace {
@@ -280,9 +293,18 @@ export default {
 </style>
 <style scoped lang="scss">
 @import "@/business/style/index.scss";
+.content-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 .body-wrap {
   display: flex;
-  height: px2rem(763);
+  /* height: px2rem(763); */
+  /* min-height: px2rem(763); */
+  flex: 9;
   .aside-wrap {
     width: px2rem(268);
     border-right: 1px solid rgba(31, 35, 41, 0.15);
@@ -293,6 +315,7 @@ export default {
   }
 }
 .footer-wrap {
+  flex: 1;
   width: 100%;
   height: px2rem(80);
   background: #ffffff;

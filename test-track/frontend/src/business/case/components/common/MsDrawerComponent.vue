@@ -29,8 +29,8 @@
         <div class="options">
           <div class="options-btn">
             <div class="check-row" v-if="selectCounts > 0">
-              <div class="label">已选择 {{ selectCounts }} 条</div>
-              <div class="clear" @click="clearSelect">清空</div>
+              <div class="label">{{$t('case.selected')}} {{ selectCounts }} {{$t('case.strip')}}</div>
+              <div class="clear" @click="clearSelect">{{$t('case.clear')}}</div>
             </div>
             <div class="cancel">
               <el-button size="small" @click="visible = false">{{

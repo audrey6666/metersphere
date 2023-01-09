@@ -38,6 +38,7 @@ export default {
 </script>
 <style scoped lang="scss">
 .comment-view-box {
+  padding-bottom: 30px;
   .view-item {
     display: flex;
     flex-direction: column;

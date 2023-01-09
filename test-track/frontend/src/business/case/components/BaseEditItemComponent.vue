@@ -105,7 +105,9 @@
         >
           {{ getCustomText() }}
         </div>
-        <div class="empty" v-else @click="handleReadTextClick">暂无</div>
+        <div class="empty" v-else @click="handleReadTextClick">
+          {{ $t("case.none") }}
+        </div>
       </div>
     </div>
     <div class="footer">
@@ -113,6 +115,9 @@
         class="footer-row"
         v-if="contentObject.contentType == 'RICHTEXT' && this.selfEditable"
       >
+        <div class="cancel" @click.stop="postProcessor">
+          <el-button size="small">{{ $t("commons.cancel") }}</el-button>
+        </div>
         <div class="save">
           <el-button
             size="small"
@@ -120,9 +125,6 @@
             @click.stop="preProcessor(true)"
             >{{ $t("commons.save") }}</el-button
           >
-        </div>
-        <div class="cancel" @click.stop="postProcessor">
-          <el-button size="small">{{ $t("commons.cancel") }}</el-button>
         </div>
       </div>
     </div>
@@ -250,7 +252,7 @@ export default {
       ) {
         return this.contentObject.content.defaultValue === "" ||
           this.contentObject.content.defaultValue == null
-          ? "暂无"
+          ? this.$t("case.none")
           : this.contentObject.content.defaultValue;
       }
       return "";
@@ -445,7 +447,6 @@ export default {
     }
   }
 }
-
 .edit-container {
   width: 100%;
   .content {
@@ -462,10 +463,15 @@ export default {
     .footer-row {
       margin-top: 8px;
       display: flex;
+      justify-content: flex-end;
       .save {
-        margin-right: 12px;
+        margin-left: 12px;
+        color: #fff !important;
         el-button {
         }
+      }
+      .save:hover {
+        color: #783887 !important;
       }
 
       .cancel {

@@ -59,7 +59,7 @@
 
         <ms-table-column
           prop="name"
-          :label="$t('用例名称')"
+          :label="$t('case.case_name')"
           min-width="316px"
           width="316px"
           sortable
@@ -169,7 +169,7 @@ export default {
       },
       operators: [
         {
-          tip: this.$t("取消关联"),
+          tip: this.$t("case.disassociate"),
           isTextButton: true,
           exec: this.remove,
           isDisable: () => {

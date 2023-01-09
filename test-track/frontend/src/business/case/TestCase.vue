@@ -1023,7 +1023,7 @@ export default {
   font-weight: 400;
   font-size: 14px;
   text-align: center;
-  color:#783887;
+  /* color:#783887; */
 }
 
 .el-button--small {

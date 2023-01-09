@@ -1,6 +1,6 @@
 <template>
   <div>
-    <case-side-dialog-content :tableCount="total" label="关联接口">
+    <case-side-dialog-content :tableCount="total" :label="$t('case.all_api')">
       <template
         v-slot:simpleSearch
         v-if="

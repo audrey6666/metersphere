@@ -3,7 +3,7 @@
     <!-- 非创建状态下 展示 -->
     <div class="tab-pane-wrap" v-if="!editable">
       <el-tabs v-model="caseActiveName" @tab-click="tabClick">
-        <el-tab-pane label="用例详情" name="detail">
+        <el-tab-pane :label="$t('case.use_case_detail')" name="detail">
           <div class="content-conatiner">
             <case-detail-component
               :type="type"
@@ -21,10 +21,13 @@
             ></case-detail-component>
           </div>
           <div class="comment-common">
-            <case-comment-component :case-id="caseId"></case-comment-component>
+            <case-comment-component
+              :case-id="caseId"
+              @getComments="getComments"
+            ></case-comment-component>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="关联测试用例" name="associateTestCases">
+        <el-tab-pane :label="$t('case.associate_test_cases')" name="associateTestCases">
           <div class="content-conatiner">
             <case-test-relate
               :case-id="caseId"
@@ -33,7 +36,10 @@
             ></case-test-relate>
           </div>
           <div class="comment-common">
-            <case-comment-component :case-id="caseId"></case-comment-component>
+            <case-comment-component
+              :case-id="caseId"
+              @getComments="getComments"
+            ></case-comment-component>
           </div>
         </el-tab-pane>
         <!-- 关联缺陷 -->
@@ -53,10 +59,13 @@
             ></case-issue-relate>
           </div>
           <div class="comment-common">
-            <case-comment-component :case-id="caseId"></case-comment-component>
+            <case-comment-component
+              :case-id="caseId"
+              @getComments="getComments"
+            ></case-comment-component>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="依赖关系" name="dependencies">
+        <el-tab-pane :label="$t('case.dependencies')" name="dependencies">
           <div class="content-conatiner">
             <case-relationship-viewer
               @setCount="setRelationshipCount"
@@ -69,27 +78,37 @@
             ></case-relationship-viewer>
           </div>
           <div class="comment-common">
-            <case-comment-component :case-id="caseId"></case-comment-component>
+            <case-comment-component
+              :case-id="caseId"
+              @getComments="getComments"
+            ></case-comment-component>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="评论" name="comment">
+        <el-tab-pane :label="$t('case.comment')" name="comment">
           <div class="content-conatiner">
             <case-comment-viewer
               @getComments="getComments"
               :comments="comments"
+              ref="commentRef"
             ></case-comment-viewer>
           </div>
           <div class="comment-common">
-            <case-comment-component :case-id="caseId"></case-comment-component>
+            <case-comment-component
+              :case-id="caseId"
+              @getComments="getComments"
+            ></case-comment-component>
           </div>
         </el-tab-pane>
         <!-- 变更记录 -->
-        <el-tab-pane label="变更记录" name="changeRecord">
+        <el-tab-pane :label="$t('case.change_record')" name="changeRecord">
           <div class="content-conatiner">
             <case-change-history></case-change-history>
           </div>
           <div class="comment-common">
-            <case-comment-component :case-id="caseId"></case-comment-component>
+            <case-comment-component
+              :case-id="caseId"
+              @getComments="getComments"
+            ></case-comment-component>
           </div>
         </el-tab-pane>
       </el-tabs>

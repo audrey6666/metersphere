@@ -18,9 +18,11 @@
           prop="richText"
         />
         <div class="options">
-          <div class="cancel" @click="cancel"><div class="text">取消</div></div>
+          <div class="cancel" @click="cancel">
+            <div class="text">{{ $t("commons.cancel") }}</div>
+          </div>
           <div class="submit" @click="submit">
-            <div class="text">发表评论</div>
+            <div class="text">{{ $t("case.make_comment") }}</div>
           </div>
         </div>
       </el-form>
@@ -28,7 +30,7 @@
     <!-- 准备状态 -->
     <div class="state-ready-row" v-else>
       <div class="input-click-row" @click="toEdit">
-        <div class="label">请输入评论</div>
+        <div class="label">{{ $t("case.please_enter_comment") }}</div>
       </div>
     </div>
   </div>

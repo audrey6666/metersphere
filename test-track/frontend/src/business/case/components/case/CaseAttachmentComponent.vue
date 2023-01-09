@@ -89,10 +89,10 @@
         </div>
       </div>
     </el-popover>
-    <el-button v-popover:popover icon="el-icon-plus" size="small"
-      >添加附件</el-button
-    >
-    <div class="opt-tip">支持任意类型文件，文件大小不超过 500MB</div>
+    <el-button v-popover:popover icon="el-icon-plus" size="small">{{
+      $t("case.add_attachment")
+    }}</el-button>
+    <div class="opt-tip">{{ $t("case.file_size_limit") }}</div>
     <div class="attachment-preview">
       <case-attachment-viewer
         :tableData="tableData"

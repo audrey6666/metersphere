@@ -4,7 +4,8 @@
       <div class="menu-left-row">
         <el-dropdown placement="bottom" :disabled="readOnly">
           <div style="line-height: 32px; color: #783887; cursor: pointer">
-            <i class="el-icon-connection"></i>关联缺陷
+            <i class="el-icon-connection" style="margin-right: 4.3px"></i
+            >{{ $t("case.associated_defect") }}
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
@@ -16,7 +17,7 @@
                 size="mini"
                 @click="addIssue"
               >
-                {{ $t("创建缺陷") }}
+                {{ $t("case.create_defect") }}
               </div></el-dropdown-item
             >
             <el-dropdown-item
@@ -26,7 +27,7 @@
                 :disabled="readOnly"
                 @click="relateIssue"
               >
-                {{ $t("关联现有缺陷") }}
+                {{ $t("case.associate_existing_defects") }}
               </div></el-dropdown-item
             >
           </el-dropdown-menu>
@@ -36,7 +37,7 @@
         <ms-new-ui-search
           :condition.sync="condition"
           @search="search"
-          baseSearchTip="通过ID或名称搜索"
+          :baseSearchTip="$t('case.search_by_id')"
         />
       </div>
     </div>
@@ -364,6 +365,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "@/business/style/index.scss";
 .add-btn {
   display: inline-block;
   margin-right: 5px;
@@ -374,11 +376,11 @@ export default {
   color: #783887;
 }
 .relate-box {
-  padding: 24px 0 0 0;
+  padding: px2rem(24) 0 0 0;
   .relate-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: px2rem(16);
     .menu-left-row {
       width: 98px;
       height: 32px;
