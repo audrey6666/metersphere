@@ -958,7 +958,7 @@ export default {
         });
     },
     handleDeleteBatchToGc() {
-      let title = this.$t('test_track.case.batch_delete_confirm', [this.$refs.table.selectIds.length]);
+      let title = this.$t('test_track.case.batch_delete_confirm', [this.selectCounts]);
       this.$confirm(this.$t('test_track.case.batch_delete_tip'), title, {
           cancelButtonText: this.$t("commons.cancel"),
           confirmButtonText: this.$t("commons.delete"),
@@ -1142,12 +1142,12 @@ export default {
     handleBatchMove() {
       this.isMoveBatch = true;
       let firstSelectRow = this.$refs.table.selectRows.values().next().value;
-      this.$refs.testBatchMove.open(this.isMoveBatch, firstSelectRow.name, this.treeNodes, this.$refs.table.selectIds, this.moduleOptions);
+      this.$refs.testBatchMove.open(this.isMoveBatch, firstSelectRow.name, this.treeNodes, this.selectCounts, this.moduleOptions);
     },
     handleBatchCopy() {
       this.isMoveBatch = false;
       let firstSelectRow = this.$refs.table.selectRows.values().next().value;
-      this.$refs.testBatchMove.open(this.isMoveBatch, firstSelectRow.name, this.treeNodes, this.$refs.table.selectIds, this.moduleOptions);
+      this.$refs.testBatchMove.open(this.isMoveBatch, firstSelectRow.name, this.treeNodes, this.selectCounts, this.moduleOptions);
     },
     _handleDeleteVersion(testCase, deleteCurrentVersion) {
       // 删除指定版本

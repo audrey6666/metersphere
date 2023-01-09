@@ -1,6 +1,6 @@
 <template>
   <div v-if="dialogVisible" class="batch-move" v-loading="result.loading">
-    <el-dialog :title="this.$t(isMoveBatch ? 'test_track.case.batch_move_to' : 'test_track.case.batch_copy_to', [moveCaseTitle, selectIds.length])"
+    <el-dialog :title="this.$t(isMoveBatch ? 'test_track.case.batch_move_to' : 'test_track.case.batch_copy_to', [moveCaseTitle, selectNum])"
                :visible.sync="dialogVisible"
                :before-close="close"
                :destroy-on-close="true"
@@ -61,7 +61,8 @@ export default {
       moduleOptions: [],
       filterText: "",
       result: {},
-      isMoveBatch: false
+      isMoveBatch: false,
+      selectNum: 0
     }
   },
   props: {
@@ -76,12 +77,12 @@ export default {
     }
   },
   methods: {
-    open(isMoveBatch, caseTitle, treeNodes, selectIds, moduleOptions) {
+    open(isMoveBatch, caseTitle, treeNodes, selectNum, moduleOptions) {
       this.isMoveBatch = isMoveBatch;
       this.moveCaseTitle = caseTitle;
       this.dialogVisible = true;
       this.treeNodes = treeNodes;
-      this.selectIds = selectIds;
+      this.selectNum = selectNum;
       this.moduleOptions = moduleOptions;
     },
     save() {
