@@ -264,7 +264,7 @@ export default {
       for (let i = 0; i < this.testCases.length; i++) {
         let testCase = this.testCases[i];
         if (testCase.id === param.id) {
-          testCase.status = param.status;
+          testCase.reviewStatus = param.reviewStatus;
           return;
         }
       }
