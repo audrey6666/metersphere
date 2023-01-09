@@ -383,6 +383,7 @@ public class TestCaseService {
     public TestCaseWithBLOBs editTestCase(EditTestCaseRequest testCase) {
         checkTestCustomNum(testCase);
         testCase.setUpdateTime(System.currentTimeMillis());
+        TestCaseWithBLOBs originCase = testCaseMapper.selectByPrimaryKey(testCase.getId());
 
         // 同步缺陷与需求的关联关系
         updateThirdPartyIssuesLink(testCase);
@@ -413,20 +414,20 @@ public class TestCaseService {
 
         testCaseMapper.updateByPrimaryKeySelective(testCase);
 
-        reReviewTestReviewTestCase(testCase);
+        TestCaseWithBLOBs testCaseWithBLOBs = testCaseMapper.selectByPrimaryKey(testCase.getId());
 
-        return testCaseMapper.selectByPrimaryKey(testCase.getId());
+        reReviewTestReviewTestCase(originCase, testCaseWithBLOBs);
+
+        return testCaseWithBLOBs;
     }
 
     /**
      * 如果启用重新提审，并且前置条件或步骤发生变化，则触发重新提审
-     * @param testCase
      */
-    private void reReviewTestReviewTestCase(EditTestCaseRequest testCase) {
+    private void reReviewTestReviewTestCase(TestCaseWithBLOBs originCase, TestCaseWithBLOBs testCase) {
         ProjectConfig config = baseProjectApplicationService.getProjectConfig(testCase.getProjectId());
         Boolean reReview = config.getReReview();
-        if (BooleanUtils.isTrue(reReview)) {
-            TestCaseWithBLOBs originCase = testCaseMapper.selectByPrimaryKey(testCase.getId());
+        if (BooleanUtils.isTrue(reReview) && originCase != null) {
             if (!StringUtils.equals(originCase.getPrerequisite(), testCase.getPrerequisite())   // 前置条件添加发生变化
             || !StringUtils.equals(originCase.getSteps(), testCase.getSteps())                  // 步骤发生变化
             || !StringUtils.equals(originCase.getStepDescription(), testCase.getStepDescription())
