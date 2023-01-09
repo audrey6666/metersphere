@@ -16,6 +16,7 @@ import io.metersphere.log.vo.OperatingLogDetails;
 import io.metersphere.log.vo.system.SystemReference;
 import io.metersphere.quota.constants.QuotaConstants;
 import io.metersphere.quota.dto.QuotaResult;
+import io.metersphere.quota.service.BaseQuotaManageService;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -43,24 +44,14 @@ public class QuotaManagementService {
     private ExtQuotaMapper extQuotaMapper;
     @Resource
     private ProjectMapper projectMapper;
+    @Resource
+    private BaseQuotaManageService baseQuotaManageService;
 
     public Quota getDefaultQuota(QuotaConstants.DefaultType type) {
         Quota quota = quotaMapper.selectByPrimaryKey(type.name());
         if (quota == null) {
             quota = new Quota();
             quota.setId(type.name());
-        }
-        return quota;
-    }
-
-    public Quota getProjectDefaultQuota(String workspaceId) {
-        if (StringUtils.isBlank(workspaceId)) {
-            return new Quota();
-        }
-        Quota quota = quotaMapper.selectByPrimaryKey(QuotaConstants.prefix + workspaceId);
-        if (quota == null) {
-            quota = new Quota();
-            quota.setId(QuotaConstants.prefix + workspaceId);
         }
         return quota;
     }
@@ -75,7 +66,7 @@ public class QuotaManagementService {
                     if (project == null || StringUtils.isBlank(project.getWorkspaceId())) {
                         MSException.throwException("save project quota fail. project is null");
                     }
-                    useDefaultQuota(quota, getProjectDefaultQuota(project.getWorkspaceId()));
+                    useDefaultQuota(quota, baseQuotaManageService.getProjectDefaultQuota(project.getWorkspaceId()));
                 }
                 vumCompare(quota.getVumTotal(), quota.getVumUsed());
                 checkProjectQuota(quota);
@@ -292,7 +283,7 @@ public class QuotaManagementService {
 
     private Quota getProjectSumQuota(String workspaceId, String currentProjectId) {
         List<QuotaResult> quotaResults = listProjectQuota(workspaceId, null);
-        Quota projectDefaultQuota = this.getProjectDefaultQuota(workspaceId);
+        Quota projectDefaultQuota = baseQuotaManageService.getProjectDefaultQuota(workspaceId);
         AtomicInteger api = new AtomicInteger();
         AtomicInteger performance = new AtomicInteger();
         AtomicReference<BigDecimal> vumTotal = new AtomicReference<>(new BigDecimal("0.00"));
@@ -360,18 +351,6 @@ public class QuotaManagementService {
         Quota quota = extQuotaMapper.getWorkspaceQuota(workspaceId);
         if (quota != null && BooleanUtils.isTrue(quota.getUseDefault())) {
             return getDefaultQuota(QuotaConstants.DefaultType.workspace);
-        }
-        return quota;
-    }
-
-    public Quota getProjectQuota(String projectId) {
-        Quota quota = extQuotaMapper.getProjectQuota(projectId);
-        if (quota != null && BooleanUtils.isTrue(quota.getUseDefault())) {
-            Project project = projectMapper.selectByPrimaryKey(projectId);
-            if (project == null || StringUtils.isBlank(project.getWorkspaceId())) {
-                MSException.throwException("project is null or workspace_id of project is null");
-            }
-            return getProjectDefaultQuota(project.getWorkspaceId());
         }
         return quota;
     }

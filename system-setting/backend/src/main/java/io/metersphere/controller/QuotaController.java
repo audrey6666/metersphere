@@ -11,6 +11,7 @@ import io.metersphere.commons.utils.SessionUtils;
 import io.metersphere.log.annotation.MsAuditLog;
 import io.metersphere.quota.constants.QuotaConstants;
 import io.metersphere.quota.dto.QuotaResult;
+import io.metersphere.quota.service.BaseQuotaManageService;
 import io.metersphere.service.QuotaManagementService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,8 @@ public class QuotaController {
 
     @Resource
     private QuotaManagementService quotaManagementService;
+    @Resource
+    private BaseQuotaManageService baseQuotaManageService;
 
     @GetMapping("/default/workspace")
     public Quota getWsDefaultQuota() {
@@ -34,7 +37,7 @@ public class QuotaController {
 
     @GetMapping("/default/project/{workspaceId}")
     public Quota getProjectDefaultQuota(@PathVariable String workspaceId) {
-        return quotaManagementService.getProjectDefaultQuota(workspaceId);
+        return baseQuotaManageService.getProjectDefaultQuota(workspaceId);
     }
 
     @PostMapping("/save/default/workspace")
