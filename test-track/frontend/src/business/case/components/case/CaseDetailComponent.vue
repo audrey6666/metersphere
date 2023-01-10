@@ -392,7 +392,7 @@ export default {
             height: 22px;
             font-family: "PingFang SC";
             font-style: normal;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 14px;
             line-height: 22px;
             color: #1f2329;

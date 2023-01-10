@@ -649,9 +649,14 @@ export default {
   margin-top: 5px;
 }
 
-:deep(.ms-select-all-fixed th:first-child.el-table-column--selection) {
+.ms-select-all-fixed :deep(th:first-child.el-table-column--selection) {
   margin-top: 0px;
 }
+.ms-select-all-fixed :deep(th:first-child.el-table-column--selection > .cell) {
+  padding: 5px 9px 5px 2px;
+  width: 35px;
+}
+
 
 :deep(.ms-select-all-fixed th:nth-child(2) .table-select-icon) {
   position: absolute;

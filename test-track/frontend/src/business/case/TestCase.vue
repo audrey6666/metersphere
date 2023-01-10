@@ -1,5 +1,6 @@
 <template>
   <ms-container v-if="renderComponent" v-loading="loading">
+    <!-- operate-button  -->
     <div class="top-btn-group-layout" v-if="!showPublicNode && !showTrashNode && !editable" style="margin-bottom: 16px">
       <el-button size="small" icon="el-icon-plus" v-permission="['PROJECT_TRACK_CASE:READ+BATCH_EDIT']" @click="handleCreateCase" class="iconBtn" type="primary">
         {{$t('test_track.case.create_case')}}
@@ -36,6 +37,7 @@
       </el-dropdown>
     </div>
 
+    <!-- public, trash back header  -->
     <div v-if="showPublicNode || showTrashNode" class="back-layout">
       <i class="el-icon-back" style="float: left;position: relative;top: 15px;left: 21px;" @click="activeName = 'default'"/>
       <span class="back-content">{{showPublicNode? $t('project.case_public') : $t('commons.trash')}}</span>

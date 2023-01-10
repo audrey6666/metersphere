@@ -379,8 +379,8 @@ export default {
   color: #8f959e;
 }
 .select {
-  width: px2rem(256);
-  height: 32px;
+  width: 100%;
+  height: auto;
   line-height: 32px;
   font-weight: 400;
   font-size: 14px;

@@ -3,6 +3,7 @@
   <div class="case-main-layout">
 
     <div class="case-main-layout-left" style="float: left; display: inline-block">
+      <!-- 表头统计内容  -->
       <ms-table-count-bar :count-content="$t('table.all_case_content') + ' (' + page.total + ')'"></ms-table-count-bar>
     </div>
 
@@ -21,6 +22,7 @@
                                       :field-key="tableHeaderKey" @reload="reloadTable" />
     </div>
 
+    <!-- table -->
     <ms-table
       v-loading="loading"
       operator-width="170px"
@@ -144,8 +146,8 @@
           :label="$t('commons.tag')"
           min-width="80">
           <template v-slot:default="scope">
-            <ms-tag v-for="(itemName,index)  in scope.row.tags" :key="index" type="success" effect="plain"
-                    :show-tooltip="scope.row.tags.length===1&&itemName.length*12<=80"
+            <ms-single-tag v-for="(itemName, index)  in scope.row.tags" :key="index"
+                    :show-tooltip="scope.row.tags.length === 1 && itemName.length * 12 <= 80"
                     :content="itemName" style="margin-left: 0px; margin-right: 2px"/>
             <span/>
           </template>
@@ -204,11 +206,14 @@
 
     </ms-table>
 
+    <!-- 批量操作按钮  -->
     <ms-table-batch-operator-group v-if="selectCounts > 0" :batch-operators="batchButtons" :select-counts="selectCounts" @clear="clearTableSelect"/>
 
+    <!-- 分页组件 -->
     <home-pagination v-if="page.data.length > 0 && selectCounts == 0" :change="initTableData" :current-page.sync="page.currentPage" :page-size.sync="page.pageSize"
                      :total="page.total" layout="total, prev, pager, next, sizes, jumper" style="margin-top: 19px"/>
 
+    <!-- dialog -->
     <batch-edit ref="batchEdit" @batchEdit="batchEdit"
                 :typeArr="typeArr" :value-arr="valueArr" :dialog-title="$t('test_track.case.batch_edit_case')"/>
 
@@ -243,7 +248,7 @@ import TypeTableItem from "../../common/tableItems/planview/TypeTableItem";
 import {OPERATORS, TEST_CASE_CONFIGS} from "metersphere-frontend/src/components/search/search-components";
 import BatchEdit from "./BatchEdit";
 import {TEST_CASE_LIST} from "metersphere-frontend/src/utils/constants";
-import MsTag from "metersphere-frontend/src/components/MsTag";
+import MsSingleTag from "metersphere-frontend/src/components/new-ui/MsSingleTag";
 import {
   buildBatchParam,
   getCustomFieldBatchEditOption, getCustomFieldFilter,
@@ -303,12 +308,8 @@ import {initTestCaseConditionComponents} from "@/business/case/test-case";
 export default {
   name: "TestCaseList",
   components: {
-    TestPlanCaseStatusTableItem,
-    RelateDemand,
-    TestCaseReviewStatusTableItem,
-    MsCreateTimeColumn,
-    MsUpdateTimeColumn,
-    MsNewUiSearch,
+    TestPlanCaseStatusTableItem, RelateDemand, TestCaseReviewStatusTableItem,
+    MsCreateTimeColumn, MsUpdateTimeColumn, MsNewUiSearch,
     ListItemDeleteConfirm,
     TestCasePreview,
     BatchMove,
@@ -321,7 +322,7 @@ export default {
     MsTablePagination,
     HomePagination,
     BatchEdit,
-    MsTag,
+    MsSingleTag,
     RelationshipGraphDrawer,
     MsTableCountBar,
     ReviewStatus,
