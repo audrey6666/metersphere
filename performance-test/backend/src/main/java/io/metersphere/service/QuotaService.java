@@ -55,7 +55,6 @@ public class QuotaService {
      * @param request 压力配置
      * @param checkPerformance 是：检查创建数量配额 / 否：检查并发数和时间
      */
-    @Transactional(noRollbackFor = MSException.class, rollbackFor = Exception.class)
     public void checkLoadTestQuota(TestPlanRequest request, boolean checkPerformance) {
         String loadConfig = request.getLoadConfiguration();
         int threadNum = 0;
@@ -81,7 +80,6 @@ public class QuotaService {
      * @param projectId 性能测试所属项目ID
      * @return 本次执行预计消耗的配额
      */
-    @Transactional(noRollbackFor = MSException.class, rollbackFor = Exception.class)
     public BigDecimal checkVumUsed(TestPlanRequest request, String projectId) {
         BigDecimal toVumUsed = this.calcVum(request.getLoadConfiguration());
         if (toVumUsed.compareTo(BigDecimal.ZERO) == 0) {
@@ -120,7 +118,6 @@ public class QuotaService {
      * @param projectId 项目ID
      * @param vumUsed 预计使用数量
      */
-    @Transactional(propagation = Propagation.NESTED, rollbackFor = Exception.class)
     public void updateVumUsed(String projectId, BigDecimal vumUsed) {
         if (vumUsed == null) {
             LogUtil.info("update vum count fail. vum count is null.");
@@ -136,7 +133,6 @@ public class QuotaService {
      * @param report 性能测试报告
      * @return 预计回退数量
      */
-    @Transactional(propagation = Propagation.NESTED, rollbackFor = Exception.class)
     public BigDecimal getReduceVumUsed(LoadTestReportWithBLOBs report) {
         String reportId = report.getId();
         List<LoadTestReportResult> timeInfos = queryReportResult(reportId, ReportKeys.TimeInfo.toString());

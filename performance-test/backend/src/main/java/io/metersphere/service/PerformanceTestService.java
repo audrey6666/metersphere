@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -358,7 +359,7 @@ public class PerformanceTestService {
         }
     }
 
-    @Transactional(noRollbackFor = MSException.class)//  保存失败的信息
+    @Transactional(rollbackFor = Exception.class)
     public String run(RunTestPlanRequest request) {
         LogUtil.info("性能测试run测试");
         final LoadTestWithBLOBs loadTest = loadTestMapper.selectByPrimaryKey(request.getId());
@@ -423,6 +424,10 @@ public class PerformanceTestService {
         updateTest.setId(loadTest.getId());
         // 启动测试
         Engine engine = null;
+        PerformanceTestService proxyService = CommonBeanFactory.getBean(PerformanceTestService.class);
+        if (proxyService == null) {
+            MSException.throwException("get performance service object error!");
+        }
         try {
             // 保存测试里的配置
             testReport.setTestResourcePoolId(loadTest.getTestResourcePoolId());
@@ -451,9 +456,8 @@ public class PerformanceTestService {
             if (engine == null) {
                 MSException.throwException(String.format("Test cannot be run，test ID：%s", loadTest.getId()));
             }
-
-            updateTest.setStatus(PerformanceTestStatus.Starting.name());
-            loadTestMapper.updateByPrimaryKeySelective(updateTest);
+            // 新起事务提交更改，如果startEngine出现异常在catch块中对状态进行处理
+            proxyService.updateLoadTestStatus(updateTest);
 
             LoadTestReportDetail reportDetail = new LoadTestReportDetail();
             reportDetail.setContent(HEADERS);
@@ -481,18 +485,29 @@ public class PerformanceTestService {
             // 检查配额
             this.checkLoadQuota(testReport, engine);
             return testReport.getId();
-        } catch (MSException e) {
+        } catch (Exception e) {
             // 启动失败之后清理任务
             if (engine != null) {
                 engine.stop();
             }
-            LogUtil.error(e.getMessage(), e);
-            updateTest.setStatus(PerformanceTestStatus.Error.name());
-            updateTest.setDescription(e.getMessage());
-            loadTestMapper.updateByPrimaryKeySelective(updateTest);
-            loadTestReportMapper.deleteByPrimaryKey(testReport.getId());
+            proxyService.handleRunError(updateTest, e);
             throw e;
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateLoadTestStatus(LoadTestWithBLOBs test) {
+        test.setStatus(PerformanceTestStatus.Starting.name());
+        loadTestMapper.updateByPrimaryKeySelective(test);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleRunError(LoadTestWithBLOBs test, Exception e) {
+        LogUtil.error(e.getMessage(), e);
+        test.setStatus(PerformanceTestStatus.Error.name());
+        // 记录执行错误的信息
+        test.setDescription(e.getMessage());
+        loadTestMapper.updateByPrimaryKeySelective(test);
     }
 
     private void saveLoadTestReportFiles(LoadTestReport report) {
