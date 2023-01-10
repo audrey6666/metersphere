@@ -52,6 +52,7 @@
     <comment-edit
       :title="commentTitle"
       :tip="commentTip"
+      :is-comment-require="isCommentRequire"
       @addComment="addComment"
       ref="commentEdit"/>
 
@@ -73,6 +74,7 @@ export default {
       status: null,
       commentTitle: '',
       commentTip: '',
+      isCommentRequire: true
     };
   },
   props: {
@@ -143,8 +145,7 @@ export default {
             this.$refs.commentEdit.close();
             editTestCaseReviewStatus(this.testCase.reviewId);
 
-            // // 修改当前用例在整个用例列表的状态
-            // this.testCases[this.index].status = this.testCase.status;
+            // 修改当前用例在整个用例列表的状态
             this.$emit('refreshTestCaseStatus', r.data);
           })
           .catch(() => {
@@ -168,16 +169,19 @@ export default {
       this.$refs.commentEdit.open();
     },
     uhPassCommentOpen() {
-      this.commentTitle = '确定不通过此评论吗';
-      this.commentTip = '请输入评审意见(选填)';
+      this.isCommentRequire = true;
+      this.commentTitle = '确定不通过此评审吗';
+      this.commentTip = '请输入评审意见';
       this.addCommentOpen('UnPass');
     },
     passCommentOpen() {
-      this.commentTitle = '确定通过此评论吗';
+      this.isCommentRequire = false;
+      this.commentTitle = '确定通过此评审吗';
       this.commentTip = '请输入评审意见(选填)';
       this.addCommentOpen('Pass');
     },
     commentOpen() {
+      this.isCommentRequire = true;
       this.commentTitle = '评论';
       this.commentTip = '请输入';
       this.addCommentOpen();
