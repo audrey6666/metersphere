@@ -436,6 +436,7 @@ export default {
       .version-select-row {
         width: 140px;
         margin-right: 12px;
+        height: 32px;
       }
       .adv-search-row {
         width: 32px;

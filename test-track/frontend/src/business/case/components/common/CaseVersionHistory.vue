@@ -44,7 +44,7 @@
             </div>
             <div
               class="checkout opt-row"
-              @click="checkout(item && !isCurrent)"
+              @click="checkout(item)"
               v-if="item.isCheckout"
             >
               {{ $t("project.version.checkout") }}

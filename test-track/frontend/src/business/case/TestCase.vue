@@ -776,7 +776,9 @@ export default {
       if (this.$refs.testCaseList) {
         this.$refs.testCaseList.initTableData();
       }
-      this.$refs.nodeTree.list();
+      if(this.$refs.nodeTree){
+        this.$refs.nodeTree.list();
+      }
       this.setTable(data);
     },
     importRefresh() {

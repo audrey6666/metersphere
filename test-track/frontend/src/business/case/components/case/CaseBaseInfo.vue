@@ -313,6 +313,13 @@
 </template>
 
 <script>
+import { getTestCaseVersions } from "@/api/testCase";
+import {
+  getDefaultVersion,
+  getProjectMembers,
+  getProjectVersions,
+  isProjectVersionEnable,
+} from "metersphere-frontend/src/api/version";
 import { getVersionFilters } from "@/business/utils/sdk-utils";
 import { hasLicense } from "metersphere-frontend/src/utils/permission";
 import MsFormDivider from "metersphere-frontend/src/components/MsFormDivider";
@@ -463,7 +470,7 @@ export default {
     },
     getVersionOptions() {
       if (hasLicense()) {
-        getVersionFilters(getCurrentProjectID()).then(
+        getProjectVersions(getCurrentProjectID()).then(
           (r) => (this.versionFilters = r.data)
         );
       }
@@ -473,8 +480,14 @@ export default {
       let version = this.versionFilters.filter((v) => {
         return v.id === data;
       });
-      if (version) {
-        this.form.versionName = version.name;
+      if (version || (Array.isArray(version) && version.length > 0)) {
+        console.log(version);
+        console.log(version.name);
+        if (Array.isArray(version)) {
+          this.form.versionName = version[0].name;
+        } else {
+          this.form.versionName = version.name;
+        }
       }
     },
     getVersionLabel() {
