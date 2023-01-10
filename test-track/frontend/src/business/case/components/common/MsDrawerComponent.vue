@@ -43,7 +43,7 @@
               style="margin-left: 12px"
             >
               <el-button size="small" @click="saveAndReset">{{
-                $t("保存并新建")
+                $t("case.saveAndCreate")
               }}</el-button>
             </div>
             <div class="submit">
@@ -125,7 +125,7 @@ export default {
       default() {
         return {
           isEmpty: false,
-          imgUrl: "/assets/figma/icon_none.svg",
+          imgUrl: "/assets/module/figma/icon_none.svg",
           label: "暂无数据",
         };
       },

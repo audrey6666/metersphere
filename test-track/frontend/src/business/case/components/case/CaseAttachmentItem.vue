@@ -24,7 +24,7 @@
       <div class="options">
         <!-- 预览 -->
         <div class="into opt-item" v-if="enablePreview" @click="handlePreview">
-          <img src="/assets/figma/icon_visible_outlined.svg" alt="" />
+          <img src="/assets/module/figma/icon_visible_outlined.svg" alt="" />
         </div>
         <!-- 下载 -->
         <div
@@ -32,20 +32,20 @@
           v-if="enableDownload"
           @click="handleDownload"
         >
-          <img src="/assets/figma/icon_bottom-align_outlined.svg" alt="" />
+          <img src="/assets/module/figma/icon_bottom-align_outlined.svg" alt="" />
         </div>
         <!-- 转储 -->
         <div class="retry opt-item" v-if="enableRetry" @click="handleRetry">
           <!-- <img src="/assets/figma/icon_refresh_outlined" alt="" /> -->
-          <img src="/assets/figma/icon_into-item_outlined.svg" alt="" />
+          <img src="/assets/module/figma/icon_into-item_outlined.svg" alt="" />
         </div>
         <!-- 取消关联 -->
         <div class="unLink opt-item" v-if="enableUnLink" @click="handleUnLink">
-          <img src="/assets/figma/icon_unlink_outlined.svg" alt="" />
+          <img src="/assets/module/figma/icon_unlink_outlined.svg" alt="" />
         </div>
         <!-- 删除 -->
         <div class="delete opt-item" v-if="enableDelete" @click="handleDelete">
-          <img src="/assets/figma/icon_delete-trash_outlined.svg" alt="" />
+          <img src="/assets/module/figma/icon_delete-trash_outlined.svg" alt="" />
         </div>
       </div>
     </div>
@@ -210,7 +210,7 @@ export default {
     iconSrc() {
       let type = this.fileItem.type || "None";
       type = type.toLowerCase();
-      let prefix = "/assets/figma/";
+      let prefix = "/assets/module/figma/";
       let suffix = ".svg";
       let src = "";
       switch (type) {

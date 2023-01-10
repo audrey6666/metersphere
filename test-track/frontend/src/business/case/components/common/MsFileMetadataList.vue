@@ -255,7 +255,7 @@
         <div class="image">
           <img
             style="height: 100px; width: 100px; margin-bottom: 8px"
-            src="/assets/figma/icon_none.svg"
+            src="/assets/module/figma/icon_none.svg"
           />
           <div class="label" style="color: #646a73">
             {{ $t("case.empty_file") }}

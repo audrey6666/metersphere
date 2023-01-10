@@ -7,9 +7,12 @@
     <div class="dep-header-wrap" v-xpack>
       <div class="header-row" @click="openGraph">
         <div class="dep-icon">
-          <img src="/assets/figma/icon_organization_outlined.svg" alt="" />
+          <img
+            src="/assets/module/figma/icon_organization_outlined.svg"
+            alt=""
+          />
         </div>
-        <div class="dep-label">依赖关系</div>
+        <div class="dep-label">{{ $t("case.dependencies") }}</div>
       </div>
     </div>
     <!-- 前置用例 -->

@@ -119,6 +119,7 @@ const message = {
     please_enter_expected_results: "Please enter expected results",
     please_enter_comments: "Please enter comments",
     disassociate: "Disassociate",
+    saveAndCreate: "Save and New",
   }
 }
 export default {

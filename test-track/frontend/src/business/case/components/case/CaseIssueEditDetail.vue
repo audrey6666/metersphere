@@ -35,6 +35,7 @@
             :default-open="richTextDefaultOpen"
             :form-label-width="formLabelWidth"
             :issue-template="issueTemplate"
+            class="custom-case-form"
           />
         </el-form>
         <!-- 未开启第三方 -->
@@ -166,7 +167,7 @@ import {
   relatedAttachment,
   dumpAttachment,
 } from "@/api/attachment";
-import CustomFiledFormItem from "metersphere-frontend/src/components/form/CustomFiledFormItem";
+import CustomFiledFormItem from "../common/CaseCustomFiledFormItem";
 import MsMarkDownText from "metersphere-frontend/src/components/MsMarkDownText";
 import IssueComment from "@/business/issue/IssueComment";
 import ReviewCommentItem from "@/business/review/commom/ReviewCommentItem";
@@ -900,7 +901,7 @@ export default {
   font-size: 16px;
 }
 
-.upload-default {
+/* .upload-default {
   background-color: #fbfdff;
   border: 1px dashed #c0ccda;
   border-radius: 6px;
@@ -921,7 +922,7 @@ export default {
 
 .upload-default:hover {
   border: 1px dashed #783887;
-}
+} */
 
 .local-upload-tips {
   display: inline-block;
@@ -933,7 +934,7 @@ export default {
 <style scoped lang="scss">
 @import "@/business/style/index.scss";
 :deep(.el-form-item__label) {
-  padding: 0 0 0 8px !important;
+  /* padding: 0 0 0 8px !important; */
 }
 
 .case-wrap {
@@ -1014,4 +1015,5 @@ export default {
 :deep(.viewer-box) {
   width: px2rem(900);
 }
+
 </style>

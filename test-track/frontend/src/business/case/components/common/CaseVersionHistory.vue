@@ -74,7 +74,7 @@
       </div>
       <div class="compare-row" v-if="false">
         <div class="icon">
-          <img src="/assets/figma/icon_contrast_outlined.svf" alt="" />
+          <img src="/assets/module/figma/icon_contrast_outlined.svf" alt="" />
         </div>
         <div class="label">{{ $t("版本对比") }}</div>
       </div>

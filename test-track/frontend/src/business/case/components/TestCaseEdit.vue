@@ -227,7 +227,7 @@
       <div class="edit-header-container">
         <div class="header-content-row">
           <div class="back" @click="$emit('closeTab')">
-            <img src="/assets/figma/icon_arrow-left_outlined.svg" alt="" />
+            <img src="/assets/module/figma/icon_arrow-left_outlined.svg" alt="" />
           </div>
           <div
             @click.stop="openNewTab"
@@ -258,7 +258,7 @@
                 <div class="version-box case-version" slot="versionLabel">
                   <div class="version-icon">
                     <img
-                      src="/assets/figma/icon_moments-categories_outlined.svg"
+                      src="/assets/module/figma/icon_moments-categories_outlined.svg"
                       alt=""
                     />
                   </div>
@@ -276,7 +276,7 @@
             @click="saveFollow"
           >
             <div class="icon-row">
-              <img src="/assets/figma/icon_collection_outlined.svg" alt="" />
+              <img src="/assets/module/figma/icon_collection_outlined.svg" alt="" />
             </div>
             <div class="label-row">{{ $t("case.follow") }}</div>
           </div>
@@ -286,7 +286,7 @@
             @click="saveFollow"
           >
             <div class="icon-row">
-              <img src="/assets/figma/icon_collect_filled.svg" alt="" />
+              <img src="/assets/module/figma/icon_collect_filled.svg" alt="" />
             </div>
             <div class="label-row">{{ $t("case.followed") }}</div>
           </div>
@@ -296,7 +296,7 @@
             @click="addPublic"
           >
             <div class="icon-row">
-              <img src="/assets/figma/icon_add-folder_outlined.svg" alt="" />
+              <img src="/assets/module/figma/icon_add-folder_outlined.svg" alt="" />
             </div>
             <div class="label-row">{{ $t("case.add_to_public_case") }}</div>
           </div>
@@ -306,13 +306,13 @@
             @click="removePublic"
           >
             <div class="icon-row">
-              <img src="/assets/figma/icon_yes_outlined.svg" alt="" />
+              <img src="/assets/module/figma/icon_yes_outlined.svg" alt="" />
             </div>
             <div class="label-row">{{ $t("case.added_to_public_case") }}</div>
           </div>
           <div class="more-row head-opt">
             <div class="icon-row">
-              <img src="/assets/figma/icon_more_outlined.svg" alt="" />
+              <img src="/assets/module/figma/icon_more_outlined.svg" alt="" />
             </div>
             <div class="label-row">
               <el-popover
