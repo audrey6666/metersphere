@@ -233,7 +233,7 @@
             @click.stop="openNewTab"
             :class="editable ? 'case-name' : ['case-name-hover', 'case-name']"
           >
-            {{ !editable ? form.name : "创建用例" }}
+            {{ !editable ? form.name : $t('test_track.case.create_case') }}
           </div>
           <div class="case-edit" v-if="!editable">
             <div class="case-level">

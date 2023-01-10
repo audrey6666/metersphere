@@ -13,7 +13,7 @@
       }"
     >
       <el-table-column
-        label="序号"
+        :label="$t('home.table.index')"
         prop="num"
         min-width="10%"
       ></el-table-column>

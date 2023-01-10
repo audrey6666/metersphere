@@ -72,7 +72,7 @@
               v-if="multipleProject"
               width="155px"
               :current-data="currentProject"
-              :title="$t('项目')"
+              :title="$t('case.project')"
               @dataChange="changeProject"
             />
             <slot name="aside"> </slot>

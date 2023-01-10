@@ -124,6 +124,7 @@ const message = {
     set_new: "置新",
     version_comparison: "版本對比",
     compare: "對比",
+    project: "項目"
   }
 }
 

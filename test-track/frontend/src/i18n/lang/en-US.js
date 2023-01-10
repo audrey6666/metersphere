@@ -77,7 +77,7 @@ const message = {
   case: {
     use_case_detail: "Use Case Details",
     associate_test_cases: "Associate Test Cases",
-    dependencies: "Dependencies",
+    dependencies: "Dependence",
     comment: "Comment",
     change_record: "Change record",
     case_name: "Case Name",
@@ -90,7 +90,7 @@ const message = {
     add_attachment: "Add Attachment",
     file_size_limit: "Any type of file is supported, and the file size does not exceed 500MB",
     add_steps: "Add Steps",
-    copy_this_step: "Copy this step",
+    copy_this_step: "Copy step",
     more: "More",
     follow: "Follow",
     followed: "Followed",
@@ -109,7 +109,7 @@ const message = {
     all_case: "All case",
     all_scenes: "All scenes",
     all_api: "All interfaces",
-    associated_files:"Associated files",
+    associated_files:"Associated",
     empty_file: "No files",
     upload_file: "Upload files",
     selected: "Selected",
@@ -124,6 +124,7 @@ const message = {
     set_new: "Set new",
     version_comparison: "Version comparison",
     compare: "Compare",
+    project: "Project"
   }
 }
 export default {
