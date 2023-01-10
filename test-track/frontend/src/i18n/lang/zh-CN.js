@@ -120,6 +120,10 @@ const message = {
     please_enter_comments: "请输入备注",
     disassociate: "取消关联",
     saveAndCreate: "保存并新建",
+    last_version: "最新版本",
+    set_new: "置新",
+    version_comparison: "版本对比",
+    compare: "对比",
 
   },
 };

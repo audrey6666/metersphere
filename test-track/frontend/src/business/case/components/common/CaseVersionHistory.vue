@@ -1,210 +1,148 @@
 <template>
-  <el-popover placement="bottom-end" width="392" height="394" trigger="click">
-    <div class="version-history-wrap">
-      <div class="label-row">
-        <div class="label">{{ $t("project.version.name") }}</div>
-      </div>
-      <div class="history-container">
-        <div class="item-row" v-for="item in versionOptions" :key="item.id">
-          <div class="left-detail-row">
-            <div class="version-info-row">
+  <div class="version-history-box">
+    <el-popover
+      placement="bottom-end"
+      width="392"
+      height="271"
+      trigger="click"
+      popper-class="version-popover"
+      v-loading="loading"
+    >
+      <div class="version-history-wrap">
+        <div class="label-row">
+          <div class="label">{{ $t("project.version.name") }}</div>
+        </div>
+        <div class="history-container">
+          <div class="item-row" v-for="item in versionOptions" :key="item.id">
+            <div class="left-detail-row">
+              <div class="version-info-row">
+                <div
+                  :class="
+                    item.id == dataLatestId
+                      ? ['version-label', 'active']
+                      : ['version-label']
+                  "
+                >
+                  {{ item.name }}
+                </div>
+                <div class="version-lasted" v-if="item.id == dataLatestId">
+                  {{ $t("case.last_version") }}
+                </div>
+              </div>
+              <div class="version-detail">
+                <div class="creator">
+                  {{ item.createUserName }} {{ $t("commons.create") }}
+                </div>
+              </div>
+            </div>
+            <div class="right-opt-row">
               <div
-                :class="
-                  item.id == dataLatestId
-                    ? ['version-label', 'active']
-                    : ['version-label']
+                class="updated opt-row"
+                @click="setLatest(item)"
+                v-if="
+                  hasLatest &&
+                  item.isCheckout &&
+                  !(isRead || item.id === dataLatestId)
                 "
               >
-                {{ item.name }}
+                {{ $t("case.set_new") }}
               </div>
-              <div class="version-lasted" v-if="item.id == dataLatestId">
-                {{ $t("api_test.api_import.latest_version") }}
+              <div
+                class="checkout opt-row"
+                @click="checkout(item)"
+                v-if="item.isCheckout && !item.isCurrent"
+              >
+                {{ $t("project.version.checkout") }}
               </div>
-            </div>
-            <div class="version-detail">
-              <div class="creator">
-                {{ item.createUserName }} {{ $t("commons.create") }}
+              <div
+                class="create opt-row"
+                v-if="!item.isCheckout && item.status === 'open' && !isRead"
+                @click="create(item)"
+              >
+                {{ $t("commons.create") }}
               </div>
-            </div>
-          </div>
-          <div
-            class="right-opt-row"
-            v-if="item.isCheckout || item.status !== 'open'"
-          >
-            <div
-              class="updated opt-row"
-              @click="setLatest(item)"
-              v-if="
-                hasLatest &&
-                item.isCheckout &&
-                !(isRead || item.id === dataLatestId)
-              "
-            >
-              {{ $t("置新") }}
-            </div>
-            <div
-              class="checkout opt-row"
-              @click="checkout(item)"
-              v-if="item.isCheckout"
-            >
-              {{ $t("project.version.checkout") }}
-            </div>
-            <div
-              class="create opt-row"
-              v-if="!item.isCheckout && item.status === 'open' && !isRead"
-              @click="create(item)"
-            >
-              {{ $t("commons.create") }}
-            </div>
-            <div
-              class="delete opt-row"
-              @click="del(item)"
-              v-if="item.isCheckout && !(item.isCurrent || isRead)"
-            >
-              {{ $t("commons.delete") }}
-            </div>
-            <div
-              @click="compare(item)"
-              v-if="item.isCheckout && !item.isCurrent"
-            >
-              {{ $t("project.version.compare") }}
+              <div
+                class="delete opt-row"
+                @click="del(item)"
+                v-if="item.isCheckout && !(item.isCurrent || isRead)"
+              >
+                {{ $t("commons.delete") }}
+              </div>
+              <!-- <div
+                @click="compare(item)"
+                v-if="item.isCheckout && !item.isCurrent"
+              >
+                {{ $t("project.version.compare") }}
+              </div> -->
             </div>
           </div>
         </div>
-      </div>
-      <div class="compare-row" v-if="false">
-        <div class="icon">
-          <img src="/assets/module/figma/icon_contrast_outlined.svf" alt="" />
+        <div class="compare-row" @click.stop="compareDialogVisible = true">
+          <div class="icon">
+            <img src="/assets/module/figma/icon_contrast_outlined.svg" alt="" />
+          </div>
+          <div class="label">{{ $t("case.version_comparison") }}</div>
         </div>
-        <div class="label">{{ $t("版本对比") }}</div>
       </div>
-    </div>
 
-    <!-- origin -->
-    <el-table
-      :data="versionOptions"
-      v-loading="loading"
-      height="200px"
-      v-if="false"
+      <!-- origin -->
+      <span slot="reference">
+        <slot
+          name="versionLabel"
+          v-if="versionEnable && currentVersion.id"
+        ></slot>
+      </span>
+    </el-popover>
+
+    <el-dialog
+      :visible.sync="compareDialogVisible"
+      :title="$t('case.version_comparison')"
+      width="600px"
+      @close="closeCompareVersionDialog"
     >
-      <el-table-column
-        prop="name"
-        :label="$t('project.version.name')"
-        show-overflow-tooltip
-      >
-        <template v-slot:default="scope">
-          <font-awesome-icon
-            v-if="scope.row.isCurrent"
-            class="icon global focusing"
-            :icon="['fas', 'tag']"
-          />
-          {{ scope.row.name }}
-          <el-tag
-            v-if="scope.row.id === dataLatestId"
-            size="mini"
-            type="primary"
-          >
-            {{ $t("api_test.api_import.latest_version") }}&nbsp;
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="status"
-        column-key="status"
-        min-width="65"
-        :label="$t('commons.status')"
-      >
-        <template v-slot:default="{ row }">
-          <el-tag size="mini" type="primary" v-if="row.status === 'open'">
-            {{ $t("project.version.version_open") }}
-          </el-tag>
-          <el-tag
-            size="mini"
-            type="info"
-            effect="plain"
-            v-else-if="row.status === 'closed'"
-          >
-            {{ $t("project.version.version_closed") }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createUser" :label="$t('operating_log.user')">
-        <template v-slot:default="scope">
-          <span>{{
-            userData[scope.row.createUser]
-              ? userData[scope.row.createUser]
-              : scope.row.createUser
-          }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('commons.operating')" min-width="70px">
-        <template v-slot:default="scope">
-          <el-link
-            @click="compare(scope.row)"
-            v-if="scope.row.isCheckout"
-            :disabled="scope.row.isCurrent"
-          >
-            {{ $t("project.version.compare") }}&nbsp;
-          </el-link>
-
-          <el-link
-            @click="checkout(scope.row)"
-            v-if="scope.row.isCheckout"
-            :disabled="scope.row.isCurrent"
-          >
-            {{ $t("project.version.checkout") }}&nbsp;
-          </el-link>
-
-          <el-link
-            v-if="!scope.row.isCheckout && scope.row.status === 'open'"
-            @click="create(scope.row)"
-            :disabled="isRead"
-          >
-            {{ $t("commons.create") }}&nbsp;
-          </el-link>
-
-          <el-popover
-            placement="bottom"
-            width="100"
-            trigger="hover"
-            v-if="scope.row.isCheckout || scope.row.status !== 'open'"
-          >
-            <div style="text-align: left">
-              <el-link
-                @click="setLatest(scope.row)"
-                v-if="hasLatest && scope.row.isCheckout"
-                :disabled="isRead || scope.row.id === dataLatestId"
-              >
-                {{ $t("project.version.set_new") }}&nbsp;
-              </el-link>
-              <br />
-              <el-link
-                @click="del(scope.row)"
-                v-if="scope.row.isCheckout"
-                :disabled="scope.row.isCurrent || isRead"
-              >
-                {{ $t("commons.delete") }}&nbsp;
-              </el-link>
-            </div>
-            <span slot="reference">...</span>
-          </el-popover>
-        </template>
-      </el-table-column>
-    </el-table>
-    <span slot="reference">
-      <slot
-        name="versionLabel"
-        v-if="versionEnable && currentVersion.id"
-      ></slot>
-    </span>
-  </el-popover>
+      <div class="compare-wrap">
+        <div class="version-left-box">
+          <el-select v-model="versionLeftId" size="small">
+            <el-option
+              v-for="item in versionLeftOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </div>
+        <div class="desc">{{ $t("case.compare") }}</div>
+        <div class="version-right-box">
+          <el-select v-model="versionRightId" size="small">
+            <el-option
+              v-for="item in versionRightOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option
+          ></el-select>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeCompareVersionDialog" size="small">{{
+          $t("commons.cancel")
+        }}</el-button>
+        <el-button
+          :type="enableCompare ? 'primary' : 'info'"
+          :disabled="!enableCompare"
+          @click="compareBranch"
+          size="small"
+          >{{ $t("commons.confirm") }}</el-button
+        >
+      </span>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
 import { getCurrentProjectID } from "metersphere-frontend/src/utils/token";
 import { hasLicense } from "metersphere-frontend/src/utils/permission";
 import {
-  getDefaultVersion,
   getProjectMembers,
   getProjectVersions,
   isProjectVersionEnable,
@@ -244,9 +182,48 @@ export default {
       userData: {},
       currentVersion: {},
       dataLatestId: "",
+      compareDialogVisible: false,
+      // 版本对比相关
+      versionLeftId: "",
+      versionRightId: "",
     };
   },
+  computed: {
+    enableCompare() {
+      return this.versionLeftId && this.versionRightId;
+    },
+    versionLeftOptions() {
+      return this.versionOptions;
+    },
+    versionRightOptions() {
+      return this.versionOptions;
+    },
+  },
+  beforeDestroy() {
+    this.clearSelectData();
+  },
   methods: {
+    closeCompareVersionDialog() {
+      this.compareDialogVisible = false;
+      this.clearSelectData();
+    },
+    clearSelectData() {
+      //清空表单数据
+      this.versionLeftId = "";
+      this.versionRightId = "";
+    },
+    findVersionById(id) {
+      let version = this.versionOptions.filter((v) => v.id === id);
+      return Array.isArray(version) ? version[0] : version || {};
+    },
+    compareBranch() {
+      this.$emit(
+        "compareBranch",
+        this.findVersionById(this.versionLeftId),
+        this.findVersionById(this.versionRightId)
+      );
+      this.clearSelectData();
+    },
     getVersionOptionList(callback) {
       getProjectVersions(this.currentProjectId).then((response) => {
         this.versionOptions = response.data.filter((v) => v.status === "open");
@@ -419,11 +396,12 @@ export default {
       .right-opt-row {
         display: flex;
         justify-content: flex-end;
-        align-items: center;
+        align-items: flex-start;
         .opt-row:not(:first-child) {
           margin-left: 16px;
         }
         .opt-row {
+          margin-top: 4px;
           height: 22px;
           line-height: 22px;
           font-size: 14px;
@@ -451,6 +429,7 @@ export default {
     color: #783887;
   }
   .compare-row {
+    cursor: pointer;
     display: flex;
     height: 32px;
     line-height: 32px;
@@ -474,5 +453,39 @@ export default {
       color: #646a73;
     }
   }
+}
+
+.compare-wrap {
+  display: flex;
+  :deep(.el-select--small) {
+    width: 100%;
+  }
+  .version-left-box {
+    width: 254px;
+    el-select {
+    }
+  }
+
+  .desc {
+    color: #1f2329;
+    margin: 0 5px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  .version-right-box {
+    width: 254px;
+    el-select {
+    }
+  }
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+</style>
+<style>
+.version-popover {
+  left: 215px !important;
+  padding: 0px !important;
+  height: 271px !important;
 }
 </style>

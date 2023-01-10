@@ -120,6 +120,10 @@ const message = {
     please_enter_comments: "Please enter comments",
     disassociate: "Disassociate",
     saveAndCreate: "Save and New",
+    last_version: "Last version",
+    set_new: "Set new",
+    version_comparison: "Version comparison",
+    compare: "Compare",
   }
 }
 export default {

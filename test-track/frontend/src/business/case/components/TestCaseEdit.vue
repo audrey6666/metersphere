@@ -78,7 +78,7 @@
                   </el-link>
                   <!--  版本历史 -->
                   <mx-version-history
-                    v-xpack
+                    v-show="isXpack"
                     ref="versionHistory"
                     :version-data="versionData"
                     :current-id="currentTestCaseInfo.id"
@@ -239,9 +239,10 @@
             <div class="case-level">
               <priority-table-item :value="form.priority" />
             </div>
-            <div class="case-version" v-xpack>
-              <!--  版本历史 -->
+            <div class="case-version">
+              <!--  版本历史 v-xpack -->
               <mx-version-history
+                
                 ref="versionHistory"
                 :version-data="versionData"
                 :current-id="currentTestCaseInfo.id"
@@ -251,6 +252,7 @@
                 :has-latest="hasLatest"
                 @setLatest="setLatest"
                 @compare="compare"
+                @compareBranch="compareBranch"
                 @checkout="checkout"
                 @create="create"
                 @del="del"
@@ -262,7 +264,7 @@
                       alt=""
                     />
                   </div>
-                  <div class="version-title">{{ form.versionName }}</div>
+                  <div class="version-title">{{ currentVersionName }}</div>
                   <div class="version-suffix">{{ $t("commons.version") }}</div>
                 </div>
               </mx-version-history>
@@ -427,6 +429,19 @@
         </template>
       </div>
     </div>
+    <el-dialog
+    :fullscreen="true"
+    :visible.sync="dialogVisible"
+    :destroy-on-close="true"
+    width="100%"
+  >
+    <test-case-version-diff
+      v-if="dialogVisible"
+      :old-data="oldData"
+      :new-data="newData"
+      :tree-nodes="treeNodes"
+    ></test-case-version-diff>
+  </el-dialog>
     <version-create-other-info-select
       @confirmOtherInfo="confirmOtherInfo"
       ref="selectPropDialog"
@@ -507,6 +522,10 @@ import {
 import CaseEditInfoComponent from "./case/CaseEditInfoComponent";
 import CaseBaseInfo from "./case/CaseBaseInfo";
 import PriorityTableItem from "../../common/tableItems/planview/PriorityTableItem";
+import MxVersionHistory from "./common/CaseVersionHistory"
+import {
+  getProjectVersions,
+} from "metersphere-frontend/src/api/version";
 
 export default {
   name: "TestCaseEdit",
@@ -538,7 +557,7 @@ export default {
     MsContainer,
     MsAsideContainer,
     MsMainContainer,
-    MxVersionHistory: () => import("./common/CaseVersionHistory"),
+    MxVersionHistory,
   },
   data() {
     return {
@@ -677,6 +696,8 @@ export default {
       isClickAttachmentTab: false,
       latestVersionId: "",
       hasLatest: false,
+      versionOptions: [],
+      currentVersionName: ""
     };
   },
   props: {
@@ -730,6 +751,9 @@ export default {
           let change = useStore().testCaseMap.get(this.form.id);
           change = change + 1;
           useStore().testCaseMap.set(this.form.id, change);
+        }
+        if(val.versionId && !this.currentVersionName){
+          this.fetchVersionName();
         }
       },
       deep: true,
@@ -1483,34 +1507,50 @@ export default {
       that.newData.readOnly = true;
       that.oldData.readOnly = true;
     },
-    compareBranch(t1, t2) {
-      testCaseGetByVersionId(t1.id, t2.refId).then((response) => {
-        let p1 = getTestCase(response.data.id);
-        let p2 = getTestCase(t2.id);
-        let that = this;
-        Promise.all([p1, p2]).then((r) => {
-          if (r[0] && r[1]) {
-            that.newData = r[0].data;
-            that.oldData = r[1].data;
-            that.newData.createTime = t1.createTime;
-            that.oldData.createTime =
-              this.$refs.versionHistory.versionOptions.filter(
-                (v) => v.id === that.oldData.versionId
-              )[0].createTime;
-            that.newData.versionName = that.versionData.filter(
-              (v) => v.id === that.newData.id
-            )[0].versionName;
-            that.oldData.versionName = that.versionData.filter(
-              (v) => v.id === that.oldData.id
-            )[0].versionName;
-            that.newData.userName = response.data.createName;
-            that.oldData.userName = that.versionData.filter(
-              (v) => v.id === that.oldData.id
-            )[0].createName;
-            this.setSpecialPropForCompare(that);
-            that.dialogVisible = true;
-          }
-        });
+    async fetchVersionName(){
+      if(this.form.versionName){
+        this.currentVersionName = this.form.versionName;
+        return;
+      }
+      if(this.currentVersionName){
+        return;
+      }
+      //查询版本名称
+      await this.getVersionOptionList();
+      this.currentVersionName = this.findVersionNameByID(this.form.versionId)
+    },
+    async getVersionOptionList() {
+      let res = await getProjectVersions(getCurrentProjectID());
+      this.versionOptions = res.data ?? [];
+    },
+    findVersionNameByID(versionId){
+      let versionName = "";
+      let version = this.versionOptions.filter(v => v.id === versionId);
+      if(Array.isArray(version) && version.length > 0){
+        return version[0].name;
+      }
+      return versionName;
+    },
+    async compareBranch(t1, t2) {
+      let t1Case = await testCaseGetByVersionId(t1.id, this.currentTestCaseInfo.id);
+      let t2Case = await testCaseGetByVersionId(t2.id, this.currentTestCaseInfo.id);
+
+      let p1 = getTestCase(t1Case.data.id);
+      let p2 = getTestCase(t2Case.data.id);
+      let that = this;
+      Promise.all([p1, p2]).then((r) => {
+        if (r[0] && r[1]) {
+          that.newData = r[0].data;
+          that.oldData = r[1].data;
+          that.newData.createTime = t1.createTime;
+          that.oldData.createTime = t2.createTime;
+          that.newData.versionName = t1.name;
+          that.oldData.versionName = t2.name;
+          that.newData.userName = t1Case.data.createName;
+          that.oldData.userName = t2Case.data.createName; 
+          this.setSpecialPropForCompare(that);
+          that.dialogVisible = true;
+        }
       });
     },
     compare(row) {
