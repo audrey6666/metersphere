@@ -123,6 +123,7 @@ export default {
   },
   props: {
     title: String,
+    caseId: String,
   },
   data() {
     return {
@@ -150,6 +151,14 @@ export default {
     };
   },
   methods: {
+    openHit(){
+      this.open(this.caseId, [
+        "测试用例",
+        "測試用例",
+        "Test case",
+        "TRACK_TEST_CASE",
+      ]);
+    },
     handleClose() {
       this.infoVisible = false;
     },

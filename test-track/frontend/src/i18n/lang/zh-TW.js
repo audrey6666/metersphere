@@ -124,7 +124,9 @@ const message = {
     set_new: "置新",
     version_comparison: "版本對比",
     compare: "對比",
-    project: "項目"
+    project: "項目",
+    create_version: "新建版本",
+    choose_copy_info: "選擇復製信息",
   }
 }
 

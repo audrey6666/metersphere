@@ -124,7 +124,9 @@ const message = {
     set_new: "Set new",
     version_comparison: "Version comparison",
     compare: "Compare",
-    project: "Project"
+    project: "Project",
+    create_version: "New Version",
+    choose_copy_info: "Select replication information",
   }
 }
 export default {

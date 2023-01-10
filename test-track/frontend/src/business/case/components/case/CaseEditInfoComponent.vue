@@ -102,7 +102,7 @@
         <!-- 变更记录 -->
         <el-tab-pane :label="$t('case.change_record')" name="changeRecord">
           <div class="content-conatiner">
-            <case-change-history></case-change-history>
+            <case-change-history :case-id="caseId" ref="caseChangeHistoryRef"></case-change-history>
           </div>
           <div class="comment-common">
             <case-comment-component
@@ -250,6 +250,8 @@ export default {
         this.$nextTick(() => {
           this.getRelatedTest();
         });
+      } else if(tab.name === "changeRecord"){
+        this.$refs.caseChangeHistoryRef.openHit();
       }
     },
     updateRemark(text) {
