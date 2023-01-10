@@ -113,7 +113,9 @@
     <div class="footer">
       <div
         class="footer-row"
-        v-if="contentObject.contentType == 'RICHTEXT' && this.selfEditable"
+        v-if="
+          contentObject.contentType == 'RICHTEXT' && selfEditable && !editable
+        "
       >
         <div class="cancel" @click.stop="postProcessor">
           <el-button size="small">{{ $t("commons.cancel") }}</el-button>
