@@ -120,6 +120,7 @@ export default {
     please_select_attr: '请选择属性',
     please_input_attr_value: '请输入属性对应的值',
     please_select_attr_value: '请选择属性对应的值',
+    please_select_required_value: '此为必选项',
     batch_edit_case: '批量编辑',
     batch_edit_btn: '编辑',
     batch_move_case: '批量移动',

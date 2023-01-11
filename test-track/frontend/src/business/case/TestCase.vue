@@ -92,8 +92,10 @@
           @update:activeDom="updateActiveDom"
           :left-tip="$t('test_track.case.list')"
           :left-icon-class="'icon_view-list_outlined'"
+          :left-icon-active-class="'icon_view-list_outlined_active'"
           :right-tip="$t('test_track.case.minder')"
           :right-icon-class="'icon_mindnote_outlined'"
+          :right-icon-active-class="'icon_mindnote_outlined_active'"
           :middle-button-enable="false">
           <test-case-list
             v-if="activeDom === 'left'"
@@ -103,7 +105,7 @@
             :trash-enable="false"
             :public-enable="false"
             :current-version="currentVersion"
-            :version-enable="versionEnable"
+            :version-enable.sync="versionEnable"
             @closeExport="closeExport"
             @refreshTable="refresh"
             @testCaseEdit="editTestCase"

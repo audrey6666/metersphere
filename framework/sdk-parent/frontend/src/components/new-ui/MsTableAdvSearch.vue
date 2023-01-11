@@ -1,8 +1,8 @@
 <template>
   <span class="adv-search-bar">
     <el-button size="mini" @click="open" ref="filter-btn">
-      <svg-icon :icon-class="conditionNum == 0 ? 'icon-filter' : 'icon-filter-actived'"/>
-      <span class="condition-num">{{conditionNum == 0 ? "" : "(" +  conditionNum  + ")" }}</span>
+      <svg-icon :icon-class="conditionNum === 0 ? 'icon-filter' : 'icon-filter-active'"/>
+      <span class="condition-num">{{conditionNum === 0 ? "" : "(" +  conditionNum  + ")" }}</span>
     </el-button>
     <el-dialog :title="$t('commons.adv_search.new_title')" :visible.sync="visible"
                custom-class="adv-dialog" :append-to-body="true" width="60%">

@@ -75,7 +75,7 @@
         </template>
         <template
           v-slot:default="scope">
-          <div style="padding-left: 10px;">
+          <div>
             <slot
               name="opt-before"
               :row="scope.row">

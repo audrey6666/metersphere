@@ -127,6 +127,7 @@ export default {
     please_select_attr: 'Please select attributes',
     please_input_attr_value: 'Please input the value corresponding to the attribute',
     please_select_attr_value: 'Please select the value corresponding to the attribute',
+    please_select_required_value: 'Please select value',
     batch_edit_case: 'Batch editing',
     batch_edit_btn: 'Edit',
     batch_move_case: 'Batch move',

@@ -100,16 +100,16 @@ const TRACK_HEADER = {
   //测试用例
   TRACK_TEST_CASE: [
     {id: 'num', key: '1', label: 'commons.id'},
-    {id: 'name', key: '2', label: 'commons.name'},
+    {id: 'name', key: '2', label: 'test_track.case.name'},
     {id: 'reviewStatus', key: '3', label: 'test_track.case.status'},
     {id: 'tags', key: '4', label: 'commons.tag'},
-    {id: 'versionId', key: 'b', label: 'project.version.name', xpack: true},
     {id: 'nodePath', key: '5', label: 'test_track.case.module'},
     {id: 'updateTime', key: '6', label: 'commons.update_time'},
     {id: 'createUser', key: '7', label: 'commons.create_user'},
     {id: 'createTime', key: '8', label: 'commons.create_time'},
     {id: 'desc', key: '9', label: 'test_track.case.case_desc'},
     {id: 'lastExecuteResult', key: '0', label: 'test_track.plan_view.execute_result'},
+    {id: 'versionId', key: 'a', label: 'project.version.name', xpack: true},
   ],
   // 公共用例库
   TRACK_PUBLIC_TEST_CASE: [

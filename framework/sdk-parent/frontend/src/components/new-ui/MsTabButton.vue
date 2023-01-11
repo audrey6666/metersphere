@@ -4,13 +4,13 @@
     <el-button-group v-if="isShowChangeButton" class="btn-group">
       <el-tooltip v-if="leftButtonEnable" class="item" effect="dark" :content="leftTip" placement="bottom">
         <el-button plain :class="{active: leftActive}" style="margin: 3px 8px 3px 3px" @click="changeTab('left')">
-          <svg-icon :icon-class="leftIconClass" />
+          <svg-icon :icon-class="leftActive ? leftIconActiveClass : leftIconClass" />
         </el-button>
       </el-tooltip>
 
       <el-tooltip v-if="rightButtonEnable" class="item" effect="dark" :content="rightTip" placement="bottom">
-        <el-button plain :class="{active: rightActive}" style="margin: 3px 3px 3px 0px" @click="changeTab('right')">
-          <svg-icon :icon-class="rightIconClass"/>
+        <el-button plain :class="{active: rightActive}" style="margin: 3px 3px 3px 0" @click="changeTab('right')">
+          <svg-icon :icon-class="rightActive ? rightIconActiveClass : rightIconClass"/>
         </el-button>
       </el-tooltip>
     </el-button-group>
@@ -62,6 +62,18 @@ export default {
       default: 'middle'
     },
     rightIconClass: {
+      type: String,
+      default: 'right'
+    },
+    leftIconActiveClass: {
+      type: String,
+      default: 'left'
+    },
+    middleIconActiveClass: {
+      type: String,
+      default: 'middle'
+    },
+    rightIconActiveClass: {
       type: String,
       default: 'right'
     },

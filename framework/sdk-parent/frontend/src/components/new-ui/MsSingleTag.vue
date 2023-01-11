@@ -1,5 +1,5 @@
 <template>
-  <el-tag :effect="effect" size="mini" class="status-label">{{ content }}</el-tag>
+  <el-tag size="mini" class="status-label">{{ content }}</el-tag>
 </template>
 
 <script>
@@ -25,7 +25,7 @@ export default {
   border-radius: 2px;
   border-color: transparent;
   align-items: center;
-  background-color: rgba(52, 199, 36, 0.2);
-  color: #2EA121;
+  background-color: rgba(120, 56, 135, 0.2);;
+  color: #783887;
 }
 </style>

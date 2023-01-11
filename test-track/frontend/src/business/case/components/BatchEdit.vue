@@ -12,7 +12,7 @@
       v-loading="loading">
       <span class="select-row">{{$t('test_track.batch_operate_select_row_count', [size])}}</span>
 
-      <el-form :model="form" label-position="top" label-width="180px" size="small" ref="form" :rules="rules" style="margin-top: 24px">
+      <el-form :model="form" label-position="top" label-width="180px" size="small" ref="form" :rules="rules" style="margin-top: 24px" class="batchEditForm">
         <el-form-item :label="$t('test_track.case.select_attr')" prop="type">
           <el-select v-model="form.type" style="width: 100%" @change="changeType">
             <el-option v-for="(type, index) in typeArr" :key="index" :value="type.custom ? type.custom : type.id"
@@ -38,7 +38,7 @@
           <el-checkbox v-model="form.appendTag">
             {{ $t('commons.append_tag') }}
             <el-tooltip class="item" effect="dark" :content="$t('commons.append_tag_tip')" placement="top">
-              <i class="el-icon-info"></i>
+              <i class="el-icon-question"></i>
             </el-tooltip>
           </el-checkbox>
         </el-form-item>
@@ -142,22 +142,22 @@ export default {
         type: {required: true, message: this.$t('test_track.case.please_select_attr'), trigger: ['blur', 'change']},
         value: {
           required: true,
-          message: this.$t('test_track.case.please_select_attr_value'),
+          message: this.$t('test_track.case.please_select_required_value'),
           trigger: ['blur', 'change']
         },
         tags: {
           required: true,
-          message: this.$t('test_track.case.please_select_attr_value'),
+          message: this.$t('test_track.case.please_select_required_value'),
           trigger: ['blur', 'change']
         },
         customFieldValue: {
           required: true,
-          message: this.$t('test_track.case.please_select_attr_value'),
+          message: this.$t('test_track.case.please_select_required_value'),
           trigger: ['blur', 'change']
         },
         description: {
           required: true,
-          message: this.$t('test_track.case.please_input_attr_value'),
+          message: this.$t('test_track.case.please_select_required_value'),
           trigger: ['blur']
         }
       },
@@ -404,5 +404,45 @@ export default {
   min-width: 80px;
   height: 32px;
   border-radius: 4px;
+}
+
+.batchEditForm {
+  margin-top: 24px;
+}
+
+.batchEditForm :deep(.el-form-item.is-required > .el-form-item__label:before) {
+  display: none;
+}
+
+.batchEditForm :deep(.el-form-item.is-required > .el-form-item__label:after) {
+  content: "*";
+  color: #F56C6C;
+  margin-right: 4px;
+}
+
+.ms-case-input :deep(.el-tag.el-tag--info) {
+  background-color: rgba(31, 35, 41, 0.1);
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  align-items: center;
+  color: #1F2329;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  padding-right: 4px;
+}
+
+.ms-case-input :deep(.el-tag.el-tag--info .el-icon-close) {
+  font-size: 21px;
+  position: relative;
+  right: 3px;
+}
+
+.ms-case-input :deep(.el-tag.el-tag--info .el-icon-close:hover) {
+  color: #783887;;
+  background-color: transparent;
 }
 </style>

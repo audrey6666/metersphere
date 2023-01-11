@@ -105,7 +105,7 @@
           sortable
           :field="item"
           :fields-width="fieldsWidth"
-          :label="$t('commons.name')"
+          :label="$t('test_track.case.name')"
           min-width="120"
         />
 
@@ -154,7 +154,7 @@
         </ms-table-column>
 
         <ms-table-column
-          v-if="versionEnable"
+          v-if="enableVersionColumn"
           :label="$t('project.version.name')"
           :field="item"
           :fields-width="fieldsWidth"
@@ -289,7 +289,7 @@ import RelationshipGraphDrawer from "metersphere-frontend/src/components/graph/M
 import MsNewUiSearch from "metersphere-frontend/src/components/new-ui/MsSearch";
 import {mapState} from "pinia";
 import {useStore} from "@/store"
-import {getProject} from "@/api/project";
+import {getProject, versionEnableByProjectId} from "@/api/project";
 import {getVersionFilters} from "@/business/utils/sdk-utils";
 import {getProjectApplicationConfig} from "@/api/project-application";
 import MsUpdateTimeColumn from "metersphere-frontend/src/components/table/MsUpdateTimeColumn";
@@ -473,6 +473,7 @@ export default {
       advanceSearchShow: false,
       selectCounts: 0,
       refreshBySearch: false,
+      enableVersionColumn: false
     };
   },
   props: {
@@ -586,8 +587,10 @@ export default {
     },
   },
   methods: {
-    getTemplateField() {
+    async getTemplateField() {
       this.loading = true;
+      // 防止第一次渲染版本字段展示顺序错乱
+      await this.checkVersionEnable();
       let p1 = getProjectMember()
         .then((response) => {
           this.members = response.data;
@@ -600,6 +603,9 @@ export default {
         let template = data[1];
         this.testCaseTemplate = template;
         this.fields = getTableHeaderWithCustomFields(this.tableHeaderKey, this.testCaseTemplate.customFields, this.members);
+        if (this.trashEnable) {
+          console.log(this.fields)
+        }
         this.initConditionComponents()
         this.setTestCaseDefaultValue(template);
         this.typeArr = [];
@@ -983,6 +989,7 @@ export default {
       testCaseDelete(testCaseId)
         .then(() => {
           this.$emit('refresh');
+          this.clearTableSelect();
           this.initTableData();
           this.$success(this.$t('commons.delete_success'), false);
           this.$emit('decrease', testCase.nodeId);
@@ -1198,6 +1205,17 @@ export default {
       if (hasLicense()) {
         getVersionFilters(getCurrentProjectID())
           .then(r =>  this.versionFilters = r.data);
+      }
+    },
+    checkVersionEnable() {
+      if (!this.projectId) {
+        return;
+      }
+      if (hasLicense()) {
+        versionEnableByProjectId(this.projectId)
+          .then(response => {
+            this.enableVersionColumn = response.data;
+          });
       }
     },
     generateColumnKey
