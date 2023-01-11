@@ -449,7 +449,6 @@ public class PerformanceTestService {
             testReport.setTestName(loadTest.getName());
             testReport.setEnvInfo(loadTest.getEnvInfo());
             // 启动插入 report
-            loadTestReportMapper.insertSelective(testReport);
 
             // engine
             engine = EngineFactory.createEngine(testReport);
@@ -457,7 +456,7 @@ public class PerformanceTestService {
                 MSException.throwException(String.format("Test cannot be run，test ID：%s", loadTest.getId()));
             }
             // 新起事务提交更改，如果startEngine出现异常在catch块中对状态进行处理
-            proxyService.updateLoadTestStatus(updateTest);
+            proxyService.updateLoadTestStatus(updateTest, testReport);
 
             LoadTestReportDetail reportDetail = new LoadTestReportDetail();
             reportDetail.setContent(HEADERS);
@@ -490,24 +489,26 @@ public class PerformanceTestService {
             if (engine != null) {
                 engine.stop();
             }
-            proxyService.handleRunError(updateTest, e);
+            proxyService.handleRunError(updateTest, e, testReport);
             throw e;
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateLoadTestStatus(LoadTestWithBLOBs test) {
+    public void updateLoadTestStatus(LoadTestWithBLOBs test, LoadTestReportWithBLOBs testReport) {
+        loadTestReportMapper.insertSelective(testReport);
         test.setStatus(PerformanceTestStatus.Starting.name());
         loadTestMapper.updateByPrimaryKeySelective(test);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleRunError(LoadTestWithBLOBs test, Exception e) {
+    public void handleRunError(LoadTestWithBLOBs test, Exception e, LoadTestReportWithBLOBs testReport) {
         LogUtil.error(e.getMessage(), e);
         test.setStatus(PerformanceTestStatus.Error.name());
         // 记录执行错误的信息
         test.setDescription(e.getMessage());
         loadTestMapper.updateByPrimaryKeySelective(test);
+        loadTestReportMapper.deleteByPrimaryKey(testReport.getId());
     }
 
     private void saveLoadTestReportFiles(LoadTestReport report) {

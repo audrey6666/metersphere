@@ -157,23 +157,7 @@ public class BaseQuotaService {
         if (quota == null) {
             return true;
         }
-        Object quotaCount = null;
-        if (StringUtils.equals(API, checkType)) {
-            quotaCount = quota.getApi();
-        } else if (StringUtils.equals(LOAD, checkType)) {
-            quotaCount = quota.getPerformance();
-        } else if (StringUtils.equals(DURATION, checkType)) {
-            quotaCount = quota.getDuration();
-        } else if (StringUtils.equals(MAX_THREAD, checkType)) {
-            quotaCount = quota.getMaxThreads();
-        } else if (StringUtils.equals(MEMBER, checkType)) {
-            quotaCount = quota.getMember();
-        } else if (StringUtils.equals(PROJECT, checkType)) {
-            quotaCount = quota.getProject();
-        } else {
-            LogUtil.error("doCheckQuota get quota field fail, don't have type: " + checkType);
-        }
-
+        Object quotaCount = this.getQuotaCount(quota, checkType);
         if (isValid(quota, quotaCount)) {
             long count = Long.parseLong(String.valueOf(quotaCount));
             if (queryCount > count) {
@@ -182,6 +166,33 @@ public class BaseQuotaService {
             return false;
         }
         return true;
+    }
+
+    private Object getQuotaCount(Quota quota, String type) {
+        Object count = null;
+        switch (type) {
+            case API:
+                count = quota.getApi();
+                break;
+            case LOAD:
+                count = quota.getPerformance();
+                break;
+            case DURATION:
+                count = quota.getDuration();
+                break;
+            case MAX_THREAD:
+                count = quota.getMaxThreads();
+                break;
+            case MEMBER:
+                count = quota.getMember();
+                break;
+            case PROJECT:
+                count = quota.getProject();
+                break;
+            default:
+                MSException.throwException("get quota count fail, don't have type: " + type);
+        }
+        return count;
     }
 
     private List<String> queryProjectIdsByWorkspaceId(String workspaceId) {
