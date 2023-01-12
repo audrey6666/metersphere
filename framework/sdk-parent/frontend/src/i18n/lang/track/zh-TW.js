@@ -486,6 +486,7 @@ export default {
   },
   issue: {
     issue: "缺陷",
+    list_none_tips: "暫無缺陷",
     issue_management: "缺陷管理",
     platform_status: "平臺狀態",
     issue_resource: "缺陷來源",

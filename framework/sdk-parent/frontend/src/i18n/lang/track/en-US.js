@@ -484,6 +484,7 @@ export default {
   },
   issue: {
     issue: "Issue",
+    list_none_tips: "No issues",
     issue_management: "Issue",
     platform_status: "Platform Status",
     issue_resource: "Issue Source",

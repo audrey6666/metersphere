@@ -5,7 +5,7 @@
     @clearSelect="clearSelection"
     ref="relevanceDialog"
   >
-    <div slot="header">
+    <div slot="header" v-if="page.data.length > 0">
       <div class="header-search-row">
         <div class="simple-row">
           <ms-new-ui-search
@@ -25,7 +25,12 @@
       </div>
     </div>
     <div slot="content">
+      <div v-if="page.data.length === 0" class="none-data-tip">
+        <img src="/assets/module/figma/icon_none.svg" style="height: 100px;width: 100px;margin-bottom: 8px"/>
+        <span class="none-data-content">{{$t('test_track.issue.list_none_tips')}}</span>
+      </div>
       <ms-table
+        v-if="page.data.length > 0"
         :screen-height="screenHeight"
         v-loading="page.result.status"
         :data="page.data"
@@ -95,7 +100,7 @@
         :total="page.total"
       /> -->
     </div>
-    <div slot="pagination">
+    <div slot="pagination" v-if="page.data.length > 0">
       <home-pagination
         :change="getIssues"
         :current-page.sync="page.currentPage"
@@ -216,6 +221,7 @@ export default {
         this.visible = false;
         this.$refs.relevanceDialog.close();
         this.$emit("refresh", this.$refs.table.selectRows);
+        this.$success(this.$t('commons.relate_success'), false)
       });
     },
   },
@@ -228,7 +234,7 @@ export default {
   display: flex;
   margin: 0 px2rem(24);
   .simple-row {
-    width: px2rem(888);
+    width: px2rem(1200);
     margin-right: px2rem(12);
     :deep(.el-input--small) {
       width: 100% !important;
@@ -256,7 +262,17 @@ export default {
 }
 
 .relate-issue-table {
-  width: 93%;
+  width: 95%;
   margin-left: px2rem(24);
+}
+
+.none-data-tip {
+  text-align: center;
+  margin-top: px2rem(150);
+  .none-data-content {
+    display: block;
+    font-weight: 400;
+    color: #646A73;
+  }
 }
 </style>

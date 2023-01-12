@@ -356,7 +356,7 @@ export default {
         }).then(() => {
           this.page.result.loading = false;
           this.getIssues();
-          this.$success(this.$t("commons.delete_success"));
+          this.$success(this.$t("test_track.cancel_relevance_success"), false);
         });
       });
     },
