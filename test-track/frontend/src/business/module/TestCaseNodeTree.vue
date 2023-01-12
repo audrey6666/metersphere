@@ -11,6 +11,7 @@
       :update-permission="['PROJECT_TRACK_CASE:READ+EDIT']"
       default-label="未规划用例"
       local-suffix="test_case"
+      :hide-node-operator="hideNodeOperator"
       @add="add"
       @edit="edit"
       @drag="drag"
@@ -25,6 +26,7 @@
           :condition="condition"
           :commands="operators"/>
         <module-public-button
+          v-if="showPublicBtn"
           :condition="condition"
           :public-total="publicTotal"
           :exe="enablePublic"/>
@@ -122,6 +124,14 @@ export default {
     showTrashBtn: {
       type: Boolean,
       default: true
+    },
+    showPublicBtn: {
+      type: Boolean,
+      default: true
+    },
+    hideNodeOperator: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {

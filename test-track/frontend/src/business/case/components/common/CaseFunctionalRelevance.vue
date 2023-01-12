@@ -11,6 +11,8 @@
     <template v-slot:aside>
       <TestCaseNodeTree
         :showTrashBtn="false"
+        :show-public-btn="false"
+        :hide-node-operator="true"
         class="node-tree"
         :case-condition="page.condition"
         :scroll="true"
@@ -161,7 +163,7 @@
 
         <div class="pagenation-wrap">
           <home-pagination
-            v-if="page.data.length > 0 && selectCounts == 0"
+            v-if="page.data.length > 0"
             :change="getTestCases"
             :current-page.sync="page.currentPage"
             :page-size.sync="page.pageSize"
@@ -244,7 +246,7 @@ export default {
       projectName: "",
       projects: [],
       customNum: false,
-      screenHeight: "400",
+      screenHeight: "calc(100vh - 185px)",
       priorityFilters: [
         { text: "P0", value: "P0" },
         { text: "P1", value: "P1" },
@@ -457,23 +459,20 @@ export default {
     }
   }
   .table-data-wrap {
-    display: flex;
+    display: block;
     flex-direction: column;
     justify-content: space-between;
-    height: px2rem(690);
     .table-data-row {
-      height: px2rem(621);
+      height: px2rem(430);
       :deep(.test-content) {
-        height: px2rem(621) !important;
-        min-height: px2rem(621) !important;
+        overflow: scroll;
       }
       :deep(.el-table__body-wrapper) {
-        height: px2rem(470) !important;
+        height: auto!important;
       }
     }
     .pagenation-wrap {
       height: px2rem(68);
-      border-top: 1px solid rgba(31, 35, 41, 0.15);
       :deep(.home-pagination) {
         margin-top: 6px;
       }

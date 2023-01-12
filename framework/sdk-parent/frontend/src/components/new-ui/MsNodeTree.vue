@@ -19,13 +19,13 @@
           :filter-node-method="filterNode"
           :expand-on-click-node="false"
           highlight-current
-          :draggable="!disabled&&!hideOpretor"
+          :draggable="!disabled&&!hideNodeOperator"
           ref="tree">
 
           <template v-slot:default="{node,data}">
             <span class="custom-tree-node father" @click="handleNodeSelect(node)">
               <span v-if="!disabled" class="node-operate drag child">
-                <svg-icon v-if="data.id !== 'root' && !hideOpretor" icon-class="icon_drag_outlined"/>
+                <svg-icon v-if="data.id !== 'root' && !hideNodeOperator" icon-class="icon_drag_outlined"/>
               </span>
 
               <span v-if="data.isEdit" @click.stop @click.stop style="width: 92%">
@@ -47,7 +47,7 @@
                   effect="dark"
                   :open-delay="200"
                   v-permission="addPermission"
-                  v-if="data.id && !isDefault(data) && !hideOpretor"
+                  v-if="data.id && !isDefault(data) && !hideNodeOperator"
                   :content="$t('test_track.module.add_submodule')"
                   placement="top">
                   <el-button class="node-operate-btn" @click.stop="append(node, data)" icon="el-icon-plus"/>
@@ -55,7 +55,7 @@
 
                 <el-button v-if="!data.id" class="node-operate-btn" @click="remove(node, data)" icon="el-icon-delete"/>
 
-                <el-dropdown placement="bottom-start" v-if="data.id && data.id !== 'root' && data.name !== defaultLabel && !hideOpretor" trigger="click">
+                <el-dropdown placement="bottom-start" v-if="data.id && data.id !== 'root' && data.name !== defaultLabel && !hideNodeOperator" trigger="click">
                   <el-button class="node-operate-btn" icon="el-icon-more" />
                   <el-dropdown-menu slot="dropdown" class="module-more-operate">
                     <el-dropdown-item :disabled="!updatePermission">
@@ -73,7 +73,7 @@
                   </el-dropdown-menu>
                 </el-dropdown>
 
-                <el-dropdown placement="bottom-start" v-if="data.id && data.name === defaultLabel && data.level !== 1 && !hideOpretor" trigger="click">
+                <el-dropdown placement="bottom-start" v-if="data.id && data.name === defaultLabel && data.level !== 1 && !hideNodeOperator" trigger="click">
                   <el-button class="node-operate-btn"/>
                   <el-dropdown-menu slot="dropdown" class="module-more-operate">
                     <el-dropdown-item :disabled="!updatePermission">
@@ -109,13 +109,13 @@
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
         highlight-current
-        :draggable="!disabled&&!hideOpretor"
+        :draggable="!disabled&&!hideNodeOperator"
         ref="tree">
 
         <template v-slot:default="{node,data}">
         <span class="custom-tree-node father" @click="handleNodeSelect(node)">
           <span v-if="!disabled" class="node-operate drag child">
-            <svg-icon v-if="data.id !== 'root' && !hideOpretor" icon-class="icon_drag_outlined"/>
+            <svg-icon v-if="data.id !== 'root' && !hideNodeOperator" icon-class="icon_drag_outlined"/>
           </span>
 
           <span v-if="data.isEdit" @click.stop style="width: 92%">
@@ -138,7 +138,7 @@
               effect="dark"
               :open-delay="200"
               v-permission="addPermission"
-              v-if="data.id && !isDefault(data) && !hideOpretor"
+              v-if="data.id && !isDefault(data) && !hideNodeOperator"
               :content="$t('test_track.module.add_submodule')"
               placement="top">
               <el-button class="node-operate-btn" @click.stop="append(node, data)" icon="el-icon-plus"/>
@@ -146,7 +146,7 @@
 
             <el-button v-if="!data.id" class="node-operate-btn" @click="remove(node, data)" icon="el-icon-delete"/>
 
-            <el-dropdown placement="bottom-start" v-if="data.id && data.id !== 'root' && data.name !== defaultLabel && !hideOpretor">
+            <el-dropdown placement="bottom-start" v-if="data.id && data.id !== 'root' && data.name !== defaultLabel && !hideNodeOperator">
               <el-button class="node-operate-btn" icon="el-icon-more"/>
               <el-dropdown-menu slot="dropdown" class="module-more-operate">
                 <el-dropdown-item :disabled="!updatePermission">
@@ -164,7 +164,7 @@
               </el-dropdown-menu>
             </el-dropdown>
 
-            <el-dropdown placement="bottom-start" v-if="data.id && data.name === defaultLabel && data.level !== 1 && !hideOpretor">
+            <el-dropdown placement="bottom-start" v-if="data.id && data.name === defaultLabel && data.level !== 1 && !hideNodeOperator">
               <el-button class="node-operate-btn"/>
               <el-dropdown-menu slot="dropdown" class="module-more-operate">
                 <el-dropdown-item :disabled="!updatePermission">
@@ -268,7 +268,7 @@ export default {
     addPermission: Array,
     deletePermission: Array,
     localSuffix: String,
-    hideOpretor: Boolean,
+    hideNodeOperator: Boolean,
   },
   watch: {
     treeNodes() {
