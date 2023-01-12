@@ -981,6 +981,8 @@ export default {
 
 .add-issue-box {
   padding: 0 24px 24px 24px;
+  overflow-y: scroll;
+  max-height: calc(100vh - 200px)
 }
 .atta-wrap {
   width: 100%;

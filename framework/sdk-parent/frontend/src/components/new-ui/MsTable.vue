@@ -24,7 +24,7 @@
       @header-dragend="headerDragend"
       @cell-mouse-enter="showPopover"
       @row-click="handleRowClick"
-      :max-height="data.length > 0 ? 'calc(100vh - 286px)' : 'calc(100vh - 286px)'"
+      :max-height="'calc(100vh - 286px)'"
       ref="table">
 
       <el-table-column

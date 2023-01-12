@@ -26,6 +26,7 @@
     </div>
     <div slot="content">
       <ms-table
+        :screen-height="screenHeight"
         v-loading="page.result.status"
         :data="page.data"
         :condition="page.condition"
@@ -35,6 +36,7 @@
         @handlePageChange="getIssues"
         @selectCountChange="setSelectCounts"
         @refresh="getIssues"
+        class="relate-issue-table"
         ref="table"
       >
         <ms-table-column
@@ -161,6 +163,7 @@ export default {
       visible: false,
       isThirdPart: false,
       selectCounts: null,
+      screenHeight: 'calc(100vh - 185px)',
     };
   },
   computed: {
@@ -250,5 +253,10 @@ export default {
       flex-grow: 0;
     }
   }
+}
+
+.relate-issue-table {
+  width: 93%;
+  margin-left: px2rem(24);
 }
 </style>

@@ -504,7 +504,7 @@ export default {
 }
 .file-drawer .file-box .footer .pagination {
   height: 68px;
-  border-top: 1px solid rgba(31, 35, 41, 0.15);
+  //border-top: 1px solid rgba(31, 35, 41, 0.15);
   margin: 0 24px;
   padding-top: 6px;
 }
