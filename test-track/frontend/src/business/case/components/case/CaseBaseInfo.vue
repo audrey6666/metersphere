@@ -875,7 +875,7 @@ export default {
     .edit-footer-container {
       display: flex;
       width: 100%;
-      height: px2rem(80);
+      height: 80px;
       background: #ffffff;
       box-shadow: 0px -1px 4px rgba(31, 35, 41, 0.1);
       align-items: center;

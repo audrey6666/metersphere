@@ -38,6 +38,11 @@ export default {
       result: {},
     };
   },
+  watch: {
+    state() {
+      this.$emit('stateChange', this.state);
+    }
+  },
   methods: {
     getCurrentShortName() {
       let token = localStorage.getItem("Admin-Token");

@@ -302,7 +302,7 @@ import {
   getCustomFieldValueForTrack,
   getProjectMemberOption
 } from "@/business/utils/sdk-utils";
-import {initTestCaseConditionComponents} from "@/business/case/test-case";
+import {initTestCaseConditionComponents, openCaseEdit} from "@/business/case/test-case";
 
 
 export default {
@@ -819,27 +819,8 @@ export default {
     reloadTable() {
       this.$refs.table.resetHeader();
     },
-    testCaseCreate() {
-      this.$emit('testCaseEdit');
-    },
-    handleEdit(testCase) {
-      getTestCase(testCase.id)
-        .then(r => {
-          let testCase = r.data;
-          testCase.trashEnable = this.trashEnable;
-          // this.$emit('testCaseEdit', testCase);
-          this.openNewTab(testCase.id);
-        });
-    },
-    openNewTab(caseId) {
-      if (!caseId) {
-        return;
-      }
-      let TestCaseData = this.$router.resolve({
-        path: "/track/case/edit/" + caseId,
-        query:{caseId},
-      });
-      window.open(TestCaseData.href, "_blank");
+    handleEdit(testCase, type) {
+      openCaseEdit(testCase, type, this);
     },
     getCase(id) {
       this.$refs.testCasePreview.open();
@@ -864,16 +845,7 @@ export default {
         });
     },
     handleCopy(testCase) {
-      getTestCase(testCase.id)
-        .then(r => {
-          let testCase = r.data;
-          testCase.name = 'copy_' + testCase.name;
-          //复制的时候只复制当前版本
-          testCase.id = getUUID();
-          testCase.refId = null;
-          testCase.versionId = null;
-          this.$emit('testCaseCopy', testCase);
-        });
+      this.handleEdit(testCase, 'copy');
     },
     handleDelete(testCase) {
       let title = this.$t('test_track.case.case_delete_confirm') + ": " + testCase.name + "?";

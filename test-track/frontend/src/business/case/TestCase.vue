@@ -43,7 +43,7 @@
       <span class="back-content">{{showPublicNode? $t('project.case_public') : $t('commons.trash')}}</span>
     </div>
 
-    <div style="display: flex; height: calc(100vh - 130px)" v-if="!editable" class = "test-case-aside-layouyt">
+    <div style="display: flex; height: calc(100vh - 130px)" v-if="!editable" class = "test-case-aside-layout">
       <!-- case-aside-container  -->
       <ms-aside-container v-show="isAsideHidden" :min-width="'0'" :enable-aside-hidden.sync="enableAsideHidden">
         <test-case-node-tree
@@ -56,7 +56,6 @@
           @refreshTable="refresh"
           @setTreeNodes="setTreeNodes"
           @exportTestCase="exportTestCase"
-          @saveAsEdit="editTestCase"
           @refreshAll="refreshAll"
           @enableTrash="enableTrash"
           @enablePublic="enablePublic"
@@ -108,7 +107,6 @@
             :version-enable.sync="versionEnable"
             @closeExport="closeExport"
             @refreshTable="refresh"
-            @testCaseEdit="editTestCase"
             @testCaseCopy="copyTestCase"
             @getTrashList="getTrashList"
             @getPublicList="getPublicList"
@@ -144,8 +142,6 @@
             :tree-nodes="treeNodes"
             :version-enable="versionEnable"
             @refreshTable="refresh"
-            @testCaseEdit="editTestCase"
-            @testCaseEditShow="editTestCaseShow"
             @testCaseCopy="copyTestCase"
             @refresh="refresh"
             @refreshAll="refreshAll"
@@ -166,7 +162,6 @@
             :trash-enable="true"
             :current-version="currentTrashVersion"
             :version-enable="versionEnable"
-            @testCaseEdit="editTestCase"
             @testCaseCopy="copyTestCase"
             @refresh="refreshTrashNode"
             @refreshAll="refreshAll"
@@ -294,7 +289,6 @@ export default {
   },
   mounted() {
     this.getProject();
-    this.init(this.$route);
     this.checkVersionEnable();
   },
   beforeRouteLeave(to, from, next) {
@@ -312,9 +306,6 @@ export default {
         // 在 DOM 中添加 my-component 组件
         this.renderComponent = true;
       });
-    },
-    '$route'(to) {
-      this.init(to);
     },
     activeName(newVal, oldVal) {
       this.isAsideHidden = this.activeName === 'default';
@@ -399,7 +390,8 @@ export default {
   methods: {
     hasPermission,
     handleCreateCase(){
-      this.handleCommand("ADD");
+      let TestCaseData = this.$router.resolve({path: "/track/case/create",});
+      window.open(TestCaseData.href, "_blank");
     },
     closeTab(){
       this.handleTabClose();
@@ -409,13 +401,37 @@ export default {
         case "ADD":
           this.addTab({name: 'add'});
           break;
-        case "CLOSE_ALL":
-          this.handleTabClose();
-          break;
-        default:
-          this.addTab({name: 'add'});
-          break;
       }
+    },
+    addTab(tab) {
+      this.showPublic = false
+      if (tab.name === 'edit' || tab.name === 'show') {
+        let label = this.$t('test_track.case.create');
+        let name = getUUID().substring(0, 8);
+        if (this.activeName === 'public') {
+          this.currentActiveName = 'public'
+        } else {
+          this.currentActiveName = 'default'
+        }
+        this.activeName = name;
+        label = tab.testCaseInfo.name;
+        this.tabs = [];
+        this.tabs.push({ edit: false, label: label, name: name, testCaseInfo: tab.testCaseInfo, isPublic: tab.isPublic});
+      }
+
+      if (tab.name === 'public') {
+        this.publicEnable = false;
+        this.$nextTick(() => {
+          this.publicEnable = true;
+        })
+      } else if (tab.name === 'trash') {
+        this.trashEnable = false;
+        this.$nextTick(() => {
+          this.trashEnable = true;
+        })
+      }
+
+      this.setCurTabId(tab, 'testCaseEdit');
     },
     handleImportCommand(e) {
       switch (e) {
@@ -512,49 +528,12 @@ export default {
         this.redirectFlag = "none";
       }
     },
-    addTab(tab) {
+    validateProjectId() {
       if (!this.projectId) {
         this.$warning(this.$t('commons.check_project_tip'));
-        return;
+        return false;
       }
-      this.showPublic = false
-      if (tab.name === 'add') {
-        let label = this.$t('test_track.case.create');
-        let name = getUUID().substring(0, 8);
-        this.activeName = name;
-        this.currentActiveName = 'default'
-        this.type = 'add';
-        //清空之前的
-        this.tabs = [];
-        this.tabs.push({ edit: true, label: label, name: name, testCaseInfo: {testCaseModuleId: "", id: getUUID()}});
-      }
-      if (tab.name === 'edit' || tab.name === 'show') {
-        let label = this.$t('test_track.case.create');
-        let name = getUUID().substring(0, 8);
-        if (this.activeName === 'public') {
-          this.currentActiveName = 'public'
-        } else {
-          this.currentActiveName = 'default'
-        }
-        this.activeName = name;
-        label = tab.testCaseInfo.name;
-        this.tabs = [];
-        this.tabs.push({ edit: false, label: label, name: name, testCaseInfo: tab.testCaseInfo, isPublic: tab.isPublic});
-      }
-
-      if (tab.name === 'public') {
-        this.publicEnable = false;
-        this.$nextTick(() => {
-          this.publicEnable = true;
-        })
-      } else if (tab.name === 'trash') {
-        this.trashEnable = false;
-        this.$nextTick(() => {
-          this.trashEnable = true;
-        })
-      }
-
-      this.setCurTabId(tab, 'testCaseEdit');
+      return true;
     },
     addTabShow(tab) {
       if (!this.projectId) {
@@ -663,29 +642,6 @@ export default {
     closeExport() {
       this.$refs.nodeTree.closeExport();
     },
-    async init(route) {
-      let path = route.path;
-      if (path.indexOf("/track/case/edit") >= 0 || path.indexOf("/track/case/create") >= 0) {
-        // 解决路由跳转 模块树不显示问题
-        await this.$refs.nodeTree.waitList();
-        this.testCaseReadOnly = false;
-        let caseId = this.$route.query.caseId;
-        if (!this.projectId) {
-          this.$warning(this.$t('commons.check_project_tip'));
-          return;
-        }
-        if (caseId) {
-            getTestCase(caseId)
-              .then(response => {
-                let testCase = response.data;
-                this.editTestCase(testCase);
-              });
-        } else {
-          this.addTab({name: 'add'});
-        }
-        this.$router.push('/track/case/all');
-      }
-    },
     publicNodeChange(node, nodeIds, pNodes) {
       if (this.$refs.testCasePublicList) {
         this.$refs.testCasePublicList.initTableData(nodeIds);
@@ -701,21 +657,6 @@ export default {
     },
     decrease(id) {
       this.$refs.nodeTree.decrease(id);
-    },
-    editTestCase(testCase, isPublic) {
-      const index = this.tabs.find(p => p.testCaseInfo && p.testCaseInfo.id === testCase.id);
-      if (!index) {
-        this.type = "edit";
-        this.testCaseReadOnly = false;
-        let hasEditPermission = hasPermission('PROJECT_TRACK_CASE:READ+EDIT');
-        this.$set(testCase, 'rowClickHasPermission', hasEditPermission);
-        this.addTab({name: isPublic ? 'show' : 'edit', testCaseInfo: testCase, isPublic});
-      } else {
-        this.activeName = index.name;
-      }
-    },
-    editTestCaseShow(testCase) {
-      this.editTestCase(testCase, true);
     },
     handleCaseCreateOrEdit(data, type) {
       if (this.$refs.minder) {
@@ -1010,7 +951,7 @@ export default {
 }
 
 /* 作用域处理 */
-.test-case-aside-layouyt :deep(.el-button--small span),
+.test-case-aside-layout :deep(.el-button--small span),
 .back-layout :deep(.el-button--small span),
 .top-btn-group-layout :deep(.el-button--small span),
 .export-case-layout :deep(.el-button--small span) {

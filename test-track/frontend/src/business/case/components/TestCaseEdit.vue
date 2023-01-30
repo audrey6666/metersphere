@@ -1,5 +1,5 @@
 <template>
-  <div class="case-edit-wrap" style="min-width: 1100px">
+  <div class="case-edit-wrap">
     <el-card :bodyStyle="{ padding: '0px' }" v-if="false">
       <div class="card-content">
         <div class="ms-main-div" @click="showAll">
@@ -82,7 +82,7 @@
                     ref="versionHistory"
                     :version-data="versionData"
                     :current-id="currentTestCaseInfo.id"
-                    :is-read="currentTestCaseInfo.trashEnable || readOnly"
+                    :is-read="readOnly"
                     @confirmOtherInfo="confirmOtherInfo"
                     :current-project-id="currentProjectId"
                     :has-latest="hasLatest"
@@ -100,23 +100,20 @@
                     @command="handleCommand"
                     size="small"
                     style="float: right; margin-right: 20px"
-                    v-if="
-                      this.path === '/test/case/add' ||
-                      (this.isPublic && this.isXpack)
-                    "
+                    v-if="isAdd || showPublic"
                     :disabled="readOnly"
                   >
                     {{ $t("commons.save") }}
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item
                         command="ADD_AND_CREATE"
-                        v-if="this.path == '/test/case/add'"
-                        >{{ $t("test_track.case.save_create_continue") }}
+                        v-if="isAdd"
+                      >{{ $t("test_track.case.save_create_continue") }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         command="ADD_AND_PUBLIC"
-                        v-if="this.isPublic && this.isXpack"
-                        >{{ $t("test_track.case.save_add_public") }}
+                        v-if="showPublic"
+                      >{{ $t("test_track.case.save_add_public") }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -176,10 +173,10 @@
 
                 <test-case-edit-other-info
                   :read-only="readOnly"
-                  :project-id="projectIds"
+                  :project-id="projectId"
                   :form="form"
                   :is-copy="currentTestCaseInfo.isCopy"
-                  :copy-case-id="copyCaseId"
+                  :copy-case-id="caseId"
                   :label-width="formLabelWidth"
                   :case-id="form.id"
                   :type="type"
@@ -242,11 +239,10 @@
             <div class="case-version">
               <!--  版本历史 v-xpack -->
               <mx-version-history
-                
                 ref="versionHistory"
                 :version-data="versionData"
                 :current-id="currentTestCaseInfo.id"
-                :is-read="currentTestCaseInfo.trashEnable || readOnly"
+                :is-read="readOnly"
                 @confirmOtherInfo="confirmOtherInfo"
                 :current-project-id="currentProjectId"
                 :has-latest="hasLatest"
@@ -345,18 +341,18 @@
         </div>
       </div>
       <!-- 正文 -->
-      <div class="edit-content-container">
+      <div class="edit-content-container" :class="{'editable-edit-content-container' : editable}">
         <case-edit-info-component
           :editable="editable"
           :richTextDefaultOpen="richTextDefaultOpen"
           :formLabelWidth="formLabelWidth"
           :read-only="readOnly"
-          :project-id="projectIds"
+          :project-id="projectId"
           :form="form"
           :is-copy="currentTestCaseInfo.isCopy"
-          :copy-case-id="copyCaseId"
+          :copy-case-id="caseId"
           :label-width="formLabelWidth"
-          :case-id="form.id"
+          :case-id="caseId"
           :type="type"
           :comments.sync="comments"
           @openComment="openComment"
@@ -367,26 +363,28 @@
         >
         </case-edit-info-component>
         <!-- 基础信息 -->
-        <div class="content-base-info-wrap">
-          <case-base-info
-            :editable="editable"
-            :case-id="form.id"
-            :project-id="projectIds"
-            :form="form"
-            :is-form-alive="isFormAlive"
-            :isloading="loading"
-            :read-only="readOnly"
-            :public-enable="publicEnable"
-            :show-input-tag="showInputTag"
-            :tree-nodes="treeNodes"
-            :project-list="projectList"
-            :custom-field-form="customFieldForm"
-            :custom-field-rules="customFieldRules"
-            :test-case-template="testCaseTemplate"
-            :default-open="richTextDefaultOpen"
-            :version-enable="versionEnable"
-            ref="testCaseBaseInfo"
-          ></case-base-info>
+        <div class="content-base-info-wrap" :class="{'editable-content-base-info-wrap' : editable}">
+          <el-scrollbar>
+            <case-base-info
+              :editable="editable"
+              :case-id="form.id"
+              :project-id="projectId"
+              :form="form"
+              :is-form-alive="isFormAlive"
+              :isloading="loading"
+              :read-only="readOnly"
+              :public-enable="publicEnable"
+              :show-input-tag="showInputTag"
+              :tree-nodes="treeNodes"
+              :project-list="projectList"
+              :custom-field-form="customFieldForm"
+              :custom-field-rules="customFieldRules"
+              :test-case-template="testCaseTemplate"
+              :default-open="richTextDefaultOpen"
+              :version-enable="versionEnable"
+              ref="testCaseBaseInfo"
+            ></case-base-info>
+          </el-scrollbar>
         </div>
       </div>
       <!-- 底部操作按钮 -->
@@ -395,36 +393,29 @@
           <!-- 保存 -->
           <div
             class="save-btn-row"
-            v-if="
-              this.path === '/test/case/add' || (this.isPublic && this.isXpack)
-            "
-          >
+            v-if="showAddBtn">
             <el-button size="small" @click="handleCommand" :disabled="readOnly">
-              {{ $t("commons.save") }}</el-button
-            >
+              {{ $t("commons.save") }}
+            </el-button>
           </div>
           <!-- 保存并添加到公共用例库 -->
           <div
             class="save-add-pub-row"
-            v-if="this.isPublic && this.isXpack"
-            @click="handleCommand('ADD_AND_PUBLIC')"
-          >
-            <el-button size="small" :disabled="readOnly">{{
-              $t("test_track.case.save_add_public")
-            }}</el-button>
+            v-if="showPublic"
+            @click="handleCommand('ADD_AND_PUBLIC')">
+            <el-button size="small" :disabled="readOnly">
+              {{ $t("test_track.case.save_add_public") }}
+            </el-button>
           </div>
           <!-- 保存并新建 -->
           <div class="save-create-row">
             <el-button
               size="small"
               @click="handleCommand('ADD_AND_CREATE')"
-              v-if="
-                this.path === '/test/case/add' ||
-                (this.isPublic && this.isXpack)
-              "
-              :disabled="readOnly"
-              >{{ $t("test_track.case.save_create_continue") }}</el-button
-            >
+              v-if="showAddBtn"
+              :disabled="readOnly">
+              {{ $t("test_track.case.save_create_continue") }}
+            </el-button>
           </div>
         </template>
       </div>
@@ -444,8 +435,7 @@
   </el-dialog>
     <version-create-other-info-select
       @confirmOtherInfo="confirmOtherInfo"
-      ref="selectPropDialog"
-    ></version-create-other-info-select>
+      ref="selectPropDialog"/>
   </div>
 </template>
 
@@ -454,7 +444,7 @@ import { TokenKey } from "metersphere-frontend/src/utils/constants";
 import MsDialogFooter from "metersphere-frontend/src/components/MsDialogFooter";
 import {
   getCurrentProjectID,
-  getCurrentUser,
+  getCurrentUser, setCurrentProjectID,
 } from "metersphere-frontend/src/utils/token";
 import {
   hasLicense,
@@ -506,7 +496,7 @@ import {
   hasTestCaseOtherInfo,
   testCaseEditFollows,
   testCaseGetByVersionId,
-  testCaseDeleteToGc,
+  testCaseDeleteToGc, getTestCaseNodesByCaseFilter,
 } from "@/api/testCase";
 
 import {
@@ -526,6 +516,8 @@ import MxVersionHistory from "./common/CaseVersionHistory"
 import {
   getProjectVersions,
 } from "metersphere-frontend/src/api/version";
+import {buildTree} from "metersphere-frontend/src/model/NodeTree";
+import {versionEnableByProjectId} from "@/api/project";
 
 export default {
   name: "TestCaseEdit",
@@ -562,7 +554,6 @@ export default {
   data() {
     return {
       // origin
-      path: "/test/case/add",
       isPublic: false,
       isXpack: false,
       testCaseTemplate: {},
@@ -669,7 +660,6 @@ export default {
       customFieldRules: {},
       customFieldForm: null,
       formLabelWidth: "100px",
-      operationType: "",
       isCreateContinue: false,
       isStepTableAlive: true,
       isFormAlive: true,
@@ -678,7 +668,6 @@ export default {
         { value: "manual", label: this.$t("test_track.case.manual") },
       ],
       testCase: {},
-      copyCaseId: "",
       showInputTag: true,
       tableType: "",
       moduleObj: {
@@ -696,32 +685,15 @@ export default {
       isClickAttachmentTab: false,
       latestVersionId: "",
       hasLatest: false,
+      treeNodes: [],
+      currentTestCaseInfo: {},
       versionOptions: [],
-      currentVersionName: ""
+      currentVersionName: "",
+      versionEnable: false
     };
   },
-  props: {
-    treeNodes: {
-      type: Array,
-    },
-    currentTestCaseInfo: {},
-    selectNode: {
-      type: Object,
-    },
-    selectCondition: {
-      type: Object,
-    },
-    caseType: String,
-    publicEnable: {
-      type: Boolean,
-      default: false,
-    },
-    activeName: String,
-    versionEnable: Boolean,
-    editable: Boolean,
-  },
   computed: {
-    projectIds() {
+    projectId() {
       return getCurrentProjectID();
     },
     moduleOptions() {
@@ -743,8 +715,35 @@ export default {
         !hasPermission("PROJECT_TRACK_CASE:READ+EDIT")
       );
     },
+    caseId() {
+      return this.$route.params.caseId;
+    },
+    editType() {
+      return this.$route.query.type;
+    },
+    isAdd() {
+      return !this.caseId || this.isCopy;
+    },
+    editable() {
+      return this.isAdd;
+    },
+    isCopy() {
+      return this.editType == 'copy';
+    },
+    publicEnable() {
+      return this.editType == 'public';
+    },
+    showPublic() {
+      return this.isPublic && this.isXpack;
+    },
+    showAddBtn() {
+      return this.isAdd || this.showPublic;
+    }
   },
   watch: {
+    isAdd() {
+      this.type = this.isAdd ? 'add' : 'edit';
+    },
     form: {
       handler(val) {
         if (val && useStore().testCaseMap && this.form.id) {
@@ -778,9 +777,7 @@ export default {
   },
   mounted() {
     this.getSelectOptions();
-    if (this.type === "edit" || this.type === "copy") {
-      this.open(this.currentTestCaseInfo);
-    }
+
     // Cascader 级联选择器: 点击文本就让它自动点击前面的input就可以触发选择。
     setInterval(function () {
       document.querySelectorAll(".el-cascader-node__label").forEach((el) => {
@@ -789,19 +786,7 @@ export default {
         };
       });
     }, 1000);
-    if (this.selectNode && this.selectNode.data && !this.form.id) {
-      this.form.module = this.selectNode.data.id;
-      this.form.nodePath = this.selectNode.data.path;
-    }
-    if (
-      (!this.form.module ||
-        this.form.module === "default-module" ||
-        this.form.module === "root") &&
-      this.treeNodes.length > 0
-    ) {
-      this.form.module = this.treeNodes[0].id;
-      this.form.nodePath = this.treeNodes[0].path;
-    }
+
     if (!(useStore().testCaseMap instanceof Map)) {
       useStore().testCaseMap = new Map();
     }
@@ -809,45 +794,37 @@ export default {
       useStore().testCaseMap.set(this.form.id, 0);
     }
   },
-  created() {
-    this.$EventBus.$on("handleSaveCaseWithEvent", this.handleSaveCaseWithEvent);
+  activated() {
 
-    this.type = this.caseType;
+    let initFuc = this.initEdit;
+    this.loading = true;
+    getTestTemplate().then((template) => {
+      this.testCaseTemplate = template;
+      useStore().testCaseTemplate = this.testCaseTemplate;
+      initFuc();
+    });
+
+    this.$EventBus.$on("handleSaveCaseWithEvent", this.handleSaveCaseWithEvent);
+    this.addListener(); //  添加 ctrl s 监听
+
     if (!this.projectList || this.projectList.length === 0) {
       //没有项目数据的话请求项目数据
       getProjectListAll().then((response) => {
         this.projectList = response.data; //获取当前工作空间所拥有的项目,
       });
     }
-    this.projectId = this.projectIds;
-    let initAddFuc = this.initAddFuc;
-    this.loading = true;
-    getTestTemplate().then((template) => {
-      this.testCaseTemplate = template;
-      useStore().testCaseTemplate = this.testCaseTemplate;
-      initAddFuc();
-    });
-    if (this.selectNode && this.selectNode.data && !this.form.id) {
-      this.form.module = this.selectNode.data.id;
-      this.form.nodePath = this.selectNode.data.path;
-    } else {
-      this.form.module =
-        this.treeNodes && this.length > 0 ? this.treeNodes[0].id : "";
-    }
-    if (this.type === "edit" || this.type === "copy") {
-      this.form.module = this.currentTestCaseInfo.nodeId;
-      this.form.nodePath = this.currentTestCaseInfo.nodePath;
-    }
-    if (
-      (!this.form.module ||
-        this.form.module === "default-module" ||
-        this.form.module === "root") &&
-      this.treeNodes.length > 0
-    ) {
-      this.form.module = this.treeNodes[0].id;
-      this.form.nodePath = this.treeNodes[0].path;
-    }
-    getTestCaseFollow(this.currentTestCaseInfo.id).then((response) => {
+
+    getTestCaseNodesByCaseFilter(this.projectId, {})
+      .then(r => {
+        this.treeNodes = r.data;
+        this.treeNodes.forEach(node => {
+          node.name = node.name === '未规划用例' ? this.$t('api_test.unplanned_case') : node.name
+          buildTree(node, {path: ''});
+          this.setNodeModule();
+        });
+      });
+
+    getTestCaseFollow(this.caseId).then((response) => {
       this.form.follows = response.data;
       for (let i = 0; i < response.data.length; i++) {
         if (response.data[i] === this.currentUser().id) {
@@ -878,15 +855,27 @@ export default {
       // 解决错位问题
       window.addEventListener("resize", this.resizeContainer);
     });
+
+    this.checkVersionEnable();
   },
   methods: {
+    checkVersionEnable() {
+      if (!this.projectId) {
+        return;
+      }
+      if (hasLicense()) {
+        versionEnableByProjectId(this.projectId)
+          .then(response => {
+            this.versionEnable = response.data;
+          });
+      }
+    },
     openNewTab() {
       if (this.editable || !this.form.id) {
         return;
       }
       let TestCaseData = this.$router.resolve({
-        path: "/track/case/edit/" + this.form.id,
-        query: { caseId: this.form.id },
+        path: "/track/case/edit/" + this.form.id
       });
       window.open(TestCaseData.href, "_blank");
     },
@@ -911,51 +900,17 @@ export default {
         "TRACK_TEST_CASE",
       ]);
     },
-    setModule(id, data) {
-      this.form.module = id;
-      this.form.nodePath = data.path;
-    },
-    initAddFuc() {
-      // this.loadOptions();
-      this.addListener(); //  添加 ctrl s 监听
-      if (this.selectNode && this.selectNode.data && !this.form.id) {
-        this.form.module = this.selectNode.data.id;
-        this.form.nodePath = this.selectNode.data.path;
-      } else {
-        this.form.module =
-          this.treeNodes && this.length > 0 ? this.treeNodes[0].id : "";
-      }
-      if (this.type === "edit" || this.type === "copy") {
+    setNodeModule() {
+      if (this.caseId) {
         this.form.module = this.currentTestCaseInfo.nodeId;
         this.form.nodePath = this.currentTestCaseInfo.nodePath;
       }
-      if (
-        (!this.form.module ||
+      if ((!this.form.module ||
           this.form.module === "default-module" ||
-          this.form.module === "root") &&
-        this.treeNodes.length > 0
-      ) {
+          this.form.module === "root")
+        && this.treeNodes.length > 0) {
         this.form.module = this.treeNodes[0].id;
         this.form.nodePath = this.treeNodes[0].path;
-      }
-      if (this.type === "add") {
-        //设置自定义熟悉默认值
-        this.customFieldForm = parseCustomField(
-          this.form,
-          this.testCaseTemplate,
-          this.customFieldRules
-        );
-        this.form.name = this.testCaseTemplate.caseName;
-        this.form.stepDescription = this.testCaseTemplate.stepDescription;
-        this.form.expectedResult = this.testCaseTemplate.expectedResult;
-        this.form.prerequisite = this.testCaseTemplate.prerequisite;
-        this.form.stepModel = this.testCaseTemplate.stepModel;
-        if (this.testCaseTemplate.steps) {
-          this.form.steps = JSON.parse(this.testCaseTemplate.steps);
-        }
-      }
-      if (this.type === "add" || this.type === "copy") {
-        this.loading = false;
       }
     },
     setDefaultValue() {
@@ -1004,15 +959,12 @@ export default {
     openComment() {
       this.$refs.testCaseComment.open();
     },
-    getComments(testCase) {
-      let id = "";
-      if (testCase) {
-        id = testCase.id;
-      } else {
-        id = this.form.id;
+    getComments() {
+      if (!this.caseId) {
+        return;
       }
       this.loading = true;
-      testCaseCommentList(id).then((res) => {
+      testCaseCommentList(this.caseId).then((res) => {
         this.loading = false;
         this.comments = res.data;
       });
@@ -1036,62 +988,31 @@ export default {
       this.isFormAlive = false;
       this.$nextTick(() => (this.isFormAlive = true));
     },
-    open(testCase) {
-      /*
-             this.form.selected=[["automation", "3edaaf31-3fa4-4a53-9654-320205c2953a"],["automation", "3aa58bd1-c986-448c-8060-d32713dbd4eb"]]
-      */
-      this.projectId = this.projectIds;
-      let initFuc = this.initEdit;
-      this.loading = true;
-      getTestTemplate().then((template) => {
-        this.testCaseTemplate = template;
-        useStore().testCaseTemplate = this.testCaseTemplate;
-        initFuc(testCase);
-      });
-    },
     initEdit(testCase, callback) {
+
       if (window.history && window.history.pushState) {
         history.pushState(null, null, document.URL);
         window.addEventListener("popstate", this.close);
       }
       this.resetForm();
       listenGoBack(this.close);
-      this.operationType = "add";
-      if (testCase) {
-        //修改
-        this.operationType = "edit";
-        this.copyCaseId = "";
-        //复制
-        if (this.type === "copy") {
-          this.showInputTag = false;
-          this.operationType = "add";
-          this.copyCaseId = testCase.copyId;
-          this.setFormData(testCase);
-          this.testCaseTemplate.customFields.forEach((item) => {
-            item.isEdit = false;
-          });
-          this.setTestCaseExtInfo(testCase);
-          this.getSelectOptions();
-          this.reload();
-          this.$nextTick(() => {
-            this.showInputTag = true;
-          });
-          this.form.id = null;
-          this.loading = false;
+
+      if (this.caseId) {
+        this.operationType = 'edit';
+        if (this.isCopy) {
+          this.operationType = 'add';
         } else {
-          this.getTestCase(testCase.id);
+          this.getComments();
         }
+        this.getTestCase();
       } else {
+        this.operationType = 'add';
+
         // add
-        if (this.selectNode.data) {
-          this.form.module = this.selectNode.data.id;
-        } else {
-          if (this.moduleOptions.length > 0) {
-            this.form.module = this.moduleOptions[0].id;
-          }
+        if (this.moduleOptions.length > 0) {
+          this.form.module = this.moduleOptions[0].id;
         }
         let user = JSON.parse(localStorage.getItem(TokenKey));
-        this.copyCaseId = "";
         this.form.priority = "P3";
         this.form.type = "functional";
         this.form.method = "manual";
@@ -1109,27 +1030,37 @@ export default {
       if (callback) {
         callback();
       }
-      if (this.type !== "copy") {
-        this.getComments(this.currentTestCaseInfo);
-      }
     },
-    getTestCase(id) {
-      this.showInputTag = false;
-      if (!id) {
-        id = this.currentTestCaseInfo.id;
+    getTestCase() {
+      if (!this.caseId) {
+        return;
       }
+      this.showInputTag = false;
       this.loading = true;
-      getTestCase(id).then((response) => {
-        this.loading = false;
-        if (response.data) {
-          this.path = "/test/case/edit";
-          if (this.currentTestCaseInfo.isCopy) {
-            this.path = "/test/case/add";
-          }
-        } else {
-          this.path = "/test/case/add";
-        }
+      getTestCase(this.caseId).then((response) => {
         let testCase = response.data;
+        this.operationType = "edit";
+
+        if (this.isCopy) {
+          this.operationType = "add";
+          testCase.name = 'copy_' + testCase.name;
+          //复制的时候只复制当前版本
+          testCase.id = getUUID();
+          testCase.refId = null;
+          testCase.versionId = null;
+
+          this.testCaseTemplate.customFields.forEach((item) => {
+            item.isEdit = false;
+          });
+          this.form.id = null;
+        } else {
+          // 如果不是当前项目，先切项目
+          if (this.projectId !== testCase.projectId) {
+            setCurrentProjectID(testCase.projectId);
+            location.reload();
+          }
+        }
+        this.currentTestCaseInfo = testCase;
         this.setFormData(testCase);
         this.setTestCaseExtInfo(testCase);
         this.getSelectOptions();
@@ -1137,6 +1068,7 @@ export default {
         this.$nextTick(() => {
           this.showInputTag = true;
         });
+        this.loading = false;
       });
     },
     async setFormData(testCase) {
@@ -1234,7 +1166,6 @@ export default {
             }
             this.loading = false;
             this.$success(this.$t("commons.save_success"));
-            this.path = "/test/case/edit";
             this.operationType = "edit";
             this.$emit("refreshTestCase");
             useStore().testCaseMap.set(this.form.id, 0);
@@ -1244,7 +1175,6 @@ export default {
             } else {
               param.id = response.data.id;
               this.$emit("caseCreate", param);
-              this.type = "edit";
               this.close();
             }
             this.form.id = response.data.id;
@@ -1264,8 +1194,7 @@ export default {
               this.getDefaultVersion();
             }
 
-            // 取消编辑状态
-            this.editable = false;
+            this.$router.push({path: "/track/case/edit/" + this.form.id})
           })
           .catch(() => {
             this.loading = false;
@@ -1277,7 +1206,7 @@ export default {
       Object.assign(param, this.form);
       param.steps = JSON.stringify(this.form.steps);
       param.nodeId = this.form.module;
-      param.copyCaseId = this.copyCaseId;
+      param.copyCaseId = this.caseId;
       if (!this.publicEnable) {
         param.nodePath = getNodePath(this.form.module, this.moduleOptions);
         if (this.projectId) {
@@ -1308,10 +1237,10 @@ export default {
       }
       // TODO since v2.6
       if (this.$refs.otherInfo) {
-        if (this.$refs.otherInfo.relateFiles.length > 0) {
+        if (this.$refs.otherInfo.relateFiles && this.$refs.otherInfo.relateFiles.length > 0) {
           param.relateFileMetaIds = this.$refs.otherInfo.relateFiles;
         }
-        if (this.$refs.otherInfo.unRelateFiles.length > 0) {
+        if (this.$refs.otherInfo.unRelateFiles && this.$refs.otherInfo.unRelateFiles.length > 0) {
           param.unRelateFileMetaIds = this.$refs.otherInfo.unRelateFiles;
         }
       }
@@ -1351,9 +1280,13 @@ export default {
           type: "application/json",
         })
       );
+      let path = '/test/case/edit';
+      if (this.isAdd || this.isCopy) {
+        path = '/test/case/add';
+      }
       return {
         method: "POST",
-        url: this.path,
+        url: path,
         data: formData,
         headers: {
           "Content-Type": undefined,
@@ -1477,7 +1410,7 @@ export default {
       });
     },
     getVersionHistory() {
-      getTestCaseVersions(this.currentTestCaseInfo.id).then((response) => {
+      getTestCaseVersions(this.caseId).then((response) => {
         if (response.data.length > 0) {
           for (let i = 0; i < response.data.length; i++) {
             this.currentProjectId = response.data[i].projectId;
@@ -1547,7 +1480,7 @@ export default {
           that.newData.versionName = t1.name;
           that.oldData.versionName = t2.name;
           that.newData.userName = t1Case.data.createName;
-          that.oldData.userName = t2Case.data.createName; 
+          that.oldData.userName = t2Case.data.createName;
           this.setSpecialPropForCompare(that);
           that.dialogVisible = true;
         }
@@ -1557,7 +1490,7 @@ export default {
       testCaseGetByVersionId(row.id, this.currentTestCaseInfo.refId).then(
         (response) => {
           let p1 = getTestCase(response.data.id);
-          let p2 = getTestCase(this.currentTestCaseInfo.id);
+          let p2 = getTestCase(this.caseId);
           let that = this;
           Promise.all([p1, p2]).then((r) => {
             if (r[0] && r[1]) {
@@ -1687,7 +1620,7 @@ export default {
         projectId: getCurrentProjectID(),
         type: "TEST_CASE",
         versionId: row.id,
-        resourceId: this.currentTestCaseInfo.id,
+        resourceId: this.caseId,
       };
       setLatestVersionById(param).then(() => {
         this.$success(this.$t("commons.modify_success"));
@@ -1794,21 +1727,35 @@ export default {
   padding-left: 60px;
   margin-left: 40px;
 }
+
+.editable-edit-content-container {
+  height: calc(100vh - 190px) !important;
+}
+
+.editable-content-base-info-wrap {
+  height: calc(100vh - 190px) !important;
+}
+
+.el-scrollbar {
+  height: 100%;
+}
 </style>
 
 <style scoped lang="scss">
 @import "@/business/style/index.scss";
+
 .case-edit-wrap {
+  padding: 12px 24px 0px;
+  box-sizing: border-box;
+
   :deep(.el-form-item__content) {
     line-height: px2rem(32);
   }
   .case-edit-box {
-    width: px2rem(1328);
-    min-height: px2rem(1001);
     /* margin-left: px2rem(34); */
     background-color: #fff;
     .edit-header-container {
-      height: px2rem(56);
+      height: 56px;
       width: 100%;
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
       display: flex;
@@ -1972,9 +1919,6 @@ export default {
         line-height: 22px;
       }
       .content-body-wrap {
-        // 1024 减去左右padding 各24 和 1px右边框 px2rem(1024)
-        width: px2rem(1024);
-        height: 100%;
         .case-title-wrap {
           display: flex;
           margin-top: px2rem(24);
@@ -2085,7 +2029,7 @@ export default {
 
       .content-base-info-wrap {
         width: px2rem(304);
-        min-height: px2rem(864);
+        height: calc(100vh - 240px + 130px);
         border-left: 1px solid rgba(31, 35, 41, 0.15);
         .case-wrap {
           margin-left: px2rem(24);
@@ -2115,7 +2059,7 @@ export default {
     .edit-footer-container {
       display: flex;
       width: 100%;
-      height: px2rem(80);
+      height: 80px;
       background: #ffffff;
       box-shadow: 0px -1px 4px rgba(31, 35, 41, 0.1);
       align-items: center;

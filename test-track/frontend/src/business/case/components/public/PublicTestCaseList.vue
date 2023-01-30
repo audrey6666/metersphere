@@ -236,9 +236,9 @@ import {TEST_CASE_STATUS_MAP} from "@/business/constants/table-constants";
 import {mapState} from "pinia";
 import {useStore} from "@/store";
 import {getProjectMemberUserFilter} from "@/api/user";
-import {operationConfirm} from "@/business/utils/sdk-utils";
 import TypeTableItem from "@/business/common/tableItems/planview/TypeTableItem";
 import {getVersionFilters} from "@/business/utils/sdk-utils";
+import {openCaseEdit} from "@/business/case/test-case";
 
 
 export default {
@@ -442,25 +442,12 @@ export default {
     callBackSelectAll(selection) {
       this.selectCounts = this.$refs.table.selectDataCounts;
     },
-    handleEdit(testCase) {
-      let TestCaseData = this.$router.resolve({
-        path: '/track/case/all',
-        query: {
-          redirectID: getUUID(),
-          dataType: "testCase",
-          dataSelectRange: testCase.id,
-          projectId: testCase.projectId
-        }
-      });
-      window.open(TestCaseData.href, '_blank');
+    handleEdit(testCase, type) {
+      openCaseEdit(testCase, type, this);
     },
     handleEditShow(testCase, column) {
       if (column.label !== this.$t('test_track.case.case_desc')) {
-        getTestCase(testCase.id)
-          .then(response => {
-            let testCase = response.data;
-            this.$emit('testCaseEditShow', testCase);
-          });
+        openCaseEdit(testCase, 'public', this);
       }
     },
     handleDeleteToGc(testCase) {

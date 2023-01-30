@@ -4,42 +4,38 @@
     <div class="tab-pane-wrap" v-if="!editable">
       <el-tabs v-model="caseActiveName" @tab-click="tabClick">
         <el-tab-pane :label="$t('case.use_case_detail')" name="detail">
-          <div class="content-conatiner">
-            <case-detail-component
-              :type="type"
-              :case-id="caseId"
-              :read-only="readOnly"
-              :project-id="projectId"
-              :is-copy="isCopy"
-              :copy-case-id="copyCaseId"
-              :isClickAttachmentTab="isClickAttachmentTab"
-              :isTestPlan="isTestPlan"
-              :editable="editable"
-              :form="form"
-              :richTextDefaultOpen="richTextDefaultOpen"
-              :formLabelWidth="formLabelWidth"
-            ></case-detail-component>
-          </div>
-          <div class="comment-common">
-            <case-comment-component
-              :case-id="caseId"
-              @getComments="getComments"
-            ></case-comment-component>
+          <div class="tab-container" :class="{'comment-edit-tab-container' : isCommentEdit}">
+            <el-scrollbar>
+              <div class="content-container">
+                <case-detail-component
+                  :type="type"
+                  :case-id="caseId"
+                  :read-only="readOnly"
+                  :project-id="projectId"
+                  :is-copy="isCopy"
+                  :copy-case-id="copyCaseId"
+                  :isClickAttachmentTab="isClickAttachmentTab"
+                  :isTestPlan="isTestPlan"
+                  :editable="editable"
+                  :form="form"
+                  :richTextDefaultOpen="richTextDefaultOpen"
+                  :formLabelWidth="formLabelWidth"
+                ></case-detail-component>
+              </div>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
         <el-tab-pane :label="$t('case.associate_test_cases')" name="associateTestCases">
-          <div class="content-conatiner">
-            <case-test-relate
-              :case-id="caseId"
-              :read-only="readOnly"
-              :version-enable="versionEnable"
-            ></case-test-relate>
-          </div>
-          <div class="comment-common">
-            <case-comment-component
-              :case-id="caseId"
-              @getComments="getComments"
-            ></case-comment-component>
+          <div class="tab-container" :class="{'comment-edit-tab-container' : isCommentEdit}">
+            <el-scrollbar>
+              <div class="content-container">
+                <case-test-relate
+                  :case-id="caseId"
+                  :read-only="readOnly"
+                  :version-enable="versionEnable"
+                ></case-test-relate>
+              </div>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
         <!-- 关联缺陷 -->
@@ -47,89 +43,88 @@
           :label="$t('test_track.case.relate_issue')"
           name="associatedDefects"
         >
-          <div class="content-conatiner">
-            <case-issue-relate
-              :plan-id="planId"
-              :is-copy="isCopy"
-              :copy-case-id="copyCaseId"
-              :read-only="readOnly && !isTestPlan"
-              :plan-case-id="planId ? this.form.id : null"
-              :case-id="caseId"
-              ref="issue"
-            ></case-issue-relate>
-          </div>
-          <div class="comment-common">
-            <case-comment-component
-              :case-id="caseId"
-              @getComments="getComments"
-            ></case-comment-component>
+          <div class="tab-container" :class="{'comment-edit-tab-container' : isCommentEdit}">
+            <el-scrollbar>
+              <div class="content-container">
+                <case-issue-relate
+                  :plan-id="planId"
+                  :is-copy="isCopy"
+                  :copy-case-id="copyCaseId"
+                  :read-only="readOnly && !isTestPlan"
+                  :plan-case-id="planId ? this.form.id : null"
+                  :case-id="caseId"
+                  ref="issue"/>
+              </div>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
         <el-tab-pane :label="$t('case.dependencies')" name="dependencies">
-          <div class="content-conatiner">
-            <case-relationship-viewer
-              @setCount="setRelationshipCount"
-              :read-only="readOnly"
-              :resource-id="caseId"
-              @openDependGraphDrawer="setRelationshipGraph"
-              :version-enable="versionEnable"
-              resource-type="TEST_CASE"
-              ref="relationship"
-            ></case-relationship-viewer>
-          </div>
-          <div class="comment-common">
-            <case-comment-component
-              :case-id="caseId"
-              @getComments="getComments"
-            ></case-comment-component>
+          <div class="tab-container" :class="{'comment-edit-tab-container' : isCommentEdit}">
+            <el-scrollbar>
+              <div class="content-container">
+                <case-relationship-viewer
+                  @setCount="setRelationshipCount"
+                  :read-only="readOnly"
+                  :resource-id="caseId"
+                  @openDependGraphDrawer="setRelationshipGraph"
+                  :version-enable="versionEnable"
+                  resource-type="TEST_CASE"
+                  ref="relationship"
+                ></case-relationship-viewer>
+              </div>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
         <el-tab-pane :label="$t('case.comment')" name="comment">
-          <div class="content-conatiner">
-            <case-comment-viewer
-              @getComments="getComments"
-              :comments="comments"
-              ref="commentRef"
-            ></case-comment-viewer>
-          </div>
-          <div class="comment-common">
-            <case-comment-component
-              :case-id="caseId"
-              @getComments="getComments"
-            ></case-comment-component>
+          <div class="tab-container" :class="{'comment-edit-tab-container' : isCommentEdit}">
+            <el-scrollbar>
+              <div class="content-container">
+                <case-comment-viewer
+                  @getComments="getComments"
+                  :comments="comments"
+                  ref="commentRef"
+                ></case-comment-viewer>
+              </div>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
         <!-- 变更记录 -->
         <el-tab-pane :label="$t('case.change_record')" name="changeRecord">
-          <div class="content-conatiner">
-            <case-change-history :case-id="caseId" ref="caseChangeHistoryRef"></case-change-history>
-          </div>
-          <div class="comment-common">
-            <case-comment-component
-              :case-id="caseId"
-              @getComments="getComments"
-            ></case-comment-component>
+          <div class="tab-container" :class="{'comment-edit-tab-container' : isCommentEdit}">
+            <el-scrollbar>
+              <div class="content-container">
+                <case-change-history  :case-id="caseId" ref="caseChangeHistoryRef"></case-change-history>
+              </div>
+            </el-scrollbar>
           </div>
         </el-tab-pane>
       </el-tabs>
+      <div class="comment-common">
+        <case-comment-component
+          :case-id="caseId"
+          @stateChange="handleCommentStateChange"
+          @getComments="getComments"
+        />
+      </div>
     </div>
-    <div class="content-conatiner">
-      <case-detail-component
-        v-if="editable"
-        :type="type"
-        :case-id="caseId"
-        :read-only="readOnly"
-        :project-id="projectId"
-        :is-copy="isCopy"
-        :copy-case-id="copyCaseId"
-        :isClickAttachmentTab="isClickAttachmentTab"
-        :isTestPlan="isTestPlan"
-        :editable="editable"
-        :form="form"
-        :richTextDefaultOpen="richTextDefaultOpen"
-        :formLabelWidth="formLabelWidth"
-        ref="testCaseBaseInfo"
-      ></case-detail-component>
+    <div class="content-container editable-container" v-if="editable">
+      <el-scrollbar>
+        <case-detail-component
+          :type="type"
+          :case-id="caseId"
+          :read-only="readOnly"
+          :project-id="projectId"
+          :is-copy="isCopy"
+          :copy-case-id="copyCaseId"
+          :isClickAttachmentTab="isClickAttachmentTab"
+          :isTestPlan="isTestPlan"
+          :editable="editable"
+          :form="form"
+          :richTextDefaultOpen="richTextDefaultOpen"
+          :formLabelWidth="formLabelWidth"
+          ref="testCaseBaseInfo"
+        ></case-detail-component>
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -203,12 +198,16 @@ export default {
       relateFiles: [],
       unRelateFiles: [],
       dumpFile: {},
+      commentState: 'READY'
     };
   },
   computed: {
     isTesterPermission() {
       return true;
     },
+    isCommentEdit() {
+      return this.commentState == 'EDIT';
+    }
   },
   watch: {
     caseId() {
@@ -262,6 +261,9 @@ export default {
     },
     getComments(testCase) {
       this.$emit("getComments", testCase);
+    },
+    handleCommentStateChange(state) {
+      this.commentState = state;
     },
     setRelationshipCount(count) {
       this.relationshipCount = count;
@@ -435,10 +437,27 @@ export default {
   left: 25px;
   top: 8px;
 }
+
+.tab-container {
+  height: calc(100vh - 240px);
+}
+
+.comment-edit-tab-container {
+  height: calc(100vh - 240px - 160px);
+}
+
+.editable-container {
+  height: calc(100vh - 200px);
+}
+
+.el-scrollbar {
+  height: 100%;
+}
 </style>
 
 <style scoped lang="scss">
 @import "@/business/style/index.scss";
+
 .case-edit-wrap {
   :deep(.el-form-item__content) {
     line-height: px2rem(32);
@@ -512,7 +531,7 @@ export default {
       }
       .content-body-wrap {
         // 1024 减去左右padding 各24 和 1px右边框
-        width: px2rem(1024);
+        width: 100%;
         height: 100%;
         .case-title-wrap {
           display: flex;
@@ -528,15 +547,13 @@ export default {
             color: #1f2329;
           }
         }
-        .content-conatiner {
+        .content-container {
           padding-left: px2rem(24);
           padding-right: px2rem(24);
         }
         .comment-common {
-          position: fixed;
           bottom: 0px;
-          width: px2rem(1024);
-          z-index: 2000;
+          width: 100%;
         }
         //公共样式
         .content-wrap {
