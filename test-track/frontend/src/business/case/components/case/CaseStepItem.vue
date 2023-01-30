@@ -248,6 +248,9 @@ export default {
   padding: 0;
 }
 
+.el-table--enable-row-hover :deep(.el-table__body tr:hover > td) {
+  background-color: rgba(31, 35, 41, 0.1)!important;
+}
 /* .el-table :deep(td:nth-child(1) .cell) {
   text-align: center;
 } */
@@ -277,6 +280,55 @@ export default {
   letter-spacing: -0.1px;
   /* ms */
   color: #783887;
+}
+
+.table-edit-input :deep(.el-textarea__inner) {
+  min-height: 32px!important;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  display: flex;
+  align-items: center;
+  color: #1F2329;
+  cursor: pointer;
+}
+
+.table-edit-input.sync-textarea.el-textarea.el-input--mini {
+  padding: 3px;
+}
+
+.table-edit-input :deep(.el-textarea__inner::-webkit-scrollbar) {
+  width: 8px;
+  height: 8px;
+}
+
+.table-edit-input :deep(.el-textarea__inner:hover) {
+  border-style: solid!important;
+  border-color: #783887!important;
+}
+
+.table-edit-input :deep(.el-textarea__inner:focus) {
+  border-style: solid!important;
+  border-color: #783887!important;
+}
+
+i.el-icon-more {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+i.el-icon-more:hover {
+  background: rgba(31, 35, 41, 0.1);
+}
+
+:deep(.el-icon-more:before) {
+  position: relative;
+  left: 6px;
+  top: 6px;
 }
 </style>
 <style>
